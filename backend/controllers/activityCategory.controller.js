@@ -7,7 +7,7 @@ export const getCategories = async (req, res) => {
         const categories = await ActivityCategory.find(filter).sort(sort);
         res.status(200).json({success:true, data: categories});
     } catch (error) {
-        res.status(404).json({ message: error.message });
+        res.status(404).json({success: false, message: error.message });
     }
 }
 

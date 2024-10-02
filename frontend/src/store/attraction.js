@@ -80,55 +80,24 @@ const ProductList = () => {
 export default ProductList;
 
 
-export const useUserStore = create((set) => ({
-    user: {
-        userName: "",
-        type: "",
-    },
-    setUser: (user) => set({user}),
-    createUser: async (newUser) => {
-        if(!newUser.userName || !newUser.email || !newUser.password) {
-            return{success: false, message: "Please fill all fields."};
-        }
-        try {
-            const res = await fetch("/api/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({"userName": newUser.userName, "password": newUser.password, "type": newUser.type}),
-            });
-            const body = await res.json();
-            if (!body.success) {
-                return{success: false, message: body.message};
-            }
-            set({user: {"userName": body.data.userName, "type": body.type}});
-
-            // switch (newUser.type) {
-        //     case "tour guide":
-        //         await addTourGuide(newUser);
-        //         break;
-
-        //     case "advertiser":
-        //         await addAdvertiser(newUser);
-        //         break;
-
-        //     case "seller":
-        //         await addSeller(newUser);
-        //         break;
-
-        //     default:
-        //         return{success: false, message: "Invalid user type."};
+export const useAttractionStore = create((set) => ({
+    attractions: [],
+    setAttractions: (attractions) => set({attractions}),
+    getAttractions: async (filter) => {
+        // const res = await fetch("/api/attractions", {
+        //     method: "GET",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({"filter": filter, "sort": {}}),
+        // });
+        // const body = await res.json();
+        // if (!body.success){
+        //     return (body)
         // }
-
-        } catch (error) {
-
-            return{success: false, message: "error.message"};
-            
-        }
-
-        
-
-        return{success: true, message: "User created successfully."};
-    },
-}));
+        // set({attractions: body.data})
+        // return {success: true, message: "fetched attractions"};
+        set({attractions: [{filter}]})
+    }
+    }
+));
