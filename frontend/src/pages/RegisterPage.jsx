@@ -1,12 +1,22 @@
 import { set } from 'mongoose';
 import React from 'react'
 import { useUserStore } from '../store/user';
-
+import { toCamelCase } from '../lib/util';
 function RegisterPage() {
     const [newUser, setNewUser] = React.useState({
         userName: "",
         email: "",
         password: "",
+    });
+
+    const [tourist, setTourist] = React.useState({
+        userName: "",
+        email: "",
+        password: "",
+        mobileNumber: "",
+        nationality: "",
+        dateOfBirth: "",
+        occupation: "",
     });
 
     const {createUser, user} = useUserStore();
@@ -18,16 +28,34 @@ function RegisterPage() {
        console.log(success, message);
     }
 
+    const handleAddTourist = async function() {
+        const passedTourist = tourist
+        passedTourist.type = "tourist"
+        const {success, message} = await createUser(passedTourist);
+        console.log(success, message);
+    }
+
 
     const types = ["tour guide", "advertiser", "seller"]
     let typeSelector = types.map((type) => (
         <button key={type} className='bg-black text-white m-6 p-2 rounded' onClick={() => (handleAddUser(type))}>{type}</button>
     ));
 
-    const touristData = ["Username", "Email", "Password", "Mobile Number", "Nationality","Date of Birth","Occupation",]
-    let touristDataInput = touristData.map((data) => (
-        <input name={data} key={data} className='border border-[rgb(205,205,205)] m-6 p-2 shadow-md rounded bg-gray-300' type='text' placeholder={data} />
-    ));
+    const touristData = ["UserName", "Email", "Password", "Mobile Number", "Nationality","Date of Birth","Occupation",]
+    let touristDataInput = touristData.map((data) => {
+        const camelCaseName = toCamelCase(data);
+        return (
+            <input
+                name={camelCaseName}
+                key={camelCaseName}
+                value={tourist[camelCaseName]}
+                onChange={(e) => setTourist({ ...tourist, [e.target.name]: e.target.value })}
+                className='border border-[rgb(205,205,205)] m-6 p-2 shadow-md rounded bg-gray-300'
+                type='text'
+                placeholder={data}
+            />
+        );
+    });
 
   return (
     <div className='flex'>
@@ -46,7 +74,7 @@ function RegisterPage() {
         <div className='flex flex-col items-center'>
             {touristDataInput}
             <div className='text-sm flex'>
-            <button className='bg-black text-white m-6 p-2 rounded'>tourist</button>
+            <button onClick={() => (handleAddTourist())} className='bg-black text-white m-6 p-2 rounded'>tourist</button>
             </div>
         </div>
     </div>

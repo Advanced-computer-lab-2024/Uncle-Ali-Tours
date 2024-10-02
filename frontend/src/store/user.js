@@ -35,50 +35,19 @@ const addSeller = async (newUser) => {
     const body = await res.json();
     return body;
 };
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
-const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const fetchProducts = async () => {
-        const filter = {};
-        if (searchTerm) {
-            filter.name = { $regex: searchTerm, $options: 'i' }; // Case-insensitive search
-        }
-
-        try {
-            const response = await axios.get('/api/products', {
-                params: {
-                    filter: JSON.stringify(filter),
-                },
-            });
-            setProducts(response.data);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-        }
-        
-    };
-
-    const handleInputChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        fetchProducts();
-    };
-
-    useEffect(() => {
-        fetchProducts();
-    }, []);
 
 
+const addTourist = async (newUser) => {
+    const res = await fetch("/api/tourists", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+    });
+    const body = await res.json();
+    return body;
 };
-
-export default ProductList;
-
 
 export const useUserStore = create((set) => ({
     user: {
@@ -87,9 +56,7 @@ export const useUserStore = create((set) => ({
     },
     setUser: (user) => set({user}),
     createUser: async (newUser) => {
-        if(!newUser.userName || !newUser.email || !newUser.password) {
-            return{success: false, message: "Please fill all fields."};
-        }
+        
         try {
             const res = await fetch("/api/users", {
                 method: "POST",
@@ -100,21 +67,29 @@ export const useUserStore = create((set) => ({
             });
             const body = await res.json();
             if (!body.success) {
-                return{success: false, message: body.message};
+                return body;
             }
             set({user: {"userName": body.data.userName, "type": body.type}});
-
-            // switch (newUser.type) {
+        
+        //     switch (newUser.type) {
         //     case "tour guide":
+        //         delete newUser.type;
         //         await addTourGuide(newUser);
         //         break;
 
         //     case "advertiser":
+        //         delete newUser.type;
         //         await addAdvertiser(newUser);
         //         break;
 
         //     case "seller":
+        //         delete newUser.type;
         //         await addSeller(newUser);
+        //         break;
+
+        //     case "tourist":
+        //         delete newUser.type;
+        //         await addTourist(newUser);
         //         break;
 
         //     default:
@@ -123,7 +98,7 @@ export const useUserStore = create((set) => ({
 
         } catch (error) {
 
-            return{success: false, message: "error.message"};
+            return{success: false, message: error.message};
             
         }
 

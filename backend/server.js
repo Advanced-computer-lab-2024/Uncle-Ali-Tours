@@ -1,5 +1,4 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import { connectDB } from './config/db.js';
 import userRouts from './routes/user.route.js';
 import  activityCategoryRouts from './routes/activityCategory.route.js';

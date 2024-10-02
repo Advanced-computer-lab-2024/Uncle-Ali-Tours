@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 function Navbar() {
   return (
     <div>
-        <nav className='flex rounded-lg justify-between items-center border mx-[1.5vh] mt-[1.5vh] h-16 bg-[rgba(255,255,255,0.18)] text-lg relative shadow-sm font-mono' role='navigation'>
+        <nav className='flex rounded-lg justify-between items-center mx-[1.5vh] mt-[1.5vh] h-16 bg-[#161821f0] text-lg relative shadow-sm font-mono' role='navigation'>
             <Link to='/' className='pl-8'>Logo</Link>
             <div className='px-4 cursor-pointer md:hidden'>
             <svg className='w-6 h-6' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
