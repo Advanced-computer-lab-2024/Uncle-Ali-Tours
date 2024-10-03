@@ -6,7 +6,7 @@ import FormDialog from '../components/FormDialog.jsx'
 import toast, { Toaster } from 'react-hot-toast';
 import { useTagStore } from '../store/tag.js'
 function PreferenceTag() {
-    const tags = ["tag1", "tag2","tag"]
+    const tags = ["tag1", "tag2","tag3"]
     const [curTag, setCurTag] = useState("");
     const [newTag, setNewTag] = useState({
         name: "",
