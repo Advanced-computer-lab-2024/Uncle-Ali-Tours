@@ -1,25 +1,49 @@
 import React from 'react'
 import TagContainer from '../components/TagContainer.jsx'
+import { useState } from 'react'
+import Dialog from '../components/Dialog.jsx'
+import FormDialog from '../components/FormDialog.jsx'
+import toast, { Toaster } from 'react-hot-toast';
+import { useTagStore } from '../store/tag.js'
 function PreferenceTag() {
-    const tags = ["tag1", "tag2"]
+    const tags = ["tag1", "tag2","tag"]
+    const [curTag, setCurTag] = useState("");
+    const [newTag, setNewTag] = useState({
+        name: "",
+    });
+    
+    const del = () => (
+        console.log(curTag)
+    )
 
+    const changeTag = (name) => (
+        setCurTag(name)
+    )
+    const {addTag} = useTagStore();
+    const handleAddTag = async() => {
+        console.log(newTag.name)
+        // const {success, message} = await addTag(newTag);
+        
+        // success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    }
   return (
     <div>
-        <div>Create New Tags</div>
+        <div className='mt-4 '>Create New Tags</div>
         <div className='text-black'>
-        <input name={"newTag"} placeholder='New Tag' onChange={(e) => setFilter({ ...filter, name: e.target.value})}></input>
-        <button className='bg-black text-white m-6 p-2 rounded'>Add Tag</button>
+        <input name={"newTag"} placeholder='New Tag' onChange={(e) => setNewTag({ name: e.target.value})}></input>
+        <button className='bg-black text-white m-6 p-2 rounded' onClick={()=>(handleAddTag())}>Add Tag</button>
+        </div>
+        <div className='mb-4'>
+            Available Preference Tags   
         </div>
         {
             tags.map((tag, index)=> (
-                <TagContainer key={index} tagName={tag}/>   
+                <TagContainer key={index} tagChanger={changeTag} tagName={tag}/>   
             ))
         }
         
-        <div>
-            Available Preference Tags
-            
-        </div>
+        <Dialog msg={"Are you sure you want to delete this preference tag?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
+        <FormDialog msg={"Update values"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name","value"]}/>
     </div>
     
   )
