@@ -1,8 +1,8 @@
 import {create} from 'zustand';
 
 
-export const useAttractionStore = create((set) => ({
-    attractions: [],
+export const useIteneraryStore = create((set) => ({
+    iteneraries: [],
     tags: [],
     setTags: (tags) => set({tags}),
     getTags: async () =>{
@@ -23,8 +23,8 @@ export const useAttractionStore = create((set) => ({
          ));
          set({tags: body.data})
     },
-    setAttractions: (attractions) => set({attractions}),
-    getAttractions: async (filter) => {
+    setIteneraries: (iteneraries) => set({iteneraries}),
+    getIteneraries: async (filter) => {
         // const res = await fetch("/api/attractions", {
         //     method: "GET",
         //     headers: {
@@ -38,7 +38,7 @@ export const useAttractionStore = create((set) => ({
         // }
         // set({attractions: body.data})
         // return {success: true, message: "fetched attractions"};
-        set({attractions: [{filter}]})
+        set({iteneraries: [{filter}]})
     }
     }
 ));
