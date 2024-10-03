@@ -1,6 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import Dialog, {dialog} from '../components/Dialog.jsx'
 function HomePage() {
+  
+  const { showDialog } = dialog()
+
+  const accept = () => {
+    console.log('accepted')
+  }
+
+  const reject = () => {
+    console.log('rejected')
+  }
+
   return (
     <div>
         <p className='text-9xl mt-20'>U A T</p>
@@ -12,6 +24,8 @@ function HomePage() {
         <button className='bg-[#dc5809] m-2 py-2 px-6 rounded'> Signup</button>
         </Link>
         </div>
+        <button onClick={() => (showDialog())} className='bg-[#dc5809] m-2 py-2 px-6 rounded'>dialog</button>
+        <Dialog msg={"sure ?"} accept={accept} reject={reject}/>
     </div>
   )
 }
