@@ -4,9 +4,10 @@ import Product from '../models/product..model.js';
 
 export const getProducts = async (req, res) => {
     const { filter, sort } = req.query;
+    let parsedFilter = filter ? JSON.parse(filter) : {};
+    let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const products = await Product.find(filter).sort(sort);
-        console.log("Success");
+        const products = await Product.find(parsedFilter).sort(parsedSort);
         res.status(200).json({ success: true, data: products });
     } catch (error) {
         console.log("Error", error.message);

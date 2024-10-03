@@ -5,8 +5,12 @@ import { createProduct } from '../../../backend/controllers/product.controller';
 export const useProductStore = create((set) => ({
 products: [],
 setProducts: (products) => set({products}),
-getProducts: async (filter, sort) => {
-    const res = await fetch(`/api/product?search=${filter, sort}`, {
+getProducts: async (filter = {}, sort = {}) => {
+  const queryString = new URLSearchParams({
+    filter: JSON.stringify(filter),
+    sort: JSON.stringify(sort),
+  }).toString();
+    const res = await fetch(`/api/product?${queryString}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
