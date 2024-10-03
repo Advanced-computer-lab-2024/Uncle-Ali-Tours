@@ -3,7 +3,7 @@ import Product from '../models/product..model.js';
 
 
 export const getProducts = async (req, res) => {
-    const { filter, sort } = req.body;
+    const { filter, sort } = req.query;
     try {
         const products = await Product.find(filter).sort(sort);
         console.log("Success");
