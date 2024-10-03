@@ -24,7 +24,7 @@ export const useIteneraryStore = create((set) => ({
          set({tags: body.data})
     },
     setIteneraries: (iteneraries) => set({iteneraries}),
-    getIteneraries: async (filter) => {
+    getIteneraries: async (filter , sort) => {
         // const res = await fetch("/api/attractions", {
         //     method: "GET",
         //     headers: {
@@ -38,7 +38,7 @@ export const useIteneraryStore = create((set) => ({
         // }
         // set({attractions: body.data})
         // return {success: true, message: "fetched attractions"};
-        set({iteneraries: [{filter}]})
+        set({iteneraries: [{filter , sort}]})
     }
     }
 ));

@@ -6,6 +6,7 @@ import RegisterPage from "./RegisterPage";
 import { Route, Routes } from "react-router-dom";
 import ActivityCategoryPage from "./ActivityCategoryPage";
 import ViewAttractions from "./ViewAttractions";
+import PreferenceTag from "./PreferenceTag";
 import ViewActivities from "./ViewActivities";
 import ViewIteneraries from "./viewIteneraries";
 import ViewProducts from "./ViewProducts";
@@ -22,6 +23,7 @@ function App() {
         <Route path="/viewAttractions" element={<ViewAttractions />} />
         <Route path="/viewActivities" element={<ViewActivities />} />
         <Route path="/viewIteneraries" element={<ViewIteneraries />} />
+        <Route path="/preferenceTag" element={<PreferenceTag />} />
         
         <Route path="/viewProducts" element={<ViewProducts />} />
         <Route path="/activityCategory" element={<ActivityCategoryPage />} />

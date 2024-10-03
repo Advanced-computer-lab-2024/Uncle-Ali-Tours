@@ -4,8 +4,8 @@ import {create} from 'zustand';
 export const useProductStore = create((set) => ({
 products: [],
 setProducts: (products) => set({products}),
-getProducts: async (filter) => {
-    // const res = await fetch("/api/product", {
+getProducts: async (filter, sort) => {
+    // const res = await fetch("/api/attractions", {
     //     method: "GET",
     //     headers: {
     //         "Content-Type": "application/json",
@@ -18,7 +18,7 @@ getProducts: async (filter) => {
     // }
     // set({attractions: body.data})
     // return {success: true, message: "fetched attractions"};
-    set({activites: [{filter}]})}}
+    set({products: [{filter , sort}]})}}
 ));
 
 
