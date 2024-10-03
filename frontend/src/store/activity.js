@@ -45,7 +45,7 @@ export const useActivityStore = create((set) => ({
     },
     
     setActivities: (activites) => set({activites}),
-    getActivities: async (filter) => {
+    getActivities: async (filter , sort) => {
         // const res = await fetch("/api/attractions", {
         //     method: "GET",
         //     headers: {
@@ -59,7 +59,7 @@ export const useActivityStore = create((set) => ({
         // }
         // set({attractions: body.data})
         // return {success: true, message: "fetched attractions"};
-        set({activites: [{filter}]})
+        set({activites: [{filter , sort}]})
     }
     }
 ));
