@@ -1,13 +1,17 @@
 import { set } from 'mongoose';
 import React from 'react'
+import { useEffect } from 'react';
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
+import toast, { Toaster } from 'react-hot-toast';
 function RegisterPage() {
     const [newUser, setNewUser] = React.useState({
         userName: "",
         email: "",
         password: "",
     });
+
+
 
     const [tourist, setTourist] = React.useState({
         userName: "",
@@ -19,6 +23,7 @@ function RegisterPage() {
         occupation: "",
     });
 
+
     const {createUser, user} = useUserStore();
 
     const handleAddUser =  async function(type) {
@@ -26,6 +31,7 @@ function RegisterPage() {
         passedUser.type = type
        const {success, message} =  await createUser(passedUser);
        console.log(success, message);
+       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
     }
 
     const handleAddTourist = async function() {
@@ -78,6 +84,7 @@ function RegisterPage() {
             </div>
         </div>
     </div>
+    <Toaster />
     </div>
   )
 }
