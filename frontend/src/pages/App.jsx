@@ -6,6 +6,7 @@ import RegisterPage from "./RegisterPage";
 import { Route, Routes } from "react-router-dom";
 import ActivityCategoryPage from "./ActivityCategoryPage";
 import ViewAttractions from "./ViewAttractions";
+import PreferenceTag from "./PreferenceTag";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/view" element={<ViewAttractions />} />
+        <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/ActivityCategory" element={<ActivityCategoryPage />} />
       </Routes>
     </div>
