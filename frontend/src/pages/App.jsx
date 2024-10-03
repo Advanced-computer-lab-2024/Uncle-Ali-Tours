@@ -6,6 +6,9 @@ import RegisterPage from "./RegisterPage";
 import { Route, Routes } from "react-router-dom";
 import ActivityCategoryPage from "./ActivityCategoryPage";
 import ViewAttractions from "./ViewAttractions";
+import ViewActivities from "./ViewActivities";
+import ViewIteneraries from "./viewIteneraries";
+import ViewProducts from "./ViewProducts";
 
 function App() {
   return (
@@ -16,8 +19,12 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/view" element={<ViewAttractions />} />
-        <Route path="/ActivityCategory" element={<ActivityCategoryPage />} />
+        <Route path="/viewAttractions" element={<ViewAttractions />} />
+        <Route path="/viewActivities" element={<ViewActivities />} />
+        <Route path="/viewIteneraries" element={<ViewIteneraries />} />
+        
+        <Route path="/viewProducts" element={<ViewProducts />} />
+        <Route path="/activityCategory" element={<ActivityCategoryPage />} />
       </Routes>
     </div>
   );

@@ -1,8 +1,9 @@
 import {create} from 'zustand';
 
 
-export const useAttractionStore = create((set) => ({
-    attractions: [],
+export const useActivityStore = create((set) => ({
+    activities: [],
+    categories: [], 
     tags: [],
     setTags: (tags) => set({tags}),
     getTags: async () =>{
@@ -23,8 +24,28 @@ export const useAttractionStore = create((set) => ({
          ));
          set({tags: body.data})
     },
-    setAttractions: (attractions) => set({attractions}),
-    getAttractions: async (filter) => {
+    setCategories: (categories) => set({categories}),
+    getCategories: async () =>{
+         const res = await fetch("/api/activityCategory", {
+             method: "GET",
+             headers: {
+                 "Content-Type": "application/json",
+             },
+         });
+         const body = await res.json();
+         if (!body.success){
+             return (body)
+         }
+         const catObjects = body.data;
+         let catNames = []
+         catObjects.map((object) => (
+            catNames += (object.name)
+         ));
+         set({categories: catNames})
+    },
+    
+    setActivities: (activites) => set({activites}),
+    getActivities: async (filter) => {
         // const res = await fetch("/api/attractions", {
         //     method: "GET",
         //     headers: {
@@ -38,7 +59,7 @@ export const useAttractionStore = create((set) => ({
         // }
         // set({attractions: body.data})
         // return {success: true, message: "fetched attractions"};
-        set({attractions: [{filter}]})
+        set({activites: [{filter}]})
     }
     }
 ));
