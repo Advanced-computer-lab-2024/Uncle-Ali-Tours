@@ -5,7 +5,7 @@ export const useProductStore = create((set) => ({
 products: [],
 setProducts: (products) => set({products}),
 getProducts: async (filter) => {
-    // const res = await fetch("/api/attractions", {
+    // const res = await fetch("/api/product", {
     //     method: "GET",
     //     headers: {
     //         "Content-Type": "application/json",
@@ -20,3 +20,31 @@ getProducts: async (filter) => {
     // return {success: true, message: "fetched attractions"};
     set({activites: [{filter}]})}}
 ));
+
+
+import { create } from 'zustand';
+
+export const postProductStore = create((set) => ({
+  product: [],
+  
+  setProducts: (product) => set({ product}),
+
+  createProduct: async (newProduct) => {
+    if (!newProduct.name || !newProduct.imageURL || !newProduct.price || !newProduct.description || !newProduct.seller ) {
+      return { success: false, message: "Please fill in all fields." };
+    }
+
+    const res = await fetch('/api/product', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newProduct),
+    });
+
+    const data = await res.json();
+    set((state) => ({ products: [...state.products, data.data] }));
+
+    return { success: true, message: 'Product created successfully!' };
+  }
+}));
