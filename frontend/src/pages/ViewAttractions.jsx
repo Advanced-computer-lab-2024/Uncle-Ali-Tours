@@ -8,7 +8,7 @@ function ViewAttractions() {
     const {attractions, getAttractions} = useAttractionStore();
     
    const handlePress = async () => {
-    await getAttractions(filter);
+    await getAttractions(filter , sort);
    };
   return (
     <div>
