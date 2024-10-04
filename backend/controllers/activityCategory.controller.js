@@ -33,8 +33,11 @@ export const createCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     const { name } = req.body;
+
     if(!name) {
+        console.log(name)
         return res.status(400).json({success:false, message: 'Name is required' });
+        
     }
     
     const category = await ActivityCategory.find({name: name});
@@ -52,6 +55,7 @@ export const deleteCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
     const { name, newCategory } = req.body;
+    console.log(req.body)
     try {
         const updatedCategory = await ActivityCategory.findOneAndUpdate({ name: name }, newCategory, { new: true });
         res.json({success:true, data:  updatedCategory});
