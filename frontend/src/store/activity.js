@@ -40,7 +40,7 @@ export const useActivityStore = create((set) => ({
          const catObjects = body.data;
          let catNames = []
          catObjects.map((object) => (
-            catNames += (object.name)
+            catNames = [...catNames,(object.name)]
          ));
          set({categories: catNames})
         }
