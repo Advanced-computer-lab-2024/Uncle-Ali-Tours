@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon backend/server.js"
+    "server": "nodemon backend/server.js",
+    "client": "cd frontend && npm run dev",
+    "app": "concurrently \"npm run server\" \"npm run client\""
   },
   "type": "module",
   "keywords": [],
@@ -15,7 +17,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "mongoose": "^8.6.3",
-    "nodemon": "^3.1.7",
     "zustand": "^5.0.0-rc.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "nodemon": "^3.1.7"
   }
 }
