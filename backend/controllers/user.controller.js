@@ -3,8 +3,6 @@ import mongoose from 'mongoose';
 
 export const loginUser = async (req, res) => {
     const credentials = req.body;
-    // if(!credentials.userName || !credentials.password) {
-    //     return res.status(400).json({success: false, message: 'No credentials sent' });}
     try {
         const user = await User.find(credentials);
         res.json({success: user.length > 0, data: user});

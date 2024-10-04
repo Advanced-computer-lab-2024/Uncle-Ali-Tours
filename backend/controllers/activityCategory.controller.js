@@ -2,9 +2,11 @@ import ActivityCategory from "../models/activityCategory.model.js";
 import mongoose from "mongoose";
 
 export const getCategories = async (req, res) => {
-    const { filter, sort } = req.body;  //{ filter: {"name": "test"}, sort: {"age" : 1} }
+    const { filter, sort } = req.query;
+    let parsedFilter = filter ? JSON.parse(filter) : {};
+    let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const categories = await ActivityCategory.find(filter).sort(sort);
+        const categories = await ActivityCategory.find(parsedFilter).sort(parsedSort);
         res.status(200).json({success:true, data: categories});
     } catch (error) {
         res.status(404).json({success: false, message: error.message });

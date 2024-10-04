@@ -13,9 +13,11 @@ export const createActivity = async(req, res) => {
 }
 
 export const getActivity = async(req, res) => {
-    const { filter, sort } = req.body;
+    const { filter, sort } = req.query;
+    let parsedFilter = filter ? JSON.parse(filter) : {};
+    let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const activities = await Activity.find(filter).sort(sort);
+        const activities = await Activity.find(parsedFilter).sort(parsedSort);
         res.status(200).json({success:true, data: activities});
     } catch (error) {
         res.status(404).json({ message: error.message });

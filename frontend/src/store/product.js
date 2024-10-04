@@ -15,7 +15,6 @@ getProducts: async (filter = {}, sort = {}) => {
         headers: {
             "Content-Type": "application/json",
         },
-        // body: JSON.stringify({"filter": filter, "sort": sort}),
         query: JSON.stringify({})
     });
     const body = await res.json();
