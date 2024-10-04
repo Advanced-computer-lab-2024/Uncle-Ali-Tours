@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import PreferenceTags from "../models/preference.tags";
+import PreferenceTags from "../models/preference.tags.js";
 
 export const createTag = async (req, res) => {
 
