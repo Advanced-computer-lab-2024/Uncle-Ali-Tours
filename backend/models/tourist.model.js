@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
-const touristModel = mongoose.Schema({
+const touristModel = new mongoose.Schema({
     email : {
         required:true,
         type: String
     },userName:{
         required:true,
         type: String,
-        unique: true
+        unique: true,
     },password:{
         required:true,
         type: String
@@ -20,10 +20,13 @@ const touristModel = mongoose.Schema({
     },dateOfBirth:{
         required:true,
         type: Date
+    },myWallet:{
+        type: Number,
+        default: 0
     },occupation:{
         required:true,
         type: String
-    }},{
+    },},{
         timestamps: true
     });
 
