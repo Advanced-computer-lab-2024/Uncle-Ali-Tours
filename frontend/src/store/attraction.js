@@ -24,26 +24,23 @@ export const useAttractionStore = create((set) => ({
          set({tags: body.data})
     },
     setAttractions: (attractions) => set({attractions}),
-    getAttractions: async (filter, sort) => {
-        // const queryString = new URLSearchParams({
-        //     filter: JSON.stringify(filter),
-        //     sort: JSON.stringify(sort),
-        //   }).toString();
-
-        // const res = await fetch(`/api/attractions?${queryString}`, {
-        //     method: "GET",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({"filter": filter, "sort": {}}),
-        // });
-        // const body = await res.json();
-        // if (!body.success){
-        //     return (body)
-        // }
-        // set({attractions: body.data})
-        // return {success: true, message: "fetched attractions"};
-        set({attractions: [{filter, sort}]})
+    getAttractions: async (filter = {} , sort = {}) => {
+        const queryString = new URLSearchParams({
+            filter: JSON.stringify(filter),
+            sort: JSON.stringify(sort),
+          }).toString();
+        const res = await fetch(`/api/attraction?${queryString}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const body = await res.json();
+        if (!body.success){
+            return (body)
+        }
+        set({attractions: body.data})
+        return {success: true, message: "fetched attractions"};
     }
     }
 ));

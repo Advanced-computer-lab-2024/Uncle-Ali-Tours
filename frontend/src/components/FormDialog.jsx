@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {create} from 'zustand';
 import { IoClose } from "react-icons/io5";
 
@@ -12,9 +12,10 @@ export const formdialog = create((set) => ({
 
 function FormDialog({msg, accept, reject, acceptButtonText= "accept", rejectButtonText="reject" , inputs=[]}) {
     const {show, hideFormDialog} = formdialog()
+    const [data, setData] = useState()
      
     const acceptClick = () => {
-        accept()
+        accept(data)
         hideFormDialog()
     }
 
@@ -32,7 +33,7 @@ function FormDialog({msg, accept, reject, acceptButtonText= "accept", rejectButt
         <p className='my-2'>{msg}</p>
         {
             inputs.map((input,index)=>(
-                <input name={input} key={index} placeholder={input} className='mb-2 w-[14vw]'/> 
+                <input name={input} key={index} placeholder={input} onChange={(e) => setData({ ...data, [input]: e.target.value})} className='mb-2 w-[14vw]'/> 
             ))
         }
         <button onClick={acceptClick} className='bg-[#dc5809] m-2 py-2 px-6 rounded'>{acceptButtonText}</button>
