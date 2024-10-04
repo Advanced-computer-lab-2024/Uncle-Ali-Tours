@@ -25,7 +25,7 @@ function FormDialog({msg, accept, reject, acceptButtonText= "accept", rejectButt
 
   return (
     show &&
-    <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+    <div className='bg-gray-700 h-fit text-center text-black p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
         <button onClick={() => (hideFormDialog())} className='absolute right-3 h-fit rounded-full'>
         <IoClose size={20}/>
         </button>
