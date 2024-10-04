@@ -25,7 +25,12 @@ export const useAttractionStore = create((set) => ({
     },
     setAttractions: (attractions) => set({attractions}),
     getAttractions: async (filter, sort) => {
-        // const res = await fetch("/api/attractions", {
+        // const queryString = new URLSearchParams({
+        //     filter: JSON.stringify(filter),
+        //     sort: JSON.stringify(sort),
+        //   }).toString();
+
+        // const res = await fetch(`/api/attractions?${queryString}`, {
         //     method: "GET",
         //     headers: {
         //         "Content-Type": "application/json",

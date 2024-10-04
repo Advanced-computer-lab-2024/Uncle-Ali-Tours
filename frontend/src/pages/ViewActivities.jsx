@@ -11,11 +11,11 @@ function ViewActivities() {
   const [sort, setSort] = useState(
     {}
 );
-    useEffect(() => {
-        //getCategories()
+    useEffect( () => {
+        getCategories()
       });
 
-    const {activites, getActivities, categories, getCategories} = useActivityStore();
+    const {activities, getActivities, categories, getCategories} = useActivityStore();
    const handlePress = async () => {
     await getActivities(filter, sort);
    };
@@ -35,7 +35,6 @@ function ViewActivities() {
         <input className='w-[15ch] m-2 pl-1 'name={'ratings'} placeholder='Ratings' onChange={(e) => setFilter({ ...filter, ratings: e.target.value})}/>
 
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
-        <button className="text-white" onClick={() => (console.log(activites))}>ss</button>
         <div><button onClick={() => (handleSort())}>sort</button>
         <div className={`${visibillity ? '' : 'hidden' }`} >
           <button onClick={()=>(setSort({'price' : -1}))}>{"Price High to Low"}</button>
@@ -43,14 +42,8 @@ function ViewActivities() {
           <button onClick={()=>(setSort({'rating' : -1}))}>{"Ratings High to Low"}</button>
           <button onClick={()=>(setSort({'rating' : 1}))}>{"Ratings Low to High"}</button>
        </div>
+       <button className='p-2 bg-black text-white' onClick={() => (console.log(activities))}>show</button>
         </div>
-        {/* {activites.map((activity, index) => 
-        (
-          <p key={index}>
-            {activity.filter.name || "ss"}
-          </p>
-        )
-        )} */}
         </div>
   )
 }
