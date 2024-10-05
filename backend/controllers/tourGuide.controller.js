@@ -1,23 +1,19 @@
 import TourGuide from "../models/tourGuide.model.js";
-import tourGuide from "../models/tourGuide.model.js"
+import User from "../models/user.model.js";
 
 export const creatTourGuide = async(req,res) =>{
     const tourGuide = req.body;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    today.setFullYear(today.getFullYear() - 10);
-    if( !tourGuide.email | !tourGuide.userName | !tourGuide.mobileNumber | !tourGuide.nationality | !tourGuide.dateOfBirth ){
+
+    const duplicat = await User.find({userName: tourGuide.userName});
+    if(duplicat.length > 0) {
+        return res.status(400).json({success: false, message: 'UserName already exists' });
+        
+    }
+    if( !tourGuide.email | !tourGuide.userName){//check dol bas el ba2i lazem ykoon verified el awal
             return res.status(400).json({success:false, message: 'All fields are required' });
     }
     if( !tourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
         return res.status(400).json({success:false, message: 'email format is wrong' });
-    }
-    if((!tourGuide.mobileNumber.toString().match(/^10\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^11\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^12\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(tourGuide.mobileNumber)){
-        return res.status(400).json({success:false, message: 'mobile number format is wrong'});
-    }
-    
-    if(new Date(tourGuide.dateOfBirth) > today){
-        return res.status(400).json({success:false, message: 'your age is less than 10 years'});
     }
     const newTourGuide= new TourGuide(tourGuide);
     try{
@@ -25,9 +21,10 @@ export const creatTourGuide = async(req,res) =>{
         res.status(201).json({success:true ,message:"account created sucssfully"});
     }
     catch(error){
-        res.status(500).json({success:false , message:"server Error"});
+        res.status(500).json({success:false , message: error.message});
     }
 }
+
 export const getTourGuide = async(req,res) => {
     const { filter, sort } = req.query;
     let parsedFilter = filter ? JSON.parse(filter) : {};
@@ -39,6 +36,7 @@ export const getTourGuide = async(req,res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
 export const updateTourGuide = async (req,res) => {
     const {userName,newTourGuide} = req.body;
     const today = new Date();
