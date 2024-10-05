@@ -40,7 +40,7 @@ export const useActivityStore = create((set) => ({
          const catObjects = body.data;
          let catNames = []
          catObjects.map((object) => (
-            catNames += (object.name)
+            catNames = [...catNames,(object.name)]
          ));
          set({categories: catNames})
         }
@@ -68,6 +68,58 @@ export const useActivityStore = create((set) => ({
         }
         set({activities: body.data})
         return {success: true, message: "fetched activities"};
+    },
+    
+    createActivityCategory: async (newCategory) => {
+     try {
+        const res = await fetch("/api/activityCategory",{
+            method :"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(newCategory)
+    })
+    const data = await res.json();
+    if (!data.success) {
+        return data;
     }
+    set((state) => ({categories:[...state.categories , data.data.name]}))
+} catch (error) {
+    return{success: false, message: error.message};
+}  
+return{success: true, message: "ActivityCategory created successfully."};
+
+
+    },
+    deleteActivityCategory: async (name) => {
+        console.log({name:name})
+        const res = await fetch('/api/activityCategory',{
+            method : "DELETE",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({name:name})
+        });
+        const data = await res.json();
+        if(!data.success) return { success : false, message: data.message};
+        set(state => ({categories:state.categories.filter(category => category !== name)}));
+        return {success: true , message: data.message};
+    },
+    updateActivityCategory: async(oldCategory,newCategory)=>{
+        const res = await fetch('/api/activityCategory',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({name:oldCategory, newCategory})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({
+                categories: state.categories.map((category) => (category == oldCategory ? data.data.name : category)),
+            }))
+            return{success: true, message: "ActivityCategory updated successfully."};
     }
+}
 ));

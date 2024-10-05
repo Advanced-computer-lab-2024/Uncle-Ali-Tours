@@ -21,13 +21,14 @@ function ViewActivities() {
    };
    const handleSort = async () => {
      setVisibillity((prev) => !prev);
+     console.log(sort)
    };
 
 
    return (
     <div className='text-black'>
         <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' name={"cat"} placeholder='Category' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
+        <input className='w-[15ch] m-2 pl-1' onClick={()=> (console.log(categories))} name={"cat"} placeholder='Category' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1' name={'tag'} placeholder='Tag' onChange={(e) => setFilter({ ...filter, tag: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1'  name={"bud"} placeholder='minBudget' onChange={(e) => setFilter({ ...filter, bud: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1'  name={"bud"} placeholder='maxBudget' onChange={(e) => setFilter({ ...filter, bud: e.target.value})}/>
@@ -35,12 +36,12 @@ function ViewActivities() {
         <input className='w-[15ch] m-2 pl-1 'name={'ratings'} placeholder='Ratings' onChange={(e) => setFilter({ ...filter, ratings: e.target.value})}/>
 
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
-        <div><button onClick={() => (handleSort())}>sort</button>
-        <div className={`${visibillity ? '' : 'hidden' }`} >
-          <button onClick={()=>(setSort({'price' : -1}))}>{"Price High to Low"}</button>
-          <button onClick={()=>(setSort({'price' : 1}))}>{"Price Low to High"}</button>
-          <button onClick={()=>(setSort({'rating' : -1}))}>{"Ratings High to Low"}</button>
-          <button onClick={()=>(setSort({'rating' : 1}))}>{"Ratings Low to High"}</button>
+        <div><button className='p-2 bg-black text-white' onClick={() => (handleSort())}>{Object.keys(sort)[0]? "sorted by " + Object.keys(sort)[0] : "Sort"}</button>
+        <div className={`${visibillity ? '' : 'hidden' } grid w-fit mx-auto`} >
+          <button className='p-2 bg-black text-white' onClick={()=>(setSort({'price' : -1}))}>{"Price High to Low"}</button>
+          <button className='p-2 bg-black text-white' onClick={()=>(setSort({'price' : 1}))}>{"Price Low to High"}</button>
+          <button className='p-2 bg-black text-white' onClick={()=>(setSort({'rating' : -1}))}>{"Ratings High to Low"}</button>
+          <button className='p-2 bg-black text-white' onClick={()=>(setSort({'rating' : 1}))}>{"Ratings Low to High"}</button>
        </div>
        <button className='p-2 bg-black text-white' onClick={() => (console.log(activities))}>show</button>
         </div>
