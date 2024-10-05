@@ -4,13 +4,13 @@ import User from "../models/user.model.js";
 export const creatTourGuide = async(req,res) =>{
     const tourGuide = req.body;
 
+    if( !tourGuide.email | !tourGuide.userName){//check dol bas el ba2i lazem ykoon verified el awal
+        return res.status(400).json({success:false, message: 'All fields are required' });
+}
     const duplicat = await User.find({userName: tourGuide.userName});
     if(duplicat.length > 0) {
         return res.status(400).json({success: false, message: 'UserName already exists' });
         
-    }
-    if( !tourGuide.email | !tourGuide.userName){//check dol bas el ba2i lazem ykoon verified el awal
-            return res.status(400).json({success:false, message: 'All fields are required' });
     }
     if( !tourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
         return res.status(400).json({success:false, message: 'email format is wrong' });
