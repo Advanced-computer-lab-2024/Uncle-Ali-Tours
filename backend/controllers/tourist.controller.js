@@ -49,7 +49,7 @@ export const updateTourist = async (req,res) => {
 
     for (let i=0;i<keys.length;i++){
         if(newTourist[keys[i]].length <= 0){
-            return res.status(400).json({success:false, message: 'cant'})
+            return res.status(400).json({success:false, message: 'fields are requierd to update'})
         }
     }
     if(newTourist.userName){
