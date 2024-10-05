@@ -13,7 +13,7 @@ export const createTag = async (req, res) => {
 
     try {
         await  newTag.save();
-        return res.status(201).json({success: true, message: 'Tag created successfully',})
+        return res.status(201).json({success: true, data: newTag});
     } catch (error) {
         console.error("Error in creating tag", error.message);
         return res.status(500).json({success: false, message: 'Error in creating tag'})
@@ -23,36 +23,24 @@ export const createTag = async (req, res) => {
 }
 
 export const deleteTag = async (req, res) => {
-    const tagName = req.params.tag;
-  
-    const tag = await PreferenceTags.findOne({ name: tagName });
-  
-    if (!tag) {
-      return res.status(404).json({ success: false, message: 'Tag does not exist' });
-    }
+    const tag = req.body;
   
     try {
-      await tag.remove();
+      await PreferenceTags.findOneAndDelete(tag)
       return res.json({ success: true, message: 'Tag deleted successfully' });
     } catch (error) {  console.error("Error in deleting tag", error.message);
-        return res.status(500).json({ success: false, message: 'Error in deleting tag' });
+        return res.status(500).json({ success: false, message: error.message });
       }
 
 };
 
 export const updateTag = async (req, res) => {
-    const tagName = req.params.tag;
-    const updatedTag = req.body;
-  
-    const tag = await PreferenceTags.findOne({ name: tagName });
-  
-    if (!tag) {
-      return res.status(404).json({ success: false, message: 'Tag does not exist' });
-    }
+    const tagName = req.body.name;
+    const newTag = req.body.newTag;
   
     try {
-      await PreferenceTags.findByIdAndUpdate(tag._id, updatedTag, { new: true });
-      return res.json({ success: true, message: 'Tag updated successfully' });
+      const updatedTag = await PreferenceTags.findOneAndUpdate({name: tagName}, newTag, { new: true });
+      return res.json({ success: true, data: updatedTag });
     } catch (error) {
       console.error("Error in updating tag", error.message);
       return res.status(500).json({ success: false, message: 'Error in updating tag' });
