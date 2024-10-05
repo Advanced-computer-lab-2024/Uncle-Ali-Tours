@@ -25,15 +25,15 @@ export const getActivity = async(req, res) => {
 }
 
 export const deleteActivity = async(req, res) => {
-    const { name } = req.body;
+    const { id } = req.body;
     try {
-        const activityExists = await Activity.exists({ name: name });
+        const activityExists = await Activity.exists({ _id: id });
 
         if (!activityExists) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
 
-        await Activity.findOneAndDelete({ name: name });
+        await Activity.findOneAndDelete({ _id: id });
         res.json({success:true, message: 'activity deleted successfully' });
     } catch (error) {
         res.status(500).json({success:false, message: error.message });
@@ -41,15 +41,15 @@ export const deleteActivity = async(req, res) => {
 }
 
 export const updateActivity = async (req, res) => {
-    const { name, newActivity } = req.body;
+    const { id, newActivity } = req.body;
     try {
-        const activityExists = await Activity.exists({ name: name });
+        const activityExists = await Activity.exists({ _id: id });
 
         if (!activityExists) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
 
-        const updatedActivity = await Activity.findOneAndUpdate({ name: name }, newActivity, { new: true });
+        const updatedActivity = await Activity.findByIdAndUpdate({ _id: id }, newActivity, { new: true , runValidators: true });
         res.status(200).json({success:true, data:  updatedActivity});
     }
     catch (error) {
