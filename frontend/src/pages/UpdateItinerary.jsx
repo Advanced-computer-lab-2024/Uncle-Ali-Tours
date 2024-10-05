@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
-function CreateItinerary() {
+import { Link } from 'react-router-dom';
+function UpdateItinerary() {
     const [activityFields, setActivityFields] = useState([]);
     const [durationFields, setDurationFields] = useState([]);
     const [locationFields, setLocationFields] = useState([]);
@@ -57,7 +58,7 @@ function CreateItinerary() {
     }
   return (
     <div>
-    <div className='text-2xl mb-3 mt-3'>Create New Itinerary</div>
+    <div className='text-2xl mb-3 mt-3'>Update Itinerary</div>
      <button onClick={addFn} className='px-5 py-2 bg-green-700 text-white rounded cursor-pointer border-none'>
         Add Activity
       </button>
@@ -189,7 +190,8 @@ function CreateItinerary() {
       <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"dropoff"} placeholder='Drop Off Location' onChange={(e) => setNewTag({ name: e.target.value})}></input>
       </div>
       <div>
-      <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddItinerary())}>Add Itinerary</button>
+      <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddItinerary())}>Update</button>
+      <Link className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' to='/itineraryPage'>Cancel</Link>
       </div>
     </div>
     </div>
@@ -198,5 +200,5 @@ function CreateItinerary() {
 }
 
 
-export default CreateItinerary
+export default UpdateItinerary
 
