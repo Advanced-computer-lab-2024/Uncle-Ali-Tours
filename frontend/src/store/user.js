@@ -38,7 +38,8 @@ const addSeller = async (newUser) => {
 
 
 const addTourist = async (newUser) => {
-    const res = await fetch("/api/tourists", {
+    console.log(newUser);
+    const res = await fetch("/api/tourist", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -56,6 +57,37 @@ export const useUserStore = create((set) => ({
     },
     setUser: (user) => set({user}),
     createUser: async (newUser) => {
+        let typeRes;
+        const type = newUser.type;
+        delete newUser.type;
+        switch (type) {
+            //     case "tour guide":
+            //         delete newUser.type;
+            //         await addTourGuide(newUser);
+            //         break;
+    
+            //     case "advertiser":
+            //         delete newUser.type;
+            //         await addAdvertiser(newUser);
+            //         break;
+    
+            //     case "seller":
+            //         delete newUser.type;
+            //         await addSeller(newUser);
+            //         break;
+    
+                case "tourist":
+                    typeRes = await addTourist(newUser);
+                    break;
+    
+                default:
+                    return{success: false, message: "Invalid user type."};
+            }
+
+            if (!typeRes.success) {
+                // typeRes.message = ` ${type} creation failed.`;
+                return typeRes;
+            }
         
         try {
             const res = await fetch("/api/users", {
@@ -63,7 +95,7 @@ export const useUserStore = create((set) => ({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({"userName": newUser.userName, "password": newUser.password, "type": newUser.type}),
+                body: JSON.stringify({"userName": newUser.userName, "password": newUser.password, "type": type}),
             });
             const body = await res.json();
             if (!body.success) {
@@ -71,30 +103,6 @@ export const useUserStore = create((set) => ({
             }
             set({user: {"userName": body.data.userName, "type": body.type}});
         
-        //     switch (newUser.type) {
-        //     case "tour guide":
-        //         delete newUser.type;
-        //         await addTourGuide(newUser);
-        //         break;
-
-        //     case "advertiser":
-        //         delete newUser.type;
-        //         await addAdvertiser(newUser);
-        //         break;
-
-        //     case "seller":
-        //         delete newUser.type;
-        //         await addSeller(newUser);
-        //         break;
-
-        //     case "tourist":
-        //         delete newUser.type;
-        //         await addTourist(newUser);
-        //         break;
-
-        //     default:
-        //         return{success: false, message: "Invalid user type."};
-        // }
 
         } catch (error) {
 

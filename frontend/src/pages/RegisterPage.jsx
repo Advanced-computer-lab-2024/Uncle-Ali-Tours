@@ -30,7 +30,6 @@ function RegisterPage() {
         const passedUser = newUser
         passedUser.type = type
        const {success, message} =  await createUser(passedUser);
-       console.log(success, message);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
     }
 
@@ -38,7 +37,7 @@ function RegisterPage() {
         const passedTourist = tourist
         passedTourist.type = "tourist"
         const {success, message} = await createUser(passedTourist);
-        console.log(success, message);
+       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
     }
 
 

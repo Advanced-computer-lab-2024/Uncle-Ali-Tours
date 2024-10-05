@@ -22,7 +22,6 @@ function ActivityCategoryPage() {
         
     }
     const updateCategory = async(updatedCategory) => {
-        console.log(updatedCategory)
         const {success, message} = await updateActivityCategory(curCategory,updatedCategory);
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
