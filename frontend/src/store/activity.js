@@ -92,7 +92,6 @@ return{success: true, message: "ActivityCategory created successfully."};
 
     },
     deleteActivityCategory: async (name) => {
-        console.log({name:name})
         const res = await fetch('/api/activityCategory',{
             method : "DELETE",
             headers:{

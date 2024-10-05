@@ -32,7 +32,7 @@ function App() {
         <Route path="/activityCategory" element={<ActivityCategoryPage />} />
         <Route path="/itineraryPage" element={<ItineraryPage />} />
         <Route path="/createItinerary" element={<CreateItinerary />} />
-        <Route path="SellerProfile" element={<SellerProfilePage />} />
+        <Route path="/SellerProfile" element={<SellerProfilePage />} />
         <Route path="/AdvertiserProfile" element={<AdvertiserProfile />} />
         
         <Route path="/updateItinerary" element={<UpdateItinerary />} />

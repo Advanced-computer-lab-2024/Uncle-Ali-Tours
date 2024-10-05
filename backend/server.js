@@ -21,6 +21,8 @@ app.use("/api/itinerary",itineraryRoutes);
 app.use("/api/tourGuide",tourGuide);
 app.use("/api/attraction", attractionRoute);
 
+app.use("/api/tourist",touristRoutes);
+app.use("/api/prefrenceTag",preferencetagRoute);
 app.listen(PORT, () => {
     connectDB();
     console.log(`server is running on port ${PORT}`);

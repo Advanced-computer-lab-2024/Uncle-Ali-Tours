@@ -1,5 +1,5 @@
 import Tourist from "../models/tourist.model.js";
-
+import User from "../models/user.model.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -8,14 +8,21 @@ export const createTourist = async(req,res)=>{
     if( !tourist.email | !tourist.userName | !tourist.password | !tourist.mobileNumber | !tourist.nationality | !tourist.dateOfBirth | !tourist.occupation){
             return res.status(400).json({success:false, message: 'All fields are required' });
     }
+    const duplicat = await User.find({userName: tourist.userName});
+    if(duplicat.length > 0) {
+        return res.status(400).json({success: false, message: 'UserName already exists' });
+        
+    }
     if( !tourist.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
         return res.status(400).json({success:false, message: 'email format is wrong' });
     }
-    if((!tourist.mobileNumber.toString().match(/^10\d{8}$/) & !tourist.mobileNumber.toString().match(/^11\d{8}$/) & !tourist.mobileNumber.toString().match(/^12\d{8}$/) & !tourist.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(tourist.mobileNumber)){
+    if((!new RegExp(/^010\d{8}$/).test(tourist.mobileNumber.toString()) & !new RegExp(/^011\d{8}$/).test(tourist.mobileNumber.toString()) & !new RegExp(/^012\d{8}$/).test(tourist.mobileNumber.toString()) & !new RegExp(/^015\d{8}$/).test(tourist.mobileNumber.toString()))){
         return res.status(400).json({success:false, message: 'mobile number format is wrong'});
     }
-    
-    if(new Date(tourist.dateOfBirth) > today){
+    tourist.dateOfBirth = Date.parse(tourist.dateOfBirth);
+    console.log(tourist.dateOfBirth);
+    console.log(new Date(tourist.dateOfBirth));
+    if(tourist.dateOfBirth > today){
         return res.status(400).json({success:false, message: 'your age is less than 10 years'});
     }
     const newTourist= new Tourist(tourist);
@@ -24,7 +31,7 @@ export const createTourist = async(req,res)=>{
         res.status(201).json({success:true ,message:"account created sucssfully"});
     }
     catch(error){
-        res.status(500).json({success:false , message:"server Error"});
+        res.status(500).json({success:false , message:error.message});
     }
 }
 export const getTourist = async(req,res) => {
