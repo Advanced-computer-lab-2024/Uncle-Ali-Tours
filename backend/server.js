@@ -8,6 +8,7 @@ import touristRoutes from './routes/tourist.route.js';
 import userRouts from './routes/user.route.js';
 import tourGuide from './routes/tourGuide.route.js'
 import preferencetagRoute from './routes/preferencetag.route.js';
+import attractionRoute from './routes/attraction.route.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
@@ -18,6 +19,8 @@ app.use("/api/activity", activityRoutes);
 app.use("/api/product",productRoutes);
 app.use("/api/itinerary",itineraryRoutes);
 app.use("/api/tourGuide",tourGuide);
+app.use("/api/attraction", attractionRoute);
+
 app.listen(PORT, () => {
     connectDB();
     console.log(`server is running on port ${PORT}`);
