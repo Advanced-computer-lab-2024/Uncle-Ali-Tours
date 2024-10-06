@@ -1,24 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { useUserStore } from '../store/user'; 
+import { useUserStore } from '../store/user';
 
 const SellerProfile = () => {
     const { user } = useUserStore(); 
-    const [name, setName] = useState('Joe Doe'); 
-    const [description, setDescription] = useState('I am a verified Seller');
+    const [name, setName] = useState(''); 
+    const [description, setDescription] = useState('');
     const [isEditing, setIsEditing] = useState(false); 
 
+    // Fetch seller's information on component mount
     useEffect(() => {
-        if (user && user.userName) {
-            setName(user.userName); 
-        }
-    }, [user]); 
+        const fetchSeller = async () => {
+            if (user && user.userName) {
+                try {
+                    const response = await fetch(`/api/sellers/${user.userName}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        setName(data.data.name);
+                        setDescription(data.data.description);
+                    } else {
+                        console.error(data.message);
+                    }
+                } catch (error) {
+                    console.error("Error fetching seller data:", error);
+                }
+            }
+        };
+
+        fetchSeller();
+    }, [user]);
 
     const handleDescriptionChange = (e) => {
         setDescription(e.target.value);
     };
 
+    const handleNameChange = (e) => {
+        setName(e.target.value);
+    };
+
     const toggleEditProfile = () => {
-        setIsEditing(!isEditing); 
+        if (isEditing) {
+            // If we're saving, submit the updated profile to the backend
+            updateSellerProfile();
+        }
+        setIsEditing(!isEditing); // Toggle edit mode
+    };
+
+    const updateSellerProfile = async () => {
+        try {
+            const response = await fetch(`/api/sellers/${user.userName}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                console.log("Seller profile updated successfully");
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error("Error updating seller profile:", error);
+        }
     };
 
     const handleDeleteProfile = () => {
@@ -39,7 +83,18 @@ const SellerProfile = () => {
             <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
                 <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div> {/* Placeholder for profile picture */}
                 <div>
-                    <h1 className="text-white text-2xl font-bold">{name}</h1> {/* Display the name from the store */}
+                    <h1 className="text-white text-2xl font-bold">
+                        {isEditing ? (
+                            <input 
+                                type="text" 
+                                value={name} 
+                                onChange={handleNameChange} 
+                                className="bg-gray-800 text-white border border-gray-600 rounded-md px-2"
+                            />
+                        ) : (
+                            name
+                        )}
+                    </h1>
                     <h2 className="text-gray-400 text-xl">Seller</h2>
                 </div>
             </div>

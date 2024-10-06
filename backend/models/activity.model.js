@@ -4,7 +4,6 @@ const activitySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
     },
     date: {
         type: Date,
@@ -44,9 +43,11 @@ const activitySchema = new mongoose.Schema({
     bookingOpen: {
         type: Boolean,
         required: true
+    },
+    creator: {
+        type: String,
+        required: true
     }
-}, {
-    timestamps: true
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

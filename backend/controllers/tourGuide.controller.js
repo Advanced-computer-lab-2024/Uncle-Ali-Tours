@@ -1,5 +1,5 @@
 import TourGuide from "../models/tourGuide.model.js";
-import tourGuide from "../models/tourGuide.model.js"
+import User from "../models/user.model.js";
 
 export const creatTourGuide = async(req,res) =>{
     const tourGuide = req.body;
@@ -31,9 +31,10 @@ export const creatTourGuide = async(req,res) =>{
         res.status(201).json({success:true ,message:"account created sucssfully"});
     }
     catch(error){
-        res.status(500).json({success:false , message:"server Error"});
+        res.status(500).json({success:false , message: error.message});
     }
 }
+
 export const getTourGuide = async(req,res) => {
     const { filter, sort } = req.query;
     let parsedFilter = filter ? JSON.parse(filter) : {};
@@ -45,6 +46,7 @@ export const getTourGuide = async(req,res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
 export const updateTourGuide = async (req,res) => {
     const {userName,newTourGuide} = req.body;
     const today = new Date();

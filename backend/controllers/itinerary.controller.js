@@ -5,6 +5,11 @@ export const createItinerary = async(req, res) => {
     const newItinerary= new Itinerary(itinerary);
     let activityInfo =0;
 
+if(!itinerary.activities || !itinerary.pickupLocation || !itinerary.dropoffLocation || !itinerary.tourLocations || !itinerary.language || !itinerary.price || !itinerary.availableDates || !itinerary.availableTimes || !itinerary.accessibility || !itinerary.creator ){
+    res.status(400).json({success: false, message: "please fill all fields"});
+    return;
+}
+
     try{
 
         itinerary.activities.forEach( activity => {
