@@ -1,4 +1,5 @@
 import {create} from 'zustand';
+import { deleteUser } from '../../../backend/controllers/user.controller';
 
 const addTourGuide = async (newUser) => {
     const res = await fetch("/api/tourGuide", {
@@ -79,6 +80,9 @@ export const useUserStore = create((set) => ({
                 case "admin":
                     typeRes = {success: true};
                     break;
+                    case "governor":
+                    typeRes = {success: true};
+                    break;
     
                 default:
                     return{success: false, message: "Invalid user type."};
@@ -113,4 +117,23 @@ export const useUserStore = create((set) => ({
 
         return{success: true, message: "User created successfully."};
     },
+    deleteUser: async (userId=-1) => {
+        try {
+            const res = await fetch(`/api/users/${userId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const body = await res.json();
+            if (!body.success) {
+                return body;
+            }
+           
+            return { success: true, message: "User deleted successfully" };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    }
+    
 }));
