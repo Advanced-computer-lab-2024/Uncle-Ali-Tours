@@ -4,7 +4,7 @@ import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import { Route, Routes } from "react-router-dom";
-import ActivityCategoryPage from "./ActivityCategoryPage";
+import ActivityCategory from "./ActivityCategory";
 import ViewAttractions from "./ViewAttractions";
 import PreferenceTag from "./PreferenceTag";
 import ViewActivities from "./ViewActivities";
@@ -30,7 +30,7 @@ function App() {
         <Route path="/viewIteneraries" element={<ViewIteneraries />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />  
         <Route path="/viewProducts" element={<ViewProducts />} />
-        <Route path="/activityCategory" element={<ActivityCategoryPage />} />
+        <Route path="/activityCategory" element={<ActivityCategory />} />
         <Route path="/itineraryPage" element={<ItineraryPage />} />
         <Route path="/createItinerary" element={<CreateItinerary />} />
         <Route path="/sellerProfile" element={<SellerProfilePage />} />

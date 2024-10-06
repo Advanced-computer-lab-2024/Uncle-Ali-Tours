@@ -23,7 +23,7 @@ function RegisterPage() {
     });
 
 
-    const {createUser, user} = useUserStore();
+    const {createUser} = useUserStore();
 
     const handleAddUser =  async function(type) {
         const passedUser = newUser

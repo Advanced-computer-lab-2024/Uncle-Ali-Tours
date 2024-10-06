@@ -75,6 +75,10 @@ export const useUserStore = create((set) => ({
                 case "tourist":
                     typeRes = await addTourist(newUser);
                     break;
+
+                case "admin":
+                    typeRes = {success: true};
+                    break;
     
                 default:
                     return{success: false, message: "Invalid user type."};

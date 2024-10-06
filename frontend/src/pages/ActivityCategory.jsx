@@ -5,7 +5,7 @@ import FormDialog from '../components/FormDialog.jsx'
 import toast, { Toaster } from 'react-hot-toast';
 import ActivityCategoryContainer from '../components/ActivityCategoryContainer.jsx'
 import { useActivityStore } from '../store/activity.js';
-function ActivityCategoryPage() {
+function ActivityCategory() {
     const [curCategory, setCurCategory] = useState("");
     const [newCategory, setNewCategory] = useState({
         name: "",
@@ -59,4 +59,4 @@ function ActivityCategoryPage() {
   )
 }
 
-export default ActivityCategoryPage
+export default ActivityCategory
