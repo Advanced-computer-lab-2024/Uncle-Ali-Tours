@@ -17,15 +17,7 @@ const sellerModel = new mongoose.Schema({
         type: String
     },
 
-    name: {
-        type: String,
-        required: false,
-        default: ""
-    },
-
-
-
-
+ 
     description: {
         type: String,
         required: false,

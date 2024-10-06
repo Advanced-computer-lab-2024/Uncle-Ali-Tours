@@ -17,56 +17,64 @@ export const createSeller = async (req, res) => {
     }
 };
 
-export const getTourGuide = async(req,res) => {
+export const getSeller = async(req,res) => {
     const { filter, sort } = req.query;
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const Sellers = await sellerData.find(parsedFilter).sort(parsedSort);
+        const Sellers = await Seller.find(parsedFilter).sort(parsedSort);
         res.status(200).json({success:true, data: Sellers});
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
 }
 
+export const updateSeller = async (req,res) => {
+    const {userName,newSeller} = req.body;
 
-export const updateSeller = async (req, res) => {
-    const { name } = req.params; 
-    const updates = req.body;
 
-    if (updates.name && updates.name.length === 0) {
-        return res.status(400).json({ success: false, message: "Name cannot be empty" });
+
+    if(newSeller.userName){
+        return res.status(400).json({success:false, message: 'user name is not editable'});
     }
-
-    if (updates.description && updates.description.length === 0) {
-        return res.status(400).json({ success: false, message: "Description cannot be empty" });
-    }
-
-    try {
-        const updatedSeller = await Seller.findOneAndUpdate({ name: name }, updates, { new: true, runValidators: true });
-
-        if (!updatedSeller) {
-            return res.status(404).json({ success: false, message: "Seller not found" });
+  
+    if(newSeller.email){
+        if( !newSeller.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
+            return res.status(400).json({success:false, message: 'email format is wrong' });
         }
-
-        res.status(200).json({ success: true, data: updatedSeller });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
-};
+    if(newSeller.mobileNumber){
+        if((!new RegExp(/^010\d{8}$/).test(newSeller.mobileNumber.toString()) & !new RegExp(/^011\d{8}$/).test(newSeller.mobileNumber.toString()) & !new RegExp(/^012\d{8}$/).test(newSeller.mobileNumber.toString()) & !new RegExp(/^015\d{8}$/).test(newSeller.mobileNumber.toString()))){
+            return res.status(400).json({success:false, message: 'mobile number format is wrong'});
+        }
+    }
+    
+    try {
+        const sellerExists = await Seller.exists({userName});
+        if(!sellerExists){
+            return res.status(404).json({ success: false, message: "seller not found" });
+        }
+        const updatedSeller = await Seller.findOneAndUpdate({ userName: userName }, newSeller, { new: true });
+        res.status(200).json({success:true, data:  updatedSeller});
+    }
+    catch (error) {
+        res.status(500).json({success:false, message: error.message });
+    }
+}
+
 
 
 export const deleteSeller = async (req, res) => {
-    const { name } = req.params; 
+    const { userName } = req.body; 
 
     try {
-        const sellerExists = await Seller.exists({ name: name });
+        const sellerExists = await Seller.exists({ userName: userName });
 
         if (!sellerExists) {
             return res.status(404).json({ success: false, message: "Seller not found" });
         }
 
-        await Seller.findOneAndDelete({ name: name });
+        await Seller.findOneAndDelete({ userName: userName });
         res.json({ success: true, message: "Seller profile deleted successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
