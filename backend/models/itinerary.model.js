@@ -50,6 +50,10 @@ const itinerarySchema = new mongoose.Schema({
     default: 1,
     required: true,
   },
+  creator: {
+    type: String,
+    required: true
+  }
 });
 
 const Itinerary = mongoose.model("Itinerary", itinerarySchema);
