@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSeller, getSellerByName, updateSeller, deleteSeller } from '../controllers/SellerController.js';
+import { createSeller, deleteSeller, getSellerByName, updateSeller } from '../controllers/seller.controller.js';
 
 const router = express.Router();
 router.post('/', createSeller);

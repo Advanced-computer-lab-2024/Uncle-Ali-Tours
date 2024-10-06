@@ -3,8 +3,8 @@ import Seller from "../models/seller.model.js";
 export const createSeller = async (req, res) => {
     const sellerData = req.body;
 
-    if (!sellerData.username || !sellerData.password|| !sellerData.email) {
-        return res.status(400).json({ success: false, message: "All fields are required'" });
+    if (!sellerData.userName || !sellerData.password|| !sellerData.email) {
+        return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
     const newSeller = new Seller(sellerData);
