@@ -17,7 +17,7 @@ app.use(express.json());
 app.use("/api/users", userRouts);
 app.use("/api/activityCategory", activityCategoryRouts);
 app.use("/api/activity", activityRoutes);
-app.use("/api/product",productRoutes);
+app.use('/api/product',productRoutes);
 app.use("/api/itinerary",itineraryRoutes);
 app.use("/api/tourGuide",tourGuide);
 app.use("/api/attraction", attractionRoute);

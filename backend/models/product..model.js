@@ -17,11 +17,11 @@ const productSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
+     //   required: true,
     },
     seller: {
         type: String,
-        required: true,
+       // required: true,
     },
     rate: {
         type: Number,
@@ -31,7 +31,7 @@ const productSchema = new Schema({
     }
 ,
 Available_quantity: {
-    type: String,
+    type: Number,
 }
 });
 

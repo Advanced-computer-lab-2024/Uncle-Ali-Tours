@@ -1,83 +1,66 @@
-import React from 'react'
-import {create} from 'zustand';
-import { postProductStore } from '../store/product';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useProductStore } from '../store/product';  
+import ProductCard from '../components/productContainer.jsx'; 
+import Dialog from '../components/Dialog.jsx'
+import FormDialog from '../components/FormDialog.jsx' 
+import toast, { Toaster } from 'react-hot-toast';
+import { deleteProduct, updateProduct,getProducts,createProduct } from '../../../backend/controllers/product.controller.js';
+function ProductPage() {
+    
+          const {products, getProducts, createProduct } = useProductStore();
+         // const [openCreateDialog, setOpenCreateDialog] = useState(false);  
+          const [newProduct, setNewProduct] = useState({
+            name: '',
+            price: '',
+            imgURL: ''
+          });
+        
 
-const ProductPage =()=>{
-    const toast = useToast;
-    const {ADD}=postProductStore;
-    const handleAddProduct=async ()=>{
-        const {success,message}= await ADD(newProduct);
-        if(!success){
-            toast({
-                title:"Error",
-                description: message,
-                isClosable: true
-        });
-        }
+    useEffect(() => {
+        getProducts()
+    }, [])
 
-    };
+    const del = async () => {
+        const {success, message} = await deleteProduct(products)
+        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
-  //  const {success, message} = postProductStore();
-
-    return
-(
-    <div>ProductPage</div>
-)
 }
-export default ProductPage;
-// import React, { useEffect, useState } from 'react';
-// import { useProductStore } from '../store/product';  // Import Zustand store
-// import ProductCard from './ProductCard';  // Import ProductCard component
 
-// const ProductPage = () => {
-//   const { getProducts } = useProductStore();  // Fetching products logic from Zustand store
-//   const [products, setProducts] = useState([]);  // State for storing fetched products
+   
 
-//   useEffect(() => {
-//     // Fetch products when the component loads
-//     const fetchProducts = async () => {
-//       const { success, data } = await getProducts();  // Call Zustand store function to get products
-//       if (success) {
-//         setProducts(data);  // Store products in local state
-//       } else {
-//         console.error("Failed to fetch products");
-//       }
-//     };
+    const handleUpdate = async (updatedProduct) => {
+        const {success, message} = await updateProduct(products, updatedProduct)
+        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    }
 
-//     fetchProducts();
-//   }, [getProducts]);
 
-//   // This function can be passed to ProductCard for handling edits
-//   const handleEdit = (updatedProduct) => {
-//     setProducts((prevProducts) =>
-//       prevProducts.map((product) =>
-//         product.name === updatedProduct.name ? updatedProduct : product
-//       )
-//     );
-//   };
+    const handleCreateProduct = async() => {
+        console.log(newProduct.name)
+        const {success, message} = await createProduct(newProduct);
+        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    }
 
-//   // This function can be passed to ProductCard for handling deletes
-//   const handleDelete = (deletedProductName) => {
-//     setProducts((prevProducts) =>
-//       prevProducts.filter((product) => product.name !== deletedProductName)
-//     );
-//   };
+  return (
+    <div className='test'>
+        <div className='mt-4 text-xl'>Create New Product</div>
+        <div className='text-black'>
+        <input className='rounded' name={"newProduct"} placeholder='New Product' onChange={(e) => setNewProduct({ name: e.target.value})}/>
+        <button className='bg-black text-white m-6 p-2 rounded-xl transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleCreateProduct())}>Add Product</button>
+        </div>
+        <div className='mb-4 text-xl'>
+            Available   
+        </div>
+        {
+            products.map((product, index)=> (
+                <productContainer key={index}  Name={product.name}/>   
+            ))
+        }
+        <Dialog msg={"Are you sure you want to delete this product?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
+        <FormDialog msg={"Update values"} accept={handleUpdate} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name"]}/>
+        <Toaster/>
+    </div>
+    
+  )
+}
 
-//   return (
-//     <div>
-//       <h1>Product Page</h1>
-//       <div>
-//         {products.map((product) => (
-//           <ProductCard
-//             key={product.name}
-//             product={product}
-//             onEdit={handleEdit}
-//             onDelete={handleDelete}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProductPage;
+export default ProductPage();

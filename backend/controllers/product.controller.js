@@ -20,29 +20,35 @@ export const getProducts = async (req, res) => {
 
 
 export const createProduct = async (req, res) => {
+    console.log('Received product data:', req.body);
+    if (!req.body.name || !req.body.price || !req.body.imgURL) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+    
     const productData = req.body; 
     const newProduct = new Product(productData); 
 
     try {
         await newProduct.save();
+        console.log('Product created:', newProduct);
         res.status(201).json({ success: true, data: newProduct });
     } catch (error) {
-        res.status(409).json({success: false, message: error.message });
+        res.status(409).json({success: false, message:error.message});
     }
 };
 
 
 
 
+
 export const deleteProduct = async (req, res) => {
-    const { name } = req.body;
-    if(!name) {
-        console.log(name)
-        return res.status(400).json({success:false, message: 'Name is required' });
+    const { id} = req.params;
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({success:false, message: 'invalid id' });
         
     }
     try {
-        const deletedProduct = await Product.findByIdAndDelete(name, { deleted: true }, { new: true });
+        const deletedProduct = await Product.findByIdAndDelete(id);
         if (deletedProduct) {
             res.json({ success: true, message: 'Product deleted successfully', data: deletedProduct });
         } else {
@@ -58,11 +64,11 @@ export const updateProduct = async (req, res) => {
     const { name,description,Available_quantity, price } = req.body;
    // const { id } = req.params;
    if(!name) {
-    console.log(name)
+   // console.log(name)
     return res.status(400).json({success:false, message: 'Name is required' });}
 
     try {
-        const updatedProduct = await Product.findByIdAndUpdate(name, { description, price,Available_quantity }, { new: true });
+        const updatedProduct = await Product.findByIdAndUpdate( { name: name }, { description, price,Available_quantity }, { new: true });
         if (updatedProduct) {
             res.json({ success: true, data: updatedProduct });
         } else {
