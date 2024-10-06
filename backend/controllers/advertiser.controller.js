@@ -3,9 +3,7 @@ export const createAdvertiser = async (req, res) => {
     const advertiser = req.body;
     
 
-    if (!advertiser.website || !advertiser.hotline || !advertiser.companyProfile || 
-        !advertiser.industry || !advertiser.address || !advertiser.email || 
-        !advertiser.companyName) {
+    if (!advertiser.userName||!advertiser.password||!advertiser.email) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
@@ -18,7 +16,7 @@ export const createAdvertiser = async (req, res) => {
     if (!Number.isInteger(advertiser.hotline) || advertiser.hotline <= 0) {
         return res.status(400).json({ success: false, message: 'Hotline must be a valid positive number' });
     }
-
+     
     
     const newAdvertiser = new Advertiser(advertiser);
     try {

@@ -1,30 +1,48 @@
 import mongoose, { Schema } from "mongoose";
 
 const advertiserModel = new mongoose.Schema({
-    website: {  
+
+    username: {
+        type:String,
+        required:true,
+         default: ""
+    },
+
+    password: {
         type: String,
         required: true,
+    },
+
+    website: {  
+        type: String,
+        required: false,
         default: ""
     },
     hotline: {
         type: Number,
-        required: true,
+        required: false,
         default: 0
     },
     companyProfile: { 
         type: String,
-        required: true, 
+        required: false, 
         default: ""
     },
     industry: { 
         type: String,
-        required: true, 
+        required: false, 
         default: ""
     },
     address: { 
         type: String,
-        required: true, 
+        required: false, 
         default: ""
+    },
+
+    verified:{
+        type : Boolean,
+        default : false,
+        required : false
     },
    
     email: {
@@ -33,7 +51,7 @@ const advertiserModel = new mongoose.Schema({
         unique: true 
     },
     companyName: {
-        required: true,
+        required: false,
         type: String,
         unique: true,
     },

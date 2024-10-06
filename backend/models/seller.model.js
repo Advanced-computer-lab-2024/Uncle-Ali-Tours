@@ -1,15 +1,41 @@
 import mongoose from "mongoose";
 
 const sellerModel = new mongoose.Schema({
-    name: {
+    userName: {
         type: String,
         required: true,
         default: ""
     },
-    description: {
+
+    password: {
         type: String,
         required: true,
+    },
+
+    email : {
+        required:true,
+        type: String
+    },
+
+    name: {
+        type: String,
+        required: false,
         default: ""
+    },
+
+
+
+
+    description: {
+        type: String,
+        required: false,
+        default: ""
+    },
+
+    verified:{
+        type : Boolean,
+        default : false,
+        required : false
     },
    
     
