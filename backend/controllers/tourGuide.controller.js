@@ -6,19 +6,25 @@ export const creatTourGuide = async(req,res) =>{
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     today.setFullYear(today.getFullYear() - 10);
-    if( !tourGuide.email | !tourGuide.userName | !tourGuide.mobileNumber | !tourGuide.nationality | !tourGuide.dateOfBirth ){
+    if( !tourGuide.email | !tourGuide.userName | !tourGuide.password ){
             return res.status(400).json({success:false, message: 'All fields are required' });
     }
+
+    const duplicat = await User.find({userName: tourGuide.userName});
+    if(duplicat.length > 0) {
+        return res.status(400).json({success: false, message: 'UserName already exists' });
+    }
+
     if( !tourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
         return res.status(400).json({success:false, message: 'email format is wrong' });
     }
-    if((!tourGuide.mobileNumber.toString().match(/^10\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^11\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^12\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(tourGuide.mobileNumber)){
-        return res.status(400).json({success:false, message: 'mobile number format is wrong'});
-    }
+    // if((!tourGuide.mobileNumber.toString().match(/^10\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^11\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^12\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(tourGuide.mobileNumber)){
+    //     return res.status(400).json({success:false, message: 'mobile number format is wrong'});
+    // }
     
-    if(new Date(tourGuide.dateOfBirth) > today){
-        return res.status(400).json({success:false, message: 'your age is less than 10 years'});
-    }
+    // if(new Date(tourGuide.dateOfBirth) > today){
+    //     return res.status(400).json({success:false, message: 'your age is less than 10 years'});
+    // }
     const newTourGuide= new TourGuide(tourGuide);
     try{
         await newTourGuide.save();
@@ -61,12 +67,13 @@ export const updateTourGuide = async (req,res) => {
         }
     }
     if(newTourGuide.mobileNumber){
-        if((!newTourGuide.mobileNumber.toString().match(/^10\d{8}$/) & !newTourGuide.mobileNumber.toString().match(/^11\d{8}$/) & !newTourGuide.mobileNumber.toString().match(/^12\d{8}$/) & !newTourGuide.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(newTourGuide.mobileNumber)){
+        if((!new RegExp(/^010\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^011\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^012\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^015\d{8}$/).test(newTourGuide.mobileNumber.toString()))){
             return res.status(400).json({success:false, message: 'mobile number format is wrong'});
         }
     }
     if(newTourGuide.dateOfBirth){
-        if(new Date(newTourGuide.dateOfBirth) > today){
+        newTourGuide.dateOfBirth = Date.parse(newTourGuide.dateOfBirth);
+        if(newTourGuide.dateOfBirth > today){
             return res.status(400).json({success:false, message: 'your age is less than 10 years'});
         }
     }
@@ -74,6 +81,10 @@ export const updateTourGuide = async (req,res) => {
         const tourGuideExists = await TourGuide.exists({userName});
         if(!tourGuideExists){
             return res.status(404).json({ success: false, message: "tour guide not found" });
+        }
+        const oldTourGuide = await TourGuide.findOneAndUpdate({ userName: userName }, newTourGuide, { new: false });
+        if(!oldTourGuide.verified){
+            return res.status(500).json({success:false, message: "your are not verified yet" });
         }
         const updatedTourGuide = await TourGuide.findOneAndUpdate({ userName: userName }, newTourGuide, { new: true });
         res.status(200).json({success:true, data:  updatedTourGuide});
