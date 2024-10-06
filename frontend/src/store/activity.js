@@ -52,9 +52,21 @@ export const useActivityStore = create((set) => ({
     setActivities: (activities) => set({activities}),
     
     getActivities: async (filter = {} , sort = {}) => {
+       let minPrice = 0
+       let maxPrice = Number.POSITIVE_INFINITY
+       if(filter.minPrice){
+        minPrice = filter.minPrice
+        delete filter.minPrice
+       }
+       if(filter.maxPrice){
+        maxPrice = filter.maxPrice
+        delete filter.maxPrice
+       }
         const queryString = new URLSearchParams({
             filter: JSON.stringify(filter),
             sort: JSON.stringify(sort),
+            minPrice:minPrice,
+            maxPrice:maxPrice,
           }).toString();
         const res = await fetch(`/api/activity?${queryString}`, {
             method: "GET",

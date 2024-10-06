@@ -39,6 +39,7 @@ export const createActivity = async(req, res) => {
 
 export const getActivity = async(req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
+    
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
 

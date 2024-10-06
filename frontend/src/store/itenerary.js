@@ -29,7 +29,7 @@ export const useIteneraryStore = create((set) => ({
             filter: JSON.stringify(filter),
             sort: JSON.stringify(sort),
           }).toString();
-        const res = await fetch(`/api/itenerary?${queryString}`, {
+        const res = await fetch(`/api/itinerary?${queryString}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
