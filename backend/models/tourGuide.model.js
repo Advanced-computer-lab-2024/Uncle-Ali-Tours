@@ -35,7 +35,11 @@ const tourGuideModel = new mongoose.Schema({
     },dateOfBirth:{
         required:false,
         type: Date
-    }},{
+    },password:{
+        required:true,
+        type:String
+    }
+    },{
         timestamps: true
     }
 )

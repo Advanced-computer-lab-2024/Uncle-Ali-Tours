@@ -21,7 +21,7 @@ router.post('/', createProduct);
 router.put('/', updateProduct);
 
 // Route to soft delete a product by ID
-router.delete('/products', deleteProduct);
+router.delete('/', deleteProduct);
 
 // Route to search a product by name
 // router.post('/products/search', searchProduct);

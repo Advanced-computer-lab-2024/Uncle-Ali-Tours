@@ -15,6 +15,7 @@ import CreateItinerary from "./CreateItinerary";
 import SellerProfilePage from "./SellerProfilePage";
 import AdvertiserProfile from "./AdvertiserProfilePage";
 import UpdateItinerary from "./UpdateItinerary";
+import AdminDashboard from "./AdminDashboardPage";
 function App() {
   return (
     <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-2vh)] mt-[1vh] w-[calc(100vw-2vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
@@ -34,7 +35,8 @@ function App() {
         <Route path="/createItinerary" element={<CreateItinerary />} />
         <Route path="/SellerProfile" element={<SellerProfilePage />} />
         <Route path="/AdvertiserProfile" element={<AdvertiserProfile />} />
-        
+        <Route path="/AdminDashboard" element={<AdminDashboard />} />
+
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         
       </Routes>
