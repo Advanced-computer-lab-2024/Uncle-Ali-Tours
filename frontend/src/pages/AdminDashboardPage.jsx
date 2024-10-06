@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useUserStore } from '../store/user';
+import {useTagStore } from '../store/tag';
 
 const AdminDashboard = () => {
   const { deleteUser } = useUserStore();
@@ -21,6 +22,9 @@ const AdminDashboard = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editedProduct, setEditedProduct] = useState({ name: '', price: '', quantity: '' });
 
+const {addTag} = useTagStore ();
+
+
   const handleDeleteAccount = async () => {
     if (window.confirm('Are you sure you want to delete this account?')) {
       await deleteUser(accountId); // Delete the specific account
@@ -29,10 +33,7 @@ const AdminDashboard = () => {
   };
 
   const handleAddTourismGovernor = async () => {
-    console.log('Adding tourism governor:', tourismGovernorUsername, tourismGovernorPassword);
-    setTourismGovernorUsername('');
-    setTourismGovernorPassword('');
-  };
+    };
 
   const handleAddNewAdmin = async () => {
     console.log('Adding new admin:', newAdminUsername, newAdminPassword);
@@ -45,11 +46,11 @@ const AdminDashboard = () => {
     setActivityCategories([...activityCategories, newActivityCategory]);
     setNewActivityCategory('');
   };
-
+ 
   const handleCreatePreferenceTag = async () => {
-    console.log('Creating preference tag:', newPreferenceTag);
-    setPreferenceTags([...preferenceTags, newPreferenceTag]);
-    setNewPreferenceTag('');
+    const {success, message} = await addTag(newPreferenceTag);
+    console.log(success, "sha8aaal");
+    console.log(success, "mesh sha8aaal");
   };
 
   const handleUpdateActivityCategory = async () => {

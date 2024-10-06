@@ -3,6 +3,12 @@ import Activity from "../models/activity.model.js";
 export const createActivity = async(req, res) => {
     const activity = req.body;
     const newActivity= new Activity(activity);
+
+    if(!activity.name || !activity.date || !activity.time || !activity.location || !activity.price || !activity.category || !activity.tags || !activity.specialDiscounts || !activity.bookingOpen || !activity.creator ){
+        res.status(400).json({success: false, message: "please fill all fields"});
+    return;
+    }
+
     try{
         await newActivity.save();
         res.status(201).json({success:true ,data:newActivity});
