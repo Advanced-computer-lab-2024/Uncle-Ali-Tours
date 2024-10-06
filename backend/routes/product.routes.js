@@ -18,10 +18,12 @@ router.get('/', getProducts);
 router.post('/', createProduct);
 
 // Route to update an existing product by ID
-router.put('/', updateProduct);
+// Update product by ID
+router.put('/:id', updateProduct);
 
-// Route to soft delete a product by ID
-router.delete('/', deleteProduct);
+// Delete product by ID
+router.delete('/:id', deleteProduct);
+
 
 // Route to search a product by name
 // router.post('/products/search', searchProduct);

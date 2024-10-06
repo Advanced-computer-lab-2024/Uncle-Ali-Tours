@@ -1,6 +1,6 @@
 import {create} from 'zustand';
-import { createProduct, deleteProduct, updateProduct } from '../../../backend/controllers/product.controller';
-import Product from '../../../backend/models/product..model';
+//import { createProduct, deleteProduct, updateProduct } from '../../../backend/controllers/product.controller';
+//import Product from '../../../backend/models/product..model';
 
 
 export const useProductStore = create((set) => ({
@@ -20,13 +20,14 @@ getProducts: async (filter = {}, sort = {}) => {
     });
     const body = await res.json();
     if (!body.success){
-        return (body)
+         return { success: false, message: body.message };
     }
     set({products: body.data})
     return {success: true, message: "fetched attractions"};
     },
 
     createProduct: async (newProduct) => {
+       try {
         const res = await fetch('/api/product', {
             method: 'POST',
             headers: {
@@ -36,22 +37,30 @@ getProducts: async (filter = {}, sort = {}) => {
           });
           const data = await res.json();
           if(!data.success){
-            return data
+            return { success: false, message: data.message };
           }
-        set({ products: [...state.products, data.data] });
+          set((state) => ({ products: [...state.products, data.data] }));
+         } catch (error) {
+            return{success: false, message: error.message};
+        }  
+
         return {success: true, message:'Product created successfully!'}
-    },
-    deleteProduct: async (name) => {
-      const res = await fetch('/api/product',{
+        },
+    
+       
+        
+    
+    deleteProduct: async (id) => {
+      const res = await fetch(`/api/product'/${id}`,{
           method : "DELETE",
           headers:{
               "Content-Type":"application/json"
           },
-          body: JSON.stringify({name})
+          body: JSON.stringify({id})
       });
       const data = await res.json();
       if(!data.success) return { success : false, message: data.message};
-      set(state => ({products:state.products.filter(product => product.name !== name)})); //update ui imm.
+      set(state => ({products:state.products.filter(product => product.id !== id)})); //update ui imm.
       return {success: true , message: data.message};
   },
   updateProduct: async(oldProduct,newProduct)=>{
