@@ -35,12 +35,14 @@ export const createProduct = async (req, res) => {
 
 
 export const deleteProduct = async (req, res) => {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)){
-        return  res.status(404).json({ success: false, message:"invaild product id" });
+    const { name } = req.body;
+    if(!name) {
+        console.log(name)
+        return res.status(400).json({success:false, message: 'Name is required' });
+        
     }
     try {
-        const deletedProduct = await Product.findByIdAndUpdate(id, { deleted: true }, { new: true });
+        const deletedProduct = await Product.findByIdAndDelete(name, { deleted: true }, { new: true });
         if (deletedProduct) {
             res.json({ success: true, message: 'Product deleted successfully', data: deletedProduct });
         } else {
@@ -53,11 +55,14 @@ export const deleteProduct = async (req, res) => {
 
 
 export const updateProduct = async (req, res) => {
-    const { description, price } = req.body;
-    const { id } = req.params;
+    const { name,description,Available_quantity, price } = req.body;
+   // const { id } = req.params;
+   if(!name) {
+    console.log(name)
+    return res.status(400).json({success:false, message: 'Name is required' });}
 
     try {
-        const updatedProduct = await Product.findByIdAndUpdate(id, { description, price }, { new: true });
+        const updatedProduct = await Product.findByIdAndUpdate(name, { description, price,Available_quantity }, { new: true });
         if (updatedProduct) {
             res.json({ success: true, data: updatedProduct });
         } else {
