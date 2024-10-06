@@ -17,21 +17,17 @@ export const createSeller = async (req, res) => {
     }
 };
 
-export const getSellerByName = async (req, res) => {
-    const { name } = req.params; 
-
+export const getTourGuide = async(req,res) => {
+    const { filter, sort } = req.query;
+    let parsedFilter = filter ? JSON.parse(filter) : {};
+    let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const seller = await Seller.findOne({ name: name });
-
-        if (!seller) {
-            return res.status(404).json({ success: false, message: "Seller not found" });
-        }
-
-        res.status(200).json({ success: true, data: seller });
+        const Sellers = await sellerData.find(parsedFilter).sort(parsedSort);
+        res.status(200).json({success:true, data: Sellers});
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
+        res.status(404).json({ message: error.message });
     }
-};
+}
 
 
 export const updateSeller = async (req, res) => {
