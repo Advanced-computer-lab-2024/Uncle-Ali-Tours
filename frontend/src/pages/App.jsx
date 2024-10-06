@@ -33,9 +33,9 @@ function App() {
         <Route path="/activityCategory" element={<ActivityCategoryPage />} />
         <Route path="/itineraryPage" element={<ItineraryPage />} />
         <Route path="/createItinerary" element={<CreateItinerary />} />
-        <Route path="/SellerProfile" element={<SellerProfilePage />} />
-        <Route path="/AdvertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/AdminDashboard" element={<AdminDashboard />} />
+        <Route path="/sellerProfile" element={<SellerProfilePage />} />
+        <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
 
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         
