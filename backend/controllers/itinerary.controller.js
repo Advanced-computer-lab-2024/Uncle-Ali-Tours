@@ -10,6 +10,24 @@ if(!itinerary.activities || !itinerary.pickupLocation || !itinerary.dropoffLocat
     return;
 }
 
+const itineraryExists = await Itinerary.exists({
+    "activities": itinerary.activities,
+    "pickupLocation.coordinates": itinerary.pickupLocation.coordinates,
+    "dropoffLocation.coordinates": itinerary.dropoffLocation.coordinates,
+    tourLocations: { $all: itinerary.tourLocations },
+    language: itinerary.language,
+    price: itinerary.price,
+    availableDates: { $all: itinerary.availableDates },
+    availableTimes: { $all: itinerary.availableTimes },
+    accessibility: itinerary.accessibility,
+    creator: itinerary.creator
+});
+
+if (itineraryExists) {
+    res.status(409).json({ success: false, message: "Itinerary already exists" });
+    return;
+}
+
     try{
 
         itinerary.activities.forEach( activity => {

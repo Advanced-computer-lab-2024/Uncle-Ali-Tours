@@ -4,17 +4,36 @@ export const createActivity = async(req, res) => {
     const activity = req.body;
     const newActivity= new Activity(activity);
 
-    if(!activity.name || !activity.date || !activity.time || !activity.location || !activity.price || !activity.category || !activity.tags || !activity.specialDiscounts || !activity.bookingOpen || !activity.creator ){
+    if(!activity.name || !activity.date || !activity.time || !activity.location || !activity.price || !activity.category || activity.bookingOpen==undefined || !activity.creator ){
         res.status(400).json({success: false, message: "please fill all fields"});
     return;
     }
+
+    const activityExists = await Activity.exists({
+        name: activity.name,
+        date: activity.date,
+        time: activity.time,
+        "location.coordinates": activity.location.coordinates,
+        price: activity.price,
+        category: activity.category,
+        tags: activity.tags || undefined,
+        specialDiscounts: activity.specialDiscounts || undefined,
+        bookingOpen: activity.bookingOpen,
+        creator: activity.creator
+    });
+
+    if (activityExists) {
+        res.status(409).json({ success: false, message: "Activity already exists" });
+        return;
+    }
+
 
     try{
         await newActivity.save();
         res.status(201).json({success:true ,data:newActivity});
     }
     catch(error){
-        res.status(500).json({success:false , message:"server error"});
+        res.status(500).json({success:false , message:error.message});
     }
 }
 
