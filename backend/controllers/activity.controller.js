@@ -38,9 +38,22 @@ export const createActivity = async(req, res) => {
 }
 
 export const getActivity = async(req, res) => {
-    const { filter, sort } = req.query;
+    const { filter, sort, minPrice, maxPrice } = req.query;
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
+
+    if (minPrice || maxPrice) {
+        parsedFilter.price = {};
+
+        if (minPrice) {
+            parsedFilter.price.$gte = parseFloat(minPrice);
+        }
+
+        if (maxPrice) {
+            parsedFilter.price.$lte = parseFloat(maxPrice);
+        }
+    }
+
     try {
         const activities = await Activity.find(parsedFilter).sort(parsedSort);
         res.status(200).json({success:true, data: activities});
