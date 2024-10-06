@@ -80,13 +80,12 @@ export const updateTourGuide = async (req,res) => {
         }
     }
     try {
-        const tourGuideExists = await TourGuide.exists({userName});
+        const tourGuideExists = await TourGuide.find({userName : userName});
         if(!tourGuideExists){
             return res.status(404).json({ success: false, message: "tour guide not found" });
         }
-        const oldTourGuide = await TourGuide.findOneAndUpdate({ userName: userName }, newTourGuide, { new: false });
-        if(!oldTourGuide.verified){
-            return res.status(500).json({success:false, message: "your are not verified yet" });
+        if(!tourGuideExists.verified){
+            return res.status(400).json({success:false, message: "your are not verified yet" });
         }
         const updatedTourGuide = await TourGuide.findOneAndUpdate({ userName: userName }, newTourGuide, { new: true });
         res.status(200).json({success:true, data:  updatedTourGuide});

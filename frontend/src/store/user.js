@@ -52,7 +52,7 @@ const addTourist = async (newUser) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "",
+        userName: "yasser",
         type: "",
     },
     setUser: (user) => set({user}),
@@ -62,6 +62,7 @@ export const useUserStore = create((set) => ({
         delete newUser.type;
         switch (type) {
                 case "tour guide":
+                    delete newUser.type;
                     typeRes = await addTourGuide(newUser);
                     break;
     
