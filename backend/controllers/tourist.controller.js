@@ -71,12 +71,13 @@ export const updateTourist = async (req,res) => {
         }
     }
     if(newTourist.mobileNumber){
-        if((!newTourist.mobileNumber.toString().match(/^10\d{8}$/) & !newTourist.mobileNumber.toString().match(/^11\d{8}$/) & !newTourist.mobileNumber.toString().match(/^12\d{8}$/) & !newTourist.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(newTourist.mobileNumber)){
+        if((!new RegExp(/^010\d{8}$/).test(newTourist.mobileNumber.toString()) & !new RegExp(/^011\d{8}$/).test(newTourist.mobileNumber.toString()) & !new RegExp(/^012\d{8}$/).test(newTourist.mobileNumber.toString()) & !new RegExp(/^015\d{8}$/).test(newTourist.mobileNumber.toString()))){
             return res.status(400).json({success:false, message: 'mobile number format is wrong'});
         }
     }
     if(newTourist.dateOfBirth){
-        if(new Date(newTourist.dateOfBirth) > today){
+        newTourist.dateOfBirth = Date.parse(newTourist.dateOfBirth);
+        if(newTourist.dateOfBirth > today){
             return res.status(400).json({success:false, message: 'your age is less than 10 years'});
         }
     }

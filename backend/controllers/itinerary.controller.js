@@ -5,6 +5,29 @@ export const createItinerary = async(req, res) => {
     const newItinerary= new Itinerary(itinerary);
     let activityInfo =0;
 
+if(!itinerary.activities || !itinerary.pickupLocation || !itinerary.dropoffLocation || !itinerary.tourLocations || !itinerary.language || !itinerary.price || !itinerary.availableDates || !itinerary.availableTimes || !itinerary.accessibility || !itinerary.creator ){
+    res.status(400).json({success: false, message: "please fill all fields"});
+    return;
+}
+
+const itineraryExists = await Itinerary.exists({
+    "activities": itinerary.activities,
+    "pickupLocation.coordinates": itinerary.pickupLocation.coordinates,
+    "dropoffLocation.coordinates": itinerary.dropoffLocation.coordinates,
+    tourLocations: { $all: itinerary.tourLocations },
+    language: itinerary.language,
+    price: itinerary.price,
+    availableDates: { $all: itinerary.availableDates },
+    availableTimes: { $all: itinerary.availableTimes },
+    accessibility: itinerary.accessibility,
+    creator: itinerary.creator
+});
+
+if (itineraryExists) {
+    res.status(409).json({ success: false, message: "Itinerary already exists" });
+    return;
+}
+
     try{
 
         itinerary.activities.forEach( activity => {

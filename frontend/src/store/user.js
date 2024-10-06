@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 
 const addTourGuide = async (newUser) => {
-    const res = await fetch("/api/tourGuides", {
+    const res = await fetch("/api/tourGuide", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -13,7 +13,7 @@ const addTourGuide = async (newUser) => {
 };
 
 const addAdvertiser = async (newUser) => {
-    const res = await fetch("/api/advertisers", {
+    const res = await fetch("/api/advertiser", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -25,7 +25,7 @@ const addAdvertiser = async (newUser) => {
 };
 
 const addSeller = async (newUser) => {
-    const res = await fetch("/api/sellers", {
+    const res = await fetch("/api/seller", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -38,7 +38,6 @@ const addSeller = async (newUser) => {
 
 
 const addTourist = async (newUser) => {
-    console.log(newUser);
     const res = await fetch("/api/tourist", {
         method: "POST",
         headers: {
@@ -61,23 +60,24 @@ export const useUserStore = create((set) => ({
         const type = newUser.type;
         delete newUser.type;
         switch (type) {
-            //     case "tour guide":
-            //         delete newUser.type;
-            //         await addTourGuide(newUser);
-            //         break;
+                case "tour guide":
+                    typeRes = await addTourGuide(newUser);
+                    break;
     
-            //     case "advertiser":
-            //         delete newUser.type;
-            //         await addAdvertiser(newUser);
-            //         break;
+                case "advertiser":
+                    typeRes = await addAdvertiser(newUser);
+                    break;
     
-            //     case "seller":
-            //         delete newUser.type;
-            //         await addSeller(newUser);
-            //         break;
+                case "seller":
+                    typeRes = await addSeller(newUser);
+                    break;
     
                 case "tourist":
                     typeRes = await addTourist(newUser);
+                    break;
+
+                case "admin":
+                    typeRes = {success: true};
                     break;
     
                 default:
@@ -85,7 +85,6 @@ export const useUserStore = create((set) => ({
             }
 
             if (!typeRes.success) {
-                // typeRes.message = ` ${type} creation failed.`;
                 return typeRes;
             }
         

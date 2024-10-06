@@ -1,16 +1,15 @@
-import { set } from 'mongoose';
 import React from 'react'
-import { useEffect } from 'react';
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 function RegisterPage() {
     const [newUser, setNewUser] = React.useState({
         userName: "",
         email: "",
         password: "",
     });
-
+    const navigate = useNavigate();
 
 
     const [tourist, setTourist] = React.useState({
@@ -24,13 +23,30 @@ function RegisterPage() {
     });
 
 
-    const {createUser, user} = useUserStore();
+    const {createUser} = useUserStore();
 
     const handleAddUser =  async function(type) {
         const passedUser = newUser
         passedUser.type = type
        const {success, message} =  await createUser(passedUser);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+       if (success) {
+        await new Promise(r => setTimeout(r, 2000));
+        switch (type) {
+            case "tour guide":
+                navigate("/tourGuideProfile");
+                break;
+            case "advertiser":
+                navigate("/advertiserProfile");
+                break;
+            case "seller":
+                navigate("/sellerProfile");
+                break;
+            default:
+                break;
+        }
+       } 
+       
     }
 
     const handleAddTourist = async function() {
@@ -38,6 +54,10 @@ function RegisterPage() {
         passedTourist.type = "tourist"
         const {success, message} = await createUser(passedTourist);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+         if (success) {
+          await new Promise(r => setTimeout(r, 2000));
+          navigate("/touristProfile");
+         }
     }
 
 

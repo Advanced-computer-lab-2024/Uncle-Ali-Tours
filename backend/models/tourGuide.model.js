@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const tourGuideModel = new mongoose.Schema({
     mobileNumber :{
         type : Number,
-        required : true
+        required : false
     },
     yearsOfExperience:{
         type : Number,
@@ -30,12 +30,16 @@ const tourGuideModel = new mongoose.Schema({
         unique: true,
     },
     nationality:{
-        required:true,
+        required:false,
         type: String
     },dateOfBirth:{
-        required:true,
+        required:false,
         type: Date
-    }},{
+    },password:{
+        required:true,
+        type:String
+    }
+    },{
         timestamps: true
     }
 )
