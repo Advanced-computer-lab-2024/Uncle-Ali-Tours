@@ -54,7 +54,7 @@ export const useUserStore = create((set) => ({
     user: {
         userName: "",
         type: "",
-    },
+    }, 
     setUser: (user) => set({user}),
     createUser: async (newUser = {}) => {
         let typeRes;
