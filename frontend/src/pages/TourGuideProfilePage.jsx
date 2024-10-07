@@ -48,7 +48,7 @@ const TourGuideProfilePage = () =>{
            </div>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>iti</button>
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>itinerary</button>
         </div>
     );
 }

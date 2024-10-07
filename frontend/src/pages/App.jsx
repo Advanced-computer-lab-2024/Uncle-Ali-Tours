@@ -38,7 +38,7 @@ function App() {
         <Route path="/createItinerary" element={<CreateItinerary />} />
         <Route path="/sellerProfile" element={<SellerProfilePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/product" element={<Productpage />} />
         <Route path="/profile" element={<TouristProfile />} />
 

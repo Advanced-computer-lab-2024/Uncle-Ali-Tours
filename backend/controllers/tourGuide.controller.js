@@ -96,6 +96,7 @@ export const updateTourGuide = async (req,res) => {
 }
 export const deleteTourGuide = async(req, res) => {
     const { userName } = req.body;
+    console.log(userName);
     if(!userName){
         return res.status(404).json({ success: false, message: "user name is requierd" });
     }
