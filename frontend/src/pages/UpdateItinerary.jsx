@@ -1,436 +1,234 @@
-import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React from 'react'
+import { useState , useEffect } from 'react';
 import { useItineraryStore } from '../store/itinerary';
+import toast, { Toaster } from 'react-hot-toast';
+import { useUserStore } from '../store/user';
+import { Link } from 'react-router-dom';
 function UpdateItinerary() {
-    const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
-    const itinerary = currentItinerary;
-    const [checkedAttributes, setCheckedAttributes] = useState({
-        activities: false,
-        durations: false,
-        locations: false,
-        timeline: false,
-        language: false,
-        accessibility: false,
-        pickup: false,
-        dropoff: false,
-        dateTimes: false,
-    });
-
-    // State to hold updated itinerary
-    const [updatedItinerary, setUpdatedItinerary] = useState({
-        activities: currentItinerary.activities ,
-        durations: currentItinerary.durations ,
-        locations: currentItinerary.locations ,
-        timeline: currentItinerary.timeline ,
-        language: currentItinerary.language,
-        accessibility: currentItinerary.accessibility ,
-        pickup: currentItinerary.pickup ,
-        dropoff: currentItinerary.dropoff ,
-        dateTimes: currentItinerary.dateTimes,
-    });
-
-    // Save a copy of the original itinerary state for reference
-    const [originalItinerary] = useState(itinerary);
-
-    const handleCheckboxChange = (e) => {
-        const { name, checked } = e.target;
-        setCheckedAttributes((prev) => ({
-            ...prev,
-            [name]: checked,
-        }));
-
-        // Reset values to original when unchecked
-        if (!checked) {
-            if (name === 'activities' || name === 'durations') {
-                setUpdatedItinerary((prev) => ({
-                    ...prev,
-                    activities: originalItinerary.activities || [],
-                    durations: originalItinerary.durations || [],
-                }));
-            } else {
-                setUpdatedItinerary((prev) => ({
-                    ...prev,
-                    [name]: originalItinerary[name] || (Array.isArray(originalItinerary[name]) ? [] : ''),
-                }));
-            }
-        }
+    const {user} = useUserStore();
+    const {currentItinerary,setCurrentItinerary,deleteItinerary , addItineraries} = useItineraryStore(); 
+    const [currItinerary, setNewItinerary] = useState();
+    const originalItinerary = currentItinerary;
+    const [activityFields, setActivityFields] = useState([]);
+    const [durationFields, setDurationFields] = useState([]);
+    const [locationFields, setLocationFields] = useState([]);
+    const [dateFields, setDateFields] = useState([]);
+    const [timeFields, setTimeFields] = useState([]);
+    useEffect (()=>{
+        setNewItinerary(currentItinerary);
+    },[]);
+    // Function to add new input fields
+    const addFn = () => {
+      // Create a new array with one more input field (represented as an empty string)
+      setActivityFields([...activityFields, ""]);
+      setDurationFields([...durationFields, ""]);
+      
     };
-
-    const handleInputChange = (e, key, index = null, subKey = null) => {
-        const { value } = e.target;
-        if (index !== null) {
-            if (subKey) {
-                // For date-time pairs
-                setUpdatedItinerary((prev) => {
-                    const updatedArray = [...prev[key]];
-                    updatedArray[index] = {
-                        ...updatedArray[index],
-                        [subKey]: value,
-                    };
-                    return {
-                        ...prev,
-                        [key]: updatedArray,
-                    };
-                });
-            } else {
-                // For array fields
-                setUpdatedItinerary((prev) => {
-                    const updatedArray = [...prev[key]];
-                    updatedArray[index] = value;
-                    return {
-                        ...prev,
-                        [key]: updatedArray,
-                    };
-                });
-            }
-        } else {
-            // For non-array fields
-            setUpdatedItinerary((prev) => ({
-                ...prev,
-                [key]: value,
-            }));
-        }
+    const deleteFn = (indexToDelete) => {
+      // Filter out the input field at the given index
+      setActivityFields(activityFields.filter((_, index) => index !== indexToDelete));
+      setDurationFields(durationFields.filter((_, index) => index !== indexToDelete));
     };
-
-    const addActivityAndDuration = () => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            activities: [...prev.activities, ''], // Add new empty activity input
-            durations: [...prev.durations, ''],   // Add new empty duration input
-        }));
+    const addLoc= () => {
+      setLocationFields([...locationFields,""]);
     };
-
-    const addDateTime = () => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            dateTimes: [...prev.dateTimes, { date: '', time: '' }], // Add new empty date-time pair
-        }));
+    const deleteLoc = (indexToDelete) => {
+      setLocationFields(locationFields.filter((_, index) => index !== indexToDelete));
+    }
+    const addDate= () => {
+      setDateFields([...dateFields,""]);
+      setTimeFields([...timeFields,""]);
     };
+    const deleteDate = (indexToDelete) => {
+      setDateFields(dateFields.filter((_, index) => index !== indexToDelete));
+      setTimeFields(timeFields.filter((_, index) => index !== indexToDelete));
+    }
 
-    const addLocation = () => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            locations: [...prev.locations, ''], // Add new empty location input
-        }));
-    };
+    const [availableDates, setDate] = useState('');
+    const [availableTimes, setTime] = useState('');
 
-    const deleteActivityAndDuration = (index) => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            activities: prev.activities.filter((_, i) => i !== index),
-            durations: prev.durations.filter((_, i) => i !== index),
-        }));
-    };
+  // Event handlers for date and time inputs
+  const handleDateChange = (e) => {
+    setDate(e.target.value);
+  };
 
-    const deleteDateTime = (index) => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            dateTimes: prev.dateTimes.filter((_, i) => i !== index),
-        }));
-    };
+  const handleTimeChange = (e) => {
+    setTime(e.target.value);
+  };
 
-    const deleteLocation = (index) => {
-        setUpdatedItinerary((prev) => ({
-            ...prev,
-            locations: prev.locations.filter((_, i) => i !== index),
-        }));
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Selected Date:", availableDates);
+    console.log("Selected Time:", availableTimes);
+  };
 
-    const handleSubmit = () => {
-        // Process updated itinerary
-        console.log('Updated Itinerary:', updatedItinerary);
-    };
+    const handleUpdate = async() => {
+        await deleteItinerary(originalItinerary._id) 
+       await addItineraries(currItinerary);
+    }
+    const handleCancel = async() => {
+        setCurrentItinerary(originalItinerary);
+    }
+  return (
+    <div>
+    <div className='text-2xl mb-3 mt-3'>Update Itinerary</div>
+    <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2 text-black' name={"name"} placeholder='Enter Name' onChange={(e) => setNewItinerary({ ...currItinerary, name: e.target.value})}></input>
+    <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2 text-black' name={"preferenceTag"} placeholder='Enter Preference Tag' onChange={(e) => setNewItinerary({ ...currItinerary, preferenceTag: e.target.value})}></input>
 
-    return (
-        <div className="update-itinerary">
-            <h2 className="text-2xl mb-4 text-center">Update Itinerary</h2>
+     <button onClick={addFn} className='px-5 py-2 bg-green-700 text-white rounded cursor-pointer border-none'>
+        Add Activity
+      </button>
 
-            {/* Checkbox for Activities */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="activities"
-                        checked={checkedAttributes.activities}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Activities & Durations
-                </label>
-            </div>
+      {/* Render all input fields */}
+      <div className="text-black" style={{ marginTop: "20px" }}>
+        {activityFields.map((field, index) => (
+          <div key={index} style={{ marginBottom: "10px" }}>
+            {/* Input field with dynamic placeholder */}
+            <input
+              value={field}
+              type="text"
+              placeholder={`Enter activity ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
+                const newFields = [...activityFields];
+                newFields[index] = e.target.value;  // Update value of the input field
+                setActivityFields(newFields);
+              }}
+            />
+            <input
+            value= {durationFields[index]}
+              type="text"
+              placeholder={`Duration for activity ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
+                const newFields = [...durationFields];
+                newFields[index] = e.target.value;  // Update value of the input field
+                setDurationFields(newFields);
+              }}
+            />
 
-            {checkedAttributes.activities && (
-                <div className="flex flex-col items-center">
-                    {updatedItinerary.activities.map((activity, index) => (
-                        <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                            <input
-                                type="text"
-                                value={activity}
-                                onChange={(e) => handleInputChange(e, 'activities', index)}
-                                placeholder={`Activity ${index + 1}`}
-                                className="rounded w-[150px] p-1 border border-[#ccc] rounded-md mr-1 text-black"
-                            />
-                            <input
-                                type="text"
-                                value={updatedItinerary.durations[index] || ''}
-                                onChange={(e) => handleInputChange(e, 'durations', index)}
-                                placeholder={`Duration ${index + 1}`}
-                                className="rounded w-[150px] p-1 border border-[#ccc] rounded-md mr-1 text-black"
-                            />
-                            <button
-                                onClick={() => deleteActivityAndDuration(index)}
-                                style={{
-                                    padding: '6px 10px',
-                                    backgroundColor: 'red',
-                                    color: '#fff',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                    fontSize: '12px',
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        onClick={addActivityAndDuration}
-                        className="px-2 py-1 bg-blue-500 text-white rounded mt-2 text-sm"
-                    >
-                        Add Activity & Duration
-                    </button>
-                </div>
-            )}
+            {/* Delete button for the individual input */}
+            <button
+              onClick={() => deleteFn(index)}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "red",
+                color: "#fff",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+        <button onClick={addLoc} className='px-5 py-2 bg-green-700 text-white rounded cursor-pointer border-none'>
+        Add Location To visit
+        </button>
+      <div className="text-black" style={{ marginTop: "20px" }}>
+        {locationFields.map((field, index) => (
+          <div key={index} style={{ marginBottom: "10px" }}>
+            {/* Input field with dynamic placeholder */}
+            <input
+              value={field}
+              type="text"
+              placeholder={`Enter location ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
+                const newFields = [...locationFields];
+                newFields[index] = e.target.value;  // Update value of the input field
+                setLocationFields(newFields);
+                setNewItinerary({...currItinerary, tourLocations: locationFields})
+                setNewItinerary({...currItinerary, creator: user.userName})
+              }}
+            />
+            
 
-            {/* Checkbox for Locations */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="locations"
-                        checked={checkedAttributes.locations}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Locations
-                </label>
-            </div>
-
-            {checkedAttributes.locations && (
-                <div className="flex flex-col items-center">
-                    {updatedItinerary.locations.map((location, index) => (
-                        <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                            <input
-                                type="text"
-                                value={location}
-                                onChange={(e) => handleInputChange(e, 'locations', index)}
-                                placeholder={`Location ${index + 1}`}
-                                className="rounded w-[150px] p-1 border border-[#ccc] rounded-md mr-1 text-black"
-                            />
-                            <button
-                                onClick={() => deleteLocation(index)}
-                                style={{
-                                    padding: '6px 10px',
-                                    backgroundColor: 'red',
-                                    color: '#fff',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                    fontSize: '12px',
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        onClick={addLocation}
-                        className="px-2 py-1 bg-blue-500 text-white rounded mt-2 text-sm"
-                    >
-                        Add Location
-                    </button>
-                </div>
-            )}
-
-            {/* Checkbox for Timeline */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="timeline"
-                        checked={checkedAttributes.timeline}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Timeline
-                </label>
-            </div>
-
-            {checkedAttributes.timeline && (
-                <input
-                    type="text"
-                    value={updatedItinerary.timeline}
-                    onChange={(e) => handleInputChange(e, 'timeline')}
-                    placeholder="Timeline"
-                    className="rounded w-[150px] p-1 border border-[#ccc] rounded-md text-black mb-4"
-                />
-            )}
-
-            {/* Checkbox for Language */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="language"
-                        checked={checkedAttributes.language}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Language
-                </label>
-            </div>
-
-            {checkedAttributes.language && (
-                <input
-                    type="text"
-                    value={updatedItinerary.language}
-                    onChange={(e) => handleInputChange(e, 'language')}
-                    placeholder="Language"
-                    className="rounded w-[150px] p-1 border border-[#ccc] rounded-md text-black mb-4"
-                />
-            )}
-
-            {/* Checkbox for Accessibility */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="accessibility"
-                        checked={checkedAttributes.accessibility}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Accessibility
-                </label>
-            </div>
-
-            {checkedAttributes.accessibility && (
-                <input
-                    type="text"
-                    value={updatedItinerary.accessibility}
-                    onChange={(e) => handleInputChange(e, 'accessibility')}
-                    placeholder="Accessibility"
-                    className="rounded w-[150px] p-1 border border-[#ccc] rounded-md text-black mb-4"
-                />
-            )}
-
-            {/* Checkbox for Pickup */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="pickup"
-                        checked={checkedAttributes.pickup}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Pickup
-                </label>
-            </div>
-
-            {checkedAttributes.pickup && (
-                <input
-                    type="text"
-                    value={updatedItinerary.pickup}
-                    onChange={(e) => handleInputChange(e, 'pickup')}
-                    placeholder="Pickup"
-                    className="rounded w-[150px] p-1 border border-[#ccc] rounded-md text-black mb-4"
-                />
-            )}
-
-            {/* Checkbox for Dropoff */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="dropoff"
-                        checked={checkedAttributes.dropoff}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Dropoff
-                </label>
-            </div>
-
-            {checkedAttributes.dropoff && (
-                <input
-                    type="text"
-                    value={updatedItinerary.dropoff}
-                    onChange={(e) => handleInputChange(e, 'dropoff')}
-                    placeholder="Dropoff"
-                    className="rounded w-[150px] p-1 border border-[#ccc] rounded-md text-black mb-4"
-                />
-            )}
-
-            {/* Checkbox for Date and Time */}
-            <div className="flex justify-center mb-4">
-                <label className="mr-2">
-                    <input
-                        type="checkbox"
-                        name="dateTimes"
-                        checked={checkedAttributes.dateTimes}
-                        onChange={handleCheckboxChange}
-                    />
-                    Update Date & Time
-                </label>
-            </div>
-
-            {checkedAttributes.dateTimes && (
-                <div className="flex flex-col items-center">
-                    {updatedItinerary.dateTimes.map((dateTime, index) => (
-                        <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                            <input
-                                id={`dateInput${index}`}
-                                type="text"
-                                placeholder={`Enter date ${index + 1}`} 
-                                value={dateTime.date}
-                                onChange={(e) => handleInputChange(e, 'dateTimes', index, 'date')}
-                                className="ml-2 rounded w-[100px] p-1 border border-[#ccc] rounded-md text-black"
-                            />
-                            <input
-                                id={`timeInput${index}`}
-                                type="text"
-                                placeholder={`Enter time ${index + 1}`} 
-                                value={dateTime.time}
-                                onChange={(e) => handleInputChange(e, 'dateTimes', index, 'time')}
-                                className="ml-2 rounded w-[100px] p-1 border border-[#ccc] rounded-md text-black"
-                            />
-                            <button
-                                onClick={() => deleteDateTime(index)}
-                                style={{
-                                    padding: '6px 10px',
-                                    backgroundColor: 'red',
-                                    color: '#fff',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                    fontSize: '12px',
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        onClick={addDateTime}
-                        className="px-2 py-1 bg-blue-500 text-white rounded mt-2 text-sm"
-                    >
-                        Add Date & Time
-                    </button>
-                </div>
-            )}
-
-            {/* Final Submit Button */}
-            <div className="flex justify-center mt-6">
-                <button className="px-4 py-1 bg-green-700 text-white rounded-md text-sm" onClick={handleSubmit}>
-                    Update Itinerary
-                </button>
-            </div>
+            {/* Delete button for the individual input */}
+            <button
+              onClick={() => deleteLoc(index)}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "red",
+                color: "#fff",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+        <button onClick={addDate} className='px-5 py-2 bg-green-700 text-white rounded cursor-pointer border-none'>
+        Add Date & Time
+        </button>
+        <div className="text-black" style={{ marginTop: "20px" }}>
+        {dateFields.map((field, index) => (
+          <div key={index} style={{ marginBottom: "10px" }} >
+          <input
+              value={field}
+              type="text"
+              placeholder={`Enter date ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
+                const newFields = [...dateFields];
+                newFields[index] = e.target.value;  // Update value of the input field
+                setDateFields(newFields);
+                setNewItinerary({ ...currItinerary,availableDates: dateFields})
+              }}
+            />
+            <input
+            value= {timeFields[index]}
+              type="text"
+              placeholder={`Time ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
+                const newFields = [...timeFields];
+                newFields[index] = e.target.value;  // Update value of the input field
+                setTimeFields(newFields);
+                setNewItinerary({ ...currItinerary,availableTimes: timeFields})
+              }}
+            />
+            <button
+              onClick={() => deleteDate(index)}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "red",
+                color: "#fff",
+                borderRadius: "5px",
+                cursor: "pointer",
+                border: "none",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ))} 
         </div>
-    );
+
+      </div>
+      <div className='flex flex-col items-center text-black space-y-4'>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"timeline"} placeholder='Timeline' onChange={(e) => setNewItinerary({ ...currItinerary, timeline: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"language"} placeholder='Language of Tour' onChange={(e) => setNewItinerary({ ...currItinerary, language: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"price"} placeholder='Price' onChange={(e) => setNewItinerary({ ...currItinerary, price: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"accessibility"} placeholder='Accessibility' onChange={(e) => setNewItinerary({ ...currItinerary, accessibility: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"pickupLocation"} placeholder='Pick Up Location' onChange={(e) => setNewItinerary({ ...currItinerary, pickupLocation: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"dropoffLocation"} placeholder='Drop Off Location' onChange={(e) => setNewItinerary({ ...currItinerary, dropoffLocation: e.target.value})}></input>
+      </div>
+      <div>
+      <Link  to='/itineraryPage'>
+      <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleUpdate())}>Update</button>
+      <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleCancel())}>Cancel</button>
+      </Link>
+      </div>
+    </div>
+    </div>
+  );
+  
 }
 
-export default UpdateItinerary;
+
+export default UpdateItinerary
+

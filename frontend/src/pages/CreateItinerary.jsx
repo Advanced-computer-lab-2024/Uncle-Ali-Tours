@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useItineraryStore } from '../store/itinerary';
 import toast, { Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user';
+import { Link } from 'react-router-dom';
 function CreateItinerary() {
     const {user} = useUserStore();
     const {newItinerary, addItineraries} = useItineraryStore(); 
@@ -74,12 +75,8 @@ function CreateItinerary() {
       activityFields.map((activity, index) => (
         tempArr = [...tempArr,{name:activity,duration:durationFields[index]}]
       ))
-      console.log(user.userName)
-      console.log(currItinerary)
       const {success, message} = await addItineraries({...currItinerary, activities:tempArr});
       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-      console.log(message)
-      console.log(user.userName)
     }
   return (
     <div>
@@ -87,6 +84,8 @@ function CreateItinerary() {
      <button onClick={addFn} className='px-5 py-2 bg-green-700 text-white rounded cursor-pointer border-none'>
         Add Activity
       </button>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2 text-black' name={"name"} placeholder='Enter Name' onChange={(e) => setNewItinerary({ ...currItinerary, name: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2 text-black' name={"preferenceTag"} placeholder='Enter Preference Tag' onChange={(e) => setNewItinerary({ ...currItinerary, preferenceTag: e.target.value})}></input>
 
       {/* Render all input fields */}
       <div className="text-black" style={{ marginTop: "20px" }}>
@@ -227,9 +226,13 @@ function CreateItinerary() {
       <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"dropoffLocation"} placeholder='Drop Off Location' onChange={(e) => setNewItinerary({ ...currItinerary, dropoffLocation: e.target.value})}></input>
       </div>
       <div>
+      <Link to='/itineraryPage'>  
       <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddItinerary())}>Add Itinerary</button>
+      <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddItinerary())}>Cancel</button>
+      </Link>
       </div>
     </div>
+    <Toaster/>
     </div>
   );
   
