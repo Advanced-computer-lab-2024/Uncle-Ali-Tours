@@ -4,6 +4,7 @@ export const useAdvertiserstore = create((set) => ({
     advertiser:{},
     setAdvertiser: (advertiser) => set({advertiser}),
     getAdvertiser: async (filter = {}, sort = {}) => {
+      console.log(filter)
       const queryString = new URLSearchParams({
         filter: JSON.stringify(filter),
         sort: JSON.stringify(sort),
@@ -20,6 +21,7 @@ export const useAdvertiserstore = create((set) => ({
             return (body)
         }
         set({advertiser: body.data[0]})
+        console.log(body.data[0])
         return {success: true, message: "fetched attractions"};
         },
 

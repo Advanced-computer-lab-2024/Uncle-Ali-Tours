@@ -32,7 +32,7 @@ const handleButtonClickk = async () => {
   
   useEffect(()=>{
     getAdvertiser({username : user.username},{});
-})
+},[])
 
 
 return (

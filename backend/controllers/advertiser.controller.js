@@ -1,4 +1,5 @@
 import Advertiser from "../models/advertiser.model.js"; 
+
 export const createAdvertiser = async (req, res) => {
     const advertiser = req.body;
     
