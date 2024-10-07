@@ -1,48 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAttractionStore } from '../store/attraction';
 import toast, { Toaster } from 'react-hot-toast';
 
 function MuseumsPage() {
-  const [museums, setMuseums] = useState([]);
-  const [newMuseum, setNewMuseum] = useState({ name: '', description: '', location: '', openingHours: '', ticketPricesF: '',
-    ticketPricesS: '',ticketPricesN: '', pictures: '' });
+  const { createAttraction, deleteAttraction, updateAttraction, getAttractions, attractions } = useAttractionStore();
+  
+  const [newMuseum, setNewMuseum] = useState({
+    name: '',
+    description: '',
+    location: '',
+    openingHours: '',
+    ticketPricesF: '',
+    ticketPricesS: '',
+    ticketPricesN: '',
+    pictures: ''
+  });
+  
   const [editingMuseum, setEditingMuseum] = useState(null);
-  const {createAttraction, deleteAttraction,updateAttraction ,getAttractions, attractions} = useAttractionStore();
+
+  useEffect(() => {
+    handlePress(); // Fetch all attractions when the page loads
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewMuseum({ ...newMuseum, [name]: value });
   };
 
-  const handleCreate = async(e) => {
+  // Create a new museum
+  const handleCreate = async (e) => {
     e.preventDefault();
-    console.log(newMuseum)
-    const prices = {student: newMuseum.ticketPricesS, native:newMuseum.ticketPricesN, foreigner: newMuseum.ticketPricesF}
-    const {success, message} = await createAttraction({...newMuseum, ticketPrices: prices});
-    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-
-    //setMuseums([...attractions, { ...newMuseum, id: Date.now() }]);
-    //setNewMuseum({ name: '', description: '', location: '', openingHours: '', ticketPrice: '', pictures: '' });
-
+    const prices = { student: newMuseum.ticketPricesS, native: newMuseum.ticketPricesN, foreigner: newMuseum.ticketPricesF };
+    const { success, message } = await createAttraction({ ...newMuseum, ticketPrices: prices });
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+      setNewMuseum({
+        name: '',
+        description: '',
+        location: '',
+        openingHours: '',
+        ticketPricesF: '',
+        ticketPricesS: '',
+        ticketPricesN: '',
+        pictures: ''
+      });
+      handlePress(); // Refresh the list after creation
+    } else {
+      toast.error(message, { className: "text-white bg-gray-800" });
+    }
   };
 
-  const handleUpdate = (e) => {
-    e.preventDefault();
-    setMuseums(
-      attractions.map((museum) =>
-        museum.id === editingMuseum.id ? editingMuseum : museum
-      )
-    );
-    setEditingMuseum(null);
+  // Fetch all attractions
+  const handlePress = async () => {
+    await getAttractions(); // Fetch all attractions without any filters
   };
 
-  const handleDelete = (id) => {
-    setMuseums(attractions.filter((museum) => museum.id !== id));
+  // Delete a museum by name
+  const handleDelete = async (name) => {
+    const { success, message } = await deleteAttraction(name);
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+      handlePress(); // Refresh the list after deletion
+    } else {
+      toast.error(message, { className: "text-white bg-gray-800" });
+    }
+  };
+
+  // Update a museum (disallow editing the name)
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const prices = {
+      student: editingMuseum.ticketPricesS,
+      native: editingMuseum.ticketPricesN,
+      foreigner: editingMuseum.ticketPricesF
+    };
+    const updatedMuseum = { description: editingMuseum.description, location: editingMuseum.location, openingHours: editingMuseum.openingHours, ticketPrices: prices, pictures: editingMuseum.pictures };
+
+    const { success, message } = await updateAttraction(editingMuseum.name, updatedMuseum); // Update using the name
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+      setEditingMuseum(null); // Clear editing state after update
+      handlePress(); // Refresh the list after update
+    } else {
+      toast.error(message, { className: "text-white bg-gray-800" });
+    }
   };
 
   return (
     <div className="max-w-7xl text-black mx-auto p-8 bg-blue-50 rounded-lg">
-      <Toaster/>
+      <Toaster />
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Museums and Historical Places</h1>
 
       {/* Form for Creating a New Museum */}
@@ -83,7 +129,7 @@ function MuseumsPage() {
         <input
           type="number"
           name="ticketPricesF"
-          placeholder="Ticket Price for"
+          placeholder="Ticket Price for Foreigners"
           value={newMuseum.ticketPricesF}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg"
@@ -91,7 +137,7 @@ function MuseumsPage() {
         <input
           type="number"
           name="ticketPricesS"
-          placeholder="Ticket Price student"
+          placeholder="Ticket Price for Students"
           value={newMuseum.ticketPricesS}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg"
@@ -99,21 +145,20 @@ function MuseumsPage() {
         <input
           type="number"
           name="ticketPricesN"
-          placeholder="Ticket Price native"
-          value={newMuseum.ticketPrices}
+          placeholder="Ticket Price for Natives"
+          value={newMuseum.ticketPricesN}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg"
         />
         <input
           type="text"
           name="pictures"
-          placeholder="pictures URL"
+          placeholder="Pictures URL"
           value={newMuseum.pictures}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg"
         />
         <button
-        onClick={handleCreate}
           type="submit"
           className="w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition duration-200"
         >
@@ -121,21 +166,23 @@ function MuseumsPage() {
         </button>
       </form>
 
+      {/* Button to load attractions */}
+      <button
+        onClick={handlePress}
+        className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition duration-200 mb-6"
+      >
+        List All Attractions
+      </button>
+
       {/* List of Museums */}
       <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">List of Museums</h2>
-      {museums.length > 0 ? (
+      
+      {attractions.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {museums.map((museum) => (
-            <div key={museum.id} className="bg-white shadow-lg rounded-lg p-6">
-              {editingMuseum?.id === museum.id ? (
+          {attractions.map((museum) => (
+            <div key={museum._id} className="bg-white shadow-lg rounded-lg p-6">
+              {editingMuseum?.name === museum.name ? (
                 <form onSubmit={handleUpdate} className="grid gap-4">
-                  <input
-                    type="text"
-                    name="name"
-                    value={editingMuseum.name}
-                    onChange={(e) => setEditingMuseum({ ...editingMuseum, name: e.target.value })}
-                    className="p-2 border border-gray-300 rounded-lg"
-                  />
                   <input
                     type="text"
                     name="description"
@@ -159,9 +206,23 @@ function MuseumsPage() {
                   />
                   <input
                     type="number"
-                    name="ticketPrices"
-                    value={editingMuseum.ticketPrices}
-                    onChange={(e) => setEditingMuseum({ ...editingMuseum, ticketPrices: e.target.value })}
+                    name="ticketPricesF"
+                    value={editingMuseum.ticketPricesF}
+                    onChange={(e) => setEditingMuseum({ ...editingMuseum, ticketPricesF: e.target.value })}
+                    className="p-2 border border-gray-300 rounded-lg"
+                  />
+                  <input
+                    type="number"
+                    name="ticketPricesS"
+                    value={editingMuseum.ticketPricesS}
+                    onChange={(e) => setEditingMuseum({ ...editingMuseum, ticketPricesS: e.target.value })}
+                    className="p-2 border border-gray-300 rounded-lg"
+                  />
+                  <input
+                    type="number"
+                    name="ticketPricesN"
+                    value={editingMuseum.ticketPricesN}
+                    onChange={(e) => setEditingMuseum({ ...editingMuseum, ticketPricesN: e.target.value })}
                     className="p-2 border border-gray-300 rounded-lg"
                   />
                   <input
@@ -193,7 +254,7 @@ function MuseumsPage() {
                   <p className="text-gray-600">{museum.description}</p>
                   <p className="text-gray-500">Location: {museum.location}</p>
                   <p className="text-gray-500">Opening Hours: {museum.openingHours}</p>
-                  <p className="text-gray-500">Ticket Price: ${museum.ticketPrices}</p>
+                  <p className="text-gray-500">Ticket Price: ${museum.ticketPrices.foreigner}</p>
                   {museum.pictures && (
                     <img
                       src={museum.pictures}
@@ -209,7 +270,7 @@ function MuseumsPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(museum.id)}
+                      onClick={() => handleDelete(museum.name)}
                       className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-400"
                     >
                       Delete
