@@ -1,91 +1,173 @@
-import React, { useState, useEffect } from 'react';
-import { useUserStore } from '../store/user'; 
+import { VStack } from '@chakra-ui/react';
+import { useUserStore } from '../store/user';
+import React, { useEffect } from "react";
+import { useState } from 'react';
+import { useAdvertiserStore } from '../store/advertiser';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { set } from 'mongoose';
 
 const AdvertiserProfile = () => {
-    const { user } = useUserStore(); 
-    const [name, setName] = useState('Joe Doe'); 
-    const [description, setDescription] = useState('I am a verified Advertiser');
-    const [isEditing, setIsEditing] = useState(false); 
+  const { user } = useUserStore(); 
+  const { advertiser, getAdvertiser, updateAdvertiser } = useAdvertiserStore(); 
 
-    useEffect(() => {
-        if (user && user.userName) {
-            setName(user.userName); 
-        }
-    }, [user]); 
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const toggleEditProfile = () => {
-        setIsEditing(!isEditing); 
-    };
-
-    const handleDeleteProfile = () => {
-        console.log('Delete Profile clicked');
-    };
-
-    const handleViewProducts = () => {
-        console.log('View Products clicked');
-    };
-
-    return (
-        <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-            {/* Green Verified Banner */}
-            <div className="absolute top-0 right-0 p-2 bg-green-500 text-white text-sm font-bold rounded-bl-lg">
-                Verified
-            </div>
-
-            <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
-                <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div> {/* Placeholder for profile picture */}
-                <div>
-                    <h1 className="text-white text-2xl font-bold">{name}</h1> {/* Display the name from the store */}
-                    <h2 className="text-gray-400 text-xl">Advertiser</h2>
-                </div>
-            </div>
-            
-            <div className="p-5 bg-gray-800 rounded-md shadow-sm mt-5">
-                <h3 className="text-lg font-semibold mb-3 text-white">About</h3>
-                {isEditing ? (
-                    <div>
-                        <textarea
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            rows="4"
-                            className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
-                        />
-                    </div>
-                ) : (
-                    <p className="text-white text-lg">{description}</p>
-                )}
-            </div>
-
-            <div className="flex justify-between mt-5">
-                <button 
-                    className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300" 
-                    onClick={toggleEditProfile}
-                >
-                    {isEditing ? 'Save' : 'Edit Profile'}
-                </button> 
-                <div className="flex space-x-4">
-                    {/* Products Button */}
-                    <button 
-                        className="px-5 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300" 
-                        onClick={handleViewProducts}
-                    >
-                        Products
-                    </button>
-                    {/* Delete Profile Button */}
-                    <button 
-                        className="px-5 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300" 
-                        onClick={handleDeleteProfile}
-                    >
-                        Delete Profile
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+  const [isRequired, setIsRequired] = useState(true);
+  const handleButtonClick = () => {
+    setIsRequired(false); 
 };
 
-export default AdvertiserProfile;
+const [updatedAdvertiser,setUpdatedAdvertiser]= useState({});  
+const handleButtonClickk = async () => {
+    if(!isRequired){
+       const {success, message}  = await updateAdvertiser(user.username , updatedAdvertiser);
+       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+
+    }
+}
+
+  const navigate = useNavigate();
+  const handleRedirect = () => {
+    navigate('/product');
+  };
+
+  
+  useEffect(()=>{
+    getAdvertiser({username : user.username},{});
+})
+
+
+return (
+    <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+      <Toaster />
+  
+      <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
+        <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
+        <div>
+        <h1 className="text-white text-2xl font-bold">
+      {advertiser.username || 'John Doe'}
+    </h1>
+          <h2 className="text-gray-400 text-xl">Advertiser</h2>
+        </div>
+      </div>
+
+      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+        <h1 className="text-lg mb-4">Profile</h1>
+        <VStack spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
+          <label>
+            NAME:
+            <input
+              type="text"
+              name="name"
+              defaultValue={advertiser.username || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, username: e.target.value })}
+            />
+          </label>
+          <label>
+            PASSWORD:
+            <input
+              type="text"
+              name="password"
+              defaultValue={advertiser.password || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, password: e.target.value })}
+            />
+          </label>
+          <label>
+            WEBSITE:
+            <input
+              type="text"
+              name="website"
+              defaultValue={advertiser.website || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, website: e.target.value })}
+            />
+          </label>
+          <label>
+            HOTLINE:
+            <input
+              type="text"
+              name="hotline"
+              defaultValue={advertiser.hotline || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, hotline: e.target.value })}
+            />
+          </label>
+          <label>
+            Company Profile:
+            <input
+              type="text"
+              name="companyProfile"
+              defaultValue={advertiser.companyProfile || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, companyProfile: e.target.value })}
+            />
+          </label>
+          <label>
+          industry:
+            <input
+              type="text"
+              name="industry"
+              defaultValue={advertiser.industry || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, industry: e.target.value })}
+            />
+          </label>
+          <label>
+          address:
+            <input
+              type="text"
+              name="address"
+              defaultValue={advertiser.address || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, address: e.target.value })}
+            />
+          </label>
+          <label>
+          email:
+            <input
+              type="text"
+              name="email"
+              defaultValue={advertiser.email || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, email: e.target.value })}
+            />
+          </label>
+          <label>
+          companyName:
+            <input
+              type="text"
+              name="companyName"
+              defaultValue={advertiser.companyName || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, companyName: e.target.value })}
+            />
+          </label>
+        </VStack>
+        <div className="flex justify-between mt-6">
+          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>
+            Edit
+          </button>
+          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClickk}>
+            Save
+          </button>
+          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>
+            Product 
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+export default SellerProfile;

@@ -26,7 +26,7 @@ const handleButtonClickk = async () => {
 
   const navigate = useNavigate();
   const handleRedirect = () => {
-    navigate('/itineraryPage');
+    navigate('/product');
   };
 
   
@@ -57,7 +57,7 @@ return (
             <input
               type="text"
               name="name"
-              defaultValue={sell.userName || 'John Doe'}
+              defaultValue={sell.userName || ''}
               className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
               readOnly={isRequired}
               onChange={(e) => setUpdatedSeller({ ...updatedSeller, userName: e.target.value })}
@@ -105,7 +105,7 @@ return (
             Save
           </button>
           <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>
-            Itinerary
+            Product 
           </button>
         </div>
       </div>
