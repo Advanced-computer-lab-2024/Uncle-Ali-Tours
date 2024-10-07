@@ -3,20 +3,25 @@ import { useUserStore } from '../store/user';
 
 const SellerProfile = () => {
     const { user } = useUserStore(); 
+    const [sellerDetails, setSellerDetails] = useState(null);
     const [name, setName] = useState(''); 
     const [description, setDescription] = useState('');
     const [isEditing, setIsEditing] = useState(false); 
+    const [isVerified, setIsVerified] = useState(false); 
 
     // Fetch seller's information on component mount
     useEffect(() => {
         const fetchSeller = async () => {
             if (user && user.userName) {
                 try {
-                    const response = await fetch(`/api/sellers/${user.userName}`);
+                    const response = await fetch(`/api/seller?filter=${JSON.stringify({ userName: user.userName })}`);
                     const data = await response.json();
-                    if (data.success) {
-                        setName(data.data.name);
-                        setDescription(data.data.description);
+                    if (data.success && data.data.length > 0) {
+                        const seller = data.data[0]; // Assuming there's only one seller with the given username
+                        setSellerDetails(seller);
+                        setName(seller.name);
+                        setDescription(seller.description);
+                        setIsVerified(true); 
                     } else {
                         console.error(data.message);
                     }
@@ -39,15 +44,14 @@ const SellerProfile = () => {
 
     const toggleEditProfile = () => {
         if (isEditing) {
-            // If we're saving, submit the updated profile to the backend
             updateSellerProfile();
         }
-        setIsEditing(!isEditing); // Toggle edit mode
+        setIsEditing(!isEditing);
     };
 
     const updateSellerProfile = async () => {
         try {
-            const response = await fetch(`/api/sellers/${user.userName}`, {
+            const response = await fetch(`/api/seller/${user.userName}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,13 +79,14 @@ const SellerProfile = () => {
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-            {/* Green Verified Banner */}
-            <div className="absolute top-0 right-0 p-2 bg-green-500 text-white text-sm font-bold rounded-bl-lg">
-                Verified
-            </div>
+            {isVerified && (
+                <div className="absolute top-0 right-0 p-2 bg-green-500 text-white text-sm font-bold rounded-bl-lg">
+                    Verified
+                </div>
+            )}
 
             <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
-                <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div> {/* Placeholder for profile picture */}
+                <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
                 <div>
                     <h1 className="text-white text-2xl font-bold">
                         {isEditing ? (
@@ -121,16 +126,15 @@ const SellerProfile = () => {
                     onClick={toggleEditProfile}
                 >
                     {isEditing ? 'Save' : 'Edit Profile'}
-                </button> 
+                </button>
+
                 <div className="flex space-x-4">
-                    {/* Products Button */}
                     <button 
                         className="px-5 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300" 
                         onClick={handleViewProducts}
                     >
                         Products
                     </button>
-                    {/* Delete Profile Button */}
                     <button 
                         className="px-5 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300" 
                         onClick={handleDeleteProfile}

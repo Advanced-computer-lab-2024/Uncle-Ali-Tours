@@ -12,6 +12,9 @@ function HomePage() {
         <Link to='/register'>
         <button className='bg-[#dc5809] m-2 py-2 px-6 rounded'> Signup</button>
         </Link>
+        <Link to='sellerProfile'>
+        <button className='bg-[#dc5809] m-2 py-2 px-6 rounded'> Seller</button>
+        </Link>
         </div>
     </div>
   )

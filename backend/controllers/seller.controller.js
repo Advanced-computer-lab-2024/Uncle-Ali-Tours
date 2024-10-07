@@ -3,8 +3,8 @@ import Seller from "../models/seller.model.js";
 export const createSeller = async (req, res) => {
     const sellerData = req.body;
 
-    if (!sellerData.userName || !sellerData.password|| !sellerData.email) {
-        return res.status(400).json({ success: false, message: "All fields are required" });
+    if (!sellerData.username || !sellerData.password|| !sellerData.email) {
+        return res.status(400).json({ success: false, message: "All fields are required'" });
     }
 
     const newSeller = new Seller(sellerData);
@@ -23,6 +23,7 @@ export const getSeller = async(req,res) => {
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
         const Sellers = await Seller.find(parsedFilter).sort(parsedSort);
+
         res.status(200).json({success:true, data: Sellers});
     } catch (error) {
         res.status(404).json({ message: error.message });

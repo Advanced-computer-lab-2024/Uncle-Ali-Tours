@@ -52,16 +52,17 @@ const addTourist = async (newUser) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "",
+        userName: "yasser",
         type: "",
     },
     setUser: (user) => set({user}),
-    createUser: async (newUser) => {
+    createUser: async (newUser = {}) => {
         let typeRes;
         const type = newUser.type;
         delete newUser.type;
         switch (type) {
                 case "tour guide":
+                    delete newUser.type;
                     typeRes = await addTourGuide(newUser);
                     break;
     
@@ -93,7 +94,7 @@ export const useUserStore = create((set) => ({
             }
         
         try {
-            const res = await fetch("/api/users", {
+            const res = await fetch("/api/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

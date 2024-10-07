@@ -34,7 +34,7 @@ function RegisterPage() {
         await new Promise(r => setTimeout(r, 2000));
         switch (type) {
             case "tour guide":
-                navigate("/tourGuideProfile");
+                navigate("/TourGuideProfilePage");
                 break;
             case "advertiser":
                 navigate("/advertiserProfile");
