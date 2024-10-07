@@ -4,7 +4,7 @@ export const createItinerary = async(req, res) => {
     const itinerary = req.body;
     const newItinerary= new Itinerary(itinerary);
     let activityInfo =0;
-
+   
 if(!itinerary.activities || !itinerary.pickupLocation || !itinerary.dropoffLocation || !itinerary.tourLocations || !itinerary.language || !itinerary.price || !itinerary.availableDates || !itinerary.availableTimes || !itinerary.accessibility || !itinerary.creator ){
     res.status(400).json({success: false, message: "please fill all fields"});
     return;
@@ -12,8 +12,8 @@ if(!itinerary.activities || !itinerary.pickupLocation || !itinerary.dropoffLocat
 
 const itineraryExists = await Itinerary.exists({
     "activities": itinerary.activities,
-    "pickupLocation.coordinates": itinerary.pickupLocation.coordinates,
-    "dropoffLocation.coordinates": itinerary.dropoffLocation.coordinates,
+    "pickupLocation": itinerary.pickupLocation,
+    "dropoffLocation": itinerary.dropoffLocation,
     tourLocations: { $all: itinerary.tourLocations },
     language: itinerary.language,
     price: itinerary.price,
@@ -35,6 +35,16 @@ if (itineraryExists) {
                 activityInfo++;
             }
         });
+        let tempDates = [];
+itinerary.availableDates.forEach(date => {
+    const parsedDate = Date.parse(date);
+    if (isNaN(parsedDate)) {
+        res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
+        return;
+    }
+    tempDates.push(parsedDate);
+});
+newItinerary.availableDates = tempDates;
         
         if(activityInfo!=0){
             activityInfo=0;
@@ -46,7 +56,7 @@ if (itineraryExists) {
         res.status(201).json({success:true ,data:newItinerary});
     }
     catch(error){
-        res.status(500).json({success:false , message:"server error"});
+        res.status(500).json({success:false , message:error.message});
     }
 }
 

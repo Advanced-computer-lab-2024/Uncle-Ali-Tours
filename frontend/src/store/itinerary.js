@@ -3,6 +3,8 @@ import {create} from 'zustand';
 
 
 export const useItineraryStore = create((set) => ({
+    currentItinerary:{},
+    setCurrentItinerary:(itinerary) => set({currentItinerary:itinerary}),
     itineraries: [],
     setItineraries: (itineraries) => set({itineraries}),
     addItineraries: async (newItinerary) => {

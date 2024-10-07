@@ -70,9 +70,13 @@ function CreateItinerary() {
   };
     
     const handleAddItinerary = async() => {
+      let tempArr = []
+      activityFields.map((activity, index) => (
+        tempArr = [...tempArr,{name:activity,duration:durationFields[index]}]
+      ))
       console.log(user.userName)
       console.log(currItinerary)
-      const {success, message} = await addItineraries(currItinerary);
+      const {success, message} = await addItineraries({...currItinerary, activities:tempArr});
       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
       console.log(message)
       console.log(user.userName)
@@ -98,7 +102,6 @@ function CreateItinerary() {
                 const newFields = [...activityFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setActivityFields(newFields);
-                setNewItinerary({...currItinerary, activities: activityFields})
               }}
             />
             <input
@@ -110,7 +113,6 @@ function CreateItinerary() {
                 const newFields = [...durationFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setDurationFields(newFields);
-                setNewItinerary({...currItinerary, durations: durationFields})
               }}
             />
 

@@ -3,34 +3,28 @@ import { useState } from 'react';
 import ItineraryContainer from '../components/ItineraryContainer.jsx'
 import Dialog from '../components/Dialog.jsx'
 import FormDialog from '../components/FormDialog.jsx'
+import { useEffect } from 'react';
+import { useUserStore } from '../store/user.js';
+import { useItineraryStore } from '../store/itinerary.js';
+import toast, { Toaster } from 'react-hot-toast';
 function ItineraryPage() {
-  const its = [
-  { id:1,
-    activities:["Tennis","Football","Basketball","Volleyball"],
-    durations:["1 week","1 month","3 days","2 weeks"],
-    locations:["GUC","BUE","FUE","AUC"],
-    timeline:"AAAAAAAAAAA",
-    language:"English",
-    accessibility:"1",
-    pickup:"GUC Gate 1",
-    dropoff:"GUC Gate 3",
-
-  }, 
-  {
-    id:2,
-    activities:["Football","Basketball","Volleyball"],
-    durations:["2 week","3 days","2 weeks"],
-    locations:["BUE","FUE","AUC"],
-    timeline:"AAAAAAAAAAA",
-    language:"Arabic",
-    accessibility:"1",
-    pickup:"GUC Gate 1",
-    dropoff:"GUC Gate 3",
-  }]
+  const {user} = useUserStore();
+  const {itineraries, addItineraries, getItineraries,deleteItinerary} = useItineraryStore();  
+  useEffect(() => {
+    getItineraries({creator: user.userName}); 
+  }, [])
   const [curItinerary, setCurItinerary] = useState(-1);
   const changeItinerary = (id) => (
     setCurItinerary(id)
   )
+  const itineraryChanger = (itinerary) => {
+    setCurItinerary(itinerary);
+  }
+  const del = async () => {
+    const {success, message} = await deleteItinerary(curItinerary._id)
+    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+  }
+  
 
   return (
     <div>
@@ -38,7 +32,7 @@ function ItineraryPage() {
             Available Itineraries   
         </div>
         {
-            its.map((it, index)=> (
+            itineraries.map((it, index)=> (
                 <ItineraryContainer key={index} itineraryChanger={changeItinerary} itinerary={it}/>   
             ))
         }

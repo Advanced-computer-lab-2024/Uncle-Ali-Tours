@@ -11,26 +11,12 @@ const itinerarySchema = new mongoose.Schema({
     required: true
   },
   pickupLocation: {
-    type: {
-      type: String, // This should be 'Point' to work with GeoJSON data
-      enum: ["Point"], // Only 'Point' is allowed for GeoJSON
-      required: true,
-    },
-    coordinates: {
-      type: [Number], // An array to store [longitude, latitude] as per GeoJSON
-      required: true,
-    },
+    type: String,
+    required: true
   },
   dropoffLocation: {
-    type: {
-      type: String, // This should be 'Point' to work with GeoJSON data
-      enum: ["Point"], // Only 'Point' is allowed for GeoJSON
-      required: true,
-    },
-    coordinates: {
-      type: [Number], // An array to store [longitude, latitude] as per GeoJSON
-      required: true,
-    },
+    type: String,
+    required: true
   },
   tourLocations: {
     type: [String],

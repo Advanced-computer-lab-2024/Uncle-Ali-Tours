@@ -4,7 +4,9 @@ import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import {dialog} from '../components/Dialog.jsx'
 import { formdialog } from './FormDialog.jsx';  
 import { Link } from 'react-router-dom';
-function ItineraryContainer({itinerary, itineraryChanger}) {
+import { useItineraryStore } from '../store/itinerary.js';
+function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
+  const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
     `${key}: ${itinerary[key]}`
@@ -14,9 +16,12 @@ function ItineraryContainer({itinerary, itineraryChanger}) {
 
   const handleClick = () => {
     showDialog()
-    tagChanger(tagName)
+    itineraryChanger(itinerary)
   }
-  
+  const handleUpdateClick = () => {
+    showFormDialog()
+    itineraryChanger(itinerary)
+  }
 
  
   return (
@@ -64,7 +69,13 @@ function ItineraryContainer({itinerary, itineraryChanger}) {
       <p>Accessibility: {itinerary.accessibility}</p>
        </div>
         <div className='flex'>
-        <Link to='/updateItinerary' className='mr-4 transform transition-transform duration-300 hover:scale-125' ><MdOutlineDriveFileRenameOutline size='18' color='black' /></Link>
+        <Link 
+          to='/updateItinerary' 
+          onClick={()=>(setCurrentItinerary(itinerary))}
+          className='mr-4 transform transition-transform duration-300 hover:scale-125'
+        >
+          <MdOutlineDriveFileRenameOutline size='18' color='black' />
+        </Link>
         <button onClick={() => (handleClick())} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
         
         </div>

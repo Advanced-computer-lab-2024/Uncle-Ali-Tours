@@ -1,19 +1,9 @@
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
-
+import { useItineraryStore } from '../store/itinerary';
 function UpdateItinerary() {
-  const itinerary={ id:1,
-    activities:["Tennis","Football","Basketball","Volleyball"],
-    durations:["1 week","1 month","3 days","2 weeks"],
-    locations:["GUC","BUE","FUE","AUC"],
-    timeline:"AAAAAAAAAAA",
-    language:"English",
-    accessibility:"1",
-    pickup:"GUC Gate 1",
-    dropoff:"GUC Gate 3",
-
-  };
-    const [currentItinerary, setCurrentItinerary] = useState(itinerary);
+    const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
+    const itinerary = currentItinerary;
     const [checkedAttributes, setCheckedAttributes] = useState({
         activities: false,
         durations: false,
@@ -28,15 +18,15 @@ function UpdateItinerary() {
 
     // State to hold updated itinerary
     const [updatedItinerary, setUpdatedItinerary] = useState({
-        activities: currentItinerary.activities || [],
-        durations: currentItinerary.durations || [],
-        locations: currentItinerary.locations || [],
-        timeline: currentItinerary.timeline || '',
-        language: currentItinerary.language || '',
-        accessibility: currentItinerary.accessibility || '',
-        pickup: currentItinerary.pickup || '',
-        dropoff: currentItinerary.dropoff || '',
-        dateTimes: currentItinerary.dateTimes || [],
+        activities: currentItinerary.activities ,
+        durations: currentItinerary.durations ,
+        locations: currentItinerary.locations ,
+        timeline: currentItinerary.timeline ,
+        language: currentItinerary.language,
+        accessibility: currentItinerary.accessibility ,
+        pickup: currentItinerary.pickup ,
+        dropoff: currentItinerary.dropoff ,
+        dateTimes: currentItinerary.dateTimes,
     });
 
     // Save a copy of the original itinerary state for reference
@@ -392,18 +382,18 @@ function UpdateItinerary() {
                 <div className="flex flex-col items-center">
                     {updatedItinerary.dateTimes.map((dateTime, index) => (
                         <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                            <label htmlFor={`dateInput${index}`} className='text-white ml-2'>Date {index + 1}: </label>
                             <input
                                 id={`dateInput${index}`}
-                                type="date"
+                                type="text"
+                                placeholder={`Enter date ${index + 1}`} 
                                 value={dateTime.date}
                                 onChange={(e) => handleInputChange(e, 'dateTimes', index, 'date')}
                                 className="ml-2 rounded w-[100px] p-1 border border-[#ccc] rounded-md text-black"
                             />
-                            <label htmlFor={`timeInput${index}`} className='text-white ml-2'>Time {index + 1}: </label>
                             <input
                                 id={`timeInput${index}`}
-                                type="time"
+                                type="text"
+                                placeholder={`Enter time ${index + 1}`} 
                                 value={dateTime.time}
                                 onChange={(e) => handleInputChange(e, 'dateTimes', index, 'time')}
                                 className="ml-2 rounded w-[100px] p-1 border border-[#ccc] rounded-md text-black"
