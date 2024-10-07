@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 const advertiserModel = new mongoose.Schema({
 
@@ -53,7 +53,6 @@ const advertiserModel = new mongoose.Schema({
     companyName: {
         required: false,
         type: String,
-        unique: true,
     },
     
 }, {

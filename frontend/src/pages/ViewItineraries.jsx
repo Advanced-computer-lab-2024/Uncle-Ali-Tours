@@ -1,20 +1,20 @@
 import React from 'react'
 import { useState } from 'react';
-import { useIteneraryStore } from '../store/itenerary';
+import { useItineraryStore } from '../store/itinerary';
 import ItineraryContainer from '../components/ItineraryContainer';
 import Dialog from '../components/Dialog.jsx'
 import FormDialog from '../components/FormDialog.jsx'
 import PreferenceTag from './PreferenceTag.jsx';
 
-function ViewIteneraries() {
+function ViewItineraries() {
     const [filter, setFilter] = useState(
         {}
     );
-    const [curActivity, setCurItenrary] = useState(-1);
-    const changeItenrary = (id) => (
-      setCurItenrary(id)
+    const [curActivity, setCuritinrary] = useState(-1);
+    const changeitinrary = (id) => (
+      setCuritinrary(id)
     )
-    const {iteneraries, getIteneraries} = useIteneraryStore();
+    const {itineraries, getItineraries} = useItineraryStore();
     const [visibillity, setVisibillity] = useState(
       false
   );
@@ -24,7 +24,7 @@ function ViewIteneraries() {
   
   const SortingList=["High to low","Low to High"];
    const handlePress = async () => {
-    await getIteneraries(filter , sort);
+    await getItineraries(filter , sort);
     setFilter({});
     console.log(filter);
    };
@@ -46,8 +46,8 @@ function ViewIteneraries() {
             Available Itineraries   
         </div>
         {
-            iteneraries.map((itinerary, index)=> (
-                <ItineraryContainer key={index} itineraryChanger={changeItenrary} itinerary={itinerary}/>   
+            itineraries.map((itinerary, index)=> (
+                <ItineraryContainer key={index} itineraryChanger={changeitinrary} itinerary={itinerary}/>   
             ))
         }
         <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
@@ -71,4 +71,4 @@ function ViewIteneraries() {
   )
 }
 
-export default ViewIteneraries
+export default ViewItineraries

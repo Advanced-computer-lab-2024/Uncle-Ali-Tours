@@ -1,6 +1,24 @@
 import React from 'react'
 import { useState } from 'react';
+import { useItineraryStore } from '../store/itinerary';
+import toast, { Toaster } from 'react-hot-toast';
+import { useUserStore } from '../store/user';
 function CreateItinerary() {
+    const {user} = useUserStore();
+    const {newItinerary, addItineraries} = useItineraryStore(); 
+    const [currItinerary, setNewItinerary] = useState({
+      activities:[],
+      durations:[],
+      tourLocations:[],
+      timeline:"",
+      language:"",
+      price:"",
+      availableDates:"",
+      availableTimes:"",
+      accessibility:"",
+      pickupLocation:"",
+      dropoffLocation:"",
+  });
     const [activityFields, setActivityFields] = useState([]);
     const [durationFields, setDurationFields] = useState([]);
     const [locationFields, setLocationFields] = useState([]);
@@ -33,8 +51,8 @@ function CreateItinerary() {
       setTimeFields(timeFields.filter((_, index) => index !== indexToDelete));
     }
 
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
+    const [availableDates, setDate] = useState('');
+    const [availableTimes, setTime] = useState('');
 
   // Event handlers for date and time inputs
   const handleDateChange = (e) => {
@@ -47,13 +65,17 @@ function CreateItinerary() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Selected Date:", date);
-    console.log("Selected Time:", time);
+    console.log("Selected Date:", availableDates);
+    console.log("Selected Time:", availableTimes);
   };
     
     const handleAddItinerary = async() => {
-        console.log({activityFields},{durationFields})
-
+      console.log(user.userName)
+      console.log(currItinerary)
+      const {success, message} = await addItineraries(currItinerary);
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+      console.log(message)
+      console.log(user.userName)
     }
   return (
     <div>
@@ -76,6 +98,7 @@ function CreateItinerary() {
                 const newFields = [...activityFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setActivityFields(newFields);
+                setNewItinerary({...currItinerary, activities: activityFields})
               }}
             />
             <input
@@ -87,6 +110,7 @@ function CreateItinerary() {
                 const newFields = [...durationFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setDurationFields(newFields);
+                setNewItinerary({...currItinerary, durations: durationFields})
               }}
             />
 
@@ -122,6 +146,8 @@ function CreateItinerary() {
                 const newFields = [...locationFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setLocationFields(newFields);
+                setNewItinerary({...currItinerary, tourLocations: locationFields})
+                setNewItinerary({...currItinerary, creator: user.userName})
               }}
             />
             
@@ -148,19 +174,28 @@ function CreateItinerary() {
         <div className="text-black" style={{ marginTop: "20px" }}>
         {dateFields.map((field, index) => (
           <div key={index} style={{ marginBottom: "10px" }} >
-          <label htmlFor="dateInput" className='text-white'>Date {index + 1}: </label>
-          <input id="dateInput" type="date" value={date} className='ml-2'
-          onChange={(e) => {
+          <input
+              value={field}
+              type="text"
+              placeholder={`Enter date ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
                 const newFields = [...dateFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setDateFields(newFields);
-              }} />
-          <label htmlFor="timeInput" className='text-white ml-2'>Time {index + 1}: </label>
-          <input id="timeInput" type="time" className='ml-2 mr-2' value= {timeFields[index]} 
-          onChange={(e) => {
+                setNewItinerary({ ...currItinerary,availableDates: dateFields})
+              }}
+            />
+            <input
+            value= {timeFields[index]}
+              type="text"
+              placeholder={`Time ${index + 1}`}  // Dynamic placeholder based on index
+              className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
+              onChange={(e) => {
                 const newFields = [...timeFields];
                 newFields[index] = e.target.value;  // Update value of the input field
                 setTimeFields(newFields);
+                setNewItinerary({ ...currItinerary,availableTimes: timeFields})
               }}
             />
             <button
@@ -182,11 +217,12 @@ function CreateItinerary() {
 
       </div>
       <div className='flex flex-col items-center text-black space-y-4'>
-      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"timeline"} placeholder='Timeline' onChange={(e) => setNewTag({ name: e.target.value})}></input>
-      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"language"} placeholder='Language of Tour' onChange={(e) => setNewTag({ name: e.target.value})}></input>
-      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"accessibility"} placeholder='Accessibility' onChange={(e) => setNewTag({ name: e.target.value})}></input>
-      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"pickup"} placeholder='Pick Up Location' onChange={(e) => setNewTag({ name: e.target.value})}></input>
-      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"dropoff"} placeholder='Drop Off Location' onChange={(e) => setNewTag({ name: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"timeline"} placeholder='Timeline' onChange={(e) => setNewItinerary({ ...currItinerary, timeline: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"language"} placeholder='Language of Tour' onChange={(e) => setNewItinerary({ ...currItinerary, language: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"price"} placeholder='Price' onChange={(e) => setNewItinerary({ ...currItinerary, price: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"accessibility"} placeholder='Accessibility' onChange={(e) => setNewItinerary({ ...currItinerary, accessibility: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"pickupLocation"} placeholder='Pick Up Location' onChange={(e) => setNewItinerary({ ...currItinerary, pickupLocation: e.target.value})}></input>
+      <input className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2' name={"dropoffLocation"} placeholder='Drop Off Location' onChange={(e) => setNewItinerary({ ...currItinerary, dropoffLocation: e.target.value})}></input>
       </div>
       <div>
       <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddItinerary())}>Add Itinerary</button>
