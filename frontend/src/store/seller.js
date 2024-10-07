@@ -4,6 +4,7 @@ export const useSellerStore = create((set) => ({
     sell:{},
     setSeller: (sell) => set({sell}),
     getSeller: async (filter = {}, sort = {}) => {
+        console.log(filter)
         const queryString = new URLSearchParams({
             filter: JSON.stringify(filter),
             sort: JSON.stringify(sort),
@@ -19,6 +20,7 @@ export const useSellerStore = create((set) => ({
             return body;
         }
         set({ sell: body.data[0] });
+        console.log(body.data[0])
         return { success: true, message: "Fetched seller data" };
     },
     deleteSeller: async (name) => {
@@ -41,11 +43,11 @@ export const useSellerStore = create((set) => ({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: oldSeller, newSeller }),
+                body: JSON.stringify({ userName: oldSeller, newSeller }),
             });
             const data = await response.json();
             if (data.success) {
-                console.log("Seller profile updated successfully");
+                return {success: true, message: "Successful"}
             } else {
                 console.error(data.message);
             }

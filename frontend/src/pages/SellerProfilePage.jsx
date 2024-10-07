@@ -31,7 +31,7 @@ const handleButtonClickk = async () => {
   
   useEffect(()=>{
     getSeller({userName : user.userName},{});
-})
+},[])
 
 
 return (
@@ -42,7 +42,7 @@ return (
         <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
         <div>
         <h1 className="text-white text-2xl font-bold">
-      {sell?.userName || 'John Doe'}
+      {sell.userName || 'John Doe'}
     </h1>
           <h2 className="text-gray-400 text-xl">Seller</h2>
         </div>
