@@ -1,150 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import { VStack } from '@chakra-ui/react';
 import { useUserStore } from '../store/user';
+import React, { useEffect } from "react";
+import { useState } from 'react';
+import { useSellerStore } from '../store/seller';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 const SellerProfile = () => {
     const { user } = useUserStore(); 
-    const [sellerDetails, setSellerDetails] = useState(null);
-    const [name, setName] = useState(''); 
-    const [description, setDescription] = useState('');
-    const [isEditing, setIsEditing] = useState(false); 
-    const [isVerified, setIsVerified] = useState(false); 
+    const { sell, getSeller, updateSeller } = useSellerStore(); 
 
-    // Fetch seller's information on component mount
-    useEffect(() => {
-        const fetchSeller = async () => {
-            if (user && user.userName) {
-                try {
-                    const response = await fetch(`/api/seller?filter=${JSON.stringify({ userName: user.userName })}`);
-                    const data = await response.json();
-                    if (data.success && data.data.length > 0) {
-                        const seller = data.data[0]; // Assuming there's only one seller with the given username
-                        setSellerDetails(seller);
-                        setName(seller.name);
-                        setDescription(seller.description);
-                        setIsVerified(true); 
-                    } else {
-                        console.error(data.message);
-                    }
-                } catch (error) {
-                    console.error("Error fetching seller data:", error);
-                }
-            }
-        };
-
-        fetchSeller();
-    }, [user]);
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleNameChange = (e) => {
-        setName(e.target.value);
-    };
-
-    const toggleEditProfile = () => {
-        if (isEditing) {
-            updateSellerProfile();
-        }
-        setIsEditing(!isEditing);
-    };
-
-    const updateSellerProfile = async () => {
-        try {
-            const response = await fetch(`/api/seller/${user.userName}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, description }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                console.log("Seller profile updated successfully");
-            } else {
-                console.error(data.message);
-            }
-        } catch (error) {
-            console.error("Error updating seller profile:", error);
-        }
-    };
-
-    const handleDeleteProfile = () => {
-        console.log('Delete Profile clicked');
-    };
-
-    const handleViewProducts = () => {
-        console.log('View Products clicked');
-    };
-
-    return (
-        <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-            {isVerified && (
-                <div className="absolute top-0 right-0 p-2 bg-green-500 text-white text-sm font-bold rounded-bl-lg">
-                    Verified
-                </div>
-            )}
-
-            <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
-                <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
-                <div>
-                    <h1 className="text-white text-2xl font-bold">
-                        {isEditing ? (
-                            <input 
-                                type="text" 
-                                value={name} 
-                                onChange={handleNameChange} 
-                                className="bg-gray-800 text-white border border-gray-600 rounded-md px-2"
-                            />
-                        ) : (
-                            name
-                        )}
-                    </h1>
-                    <h2 className="text-gray-400 text-xl">Seller</h2>
-                </div>
-            </div>
-            
-            <div className="p-5 bg-gray-800 rounded-md shadow-sm mt-5">
-                <h3 className="text-lg font-semibold mb-3 text-white">About</h3>
-                {isEditing ? (
-                    <div>
-                        <textarea
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            rows="4"
-                            className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
-                        />
-                    </div>
-                ) : (
-                    <p className="text-white text-lg">{description}</p>
-                )}
-            </div>
-
-            <div className="flex justify-between mt-5">
-                <button 
-                    className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300" 
-                    onClick={toggleEditProfile}
-                >
-                    {isEditing ? 'Save' : 'Edit Profile'}
-                </button>
-
-                <div className="flex space-x-4">
-                    <button 
-                        className="px-5 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300" 
-                        onClick={handleViewProducts}
-                    >
-                        Products
-                    </button>
-                    <button 
-                        className="px-5 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300" 
-                        onClick={handleDeleteProfile}
-                    >
-                        Delete Profile
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+    
+     const [isRequired, setIsRequired] = useState(true);
+  const handleButtonClick = () => {
+    setIsRequired(false); 
 };
+
+const [updatedSeller,setUpdatedSeller]= useState({});  
+const handleButtonClickk = async () => {
+    if(!isRequired){
+       const {success, message}  = await updateSeller(user.userName , updatedSeller);
+       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    
+    }
+}
+
+const navigate = useNavigate();
+  const handleRedirect = () => {
+    navigate('/itineraryPage');
+  };
+
+  useEffect(()=>{
+    getSeller({userName : user.userName},{});
+})
+
+return (
+    <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+      <Toaster />
+
+      <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
+        <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
+        <div>
+        <h1 className="text-white text-2xl font-bold">
+      {sell?.userName || 'John Doe'}
+    </h1>
+          <h2 className="text-gray-400 text-xl">Seller</h2>
+        </div>
+      </div>
+
+      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+        <h1 className="text-lg mb-4">Profile</h1>
+        <VStack spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
+          <label>
+            NAME:
+            <input
+              type="text"
+              name="name"
+              defaultValue={sell.userName || 'John Doe'}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedSeller({ ...updatedSeller, userName: e.target.value })}
+            />
+          </label>
+          <label>
+            Email:
+            <input
+              type="text"
+              name="email"
+              defaultValue={sell.email || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedSeller({ ...updatedSeller, email: e.target.value })}
+            />
+          </label>
+          <label>
+            Mobile number:
+            <input
+              type="text"
+              name="mobileNumber"
+              defaultValue={sell.mobileNumber || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedSeller({ ...updatedSeller, mobileNumber: e.target.value })}
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              type="text"
+              name="password"
+              defaultValue={sell.password || ''}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
+              readOnly={isRequired}
+              onChange={(e) => setUpdatedSeller({ ...updatedSeller, password: e.target.value })}
+            />
+          </label>
+        </VStack>
+        <div className="flex justify-between mt-6">
+          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>
+            Edit
+          </button>
+          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClickk}>
+            Save
+          </button>
+          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>
+            Itinerary
+          </button>
+        </div>
+        </div>
+    </div>
+  );
+};
+
 
 export default SellerProfile;
