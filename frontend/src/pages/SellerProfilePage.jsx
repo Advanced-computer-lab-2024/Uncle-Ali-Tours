@@ -1,4 +1,3 @@
-import { VStack } from '@chakra-ui/react';
 import { useUserStore } from '../store/user';
 import React, { useEffect } from "react";
 import { useState } from 'react';
@@ -51,7 +50,7 @@ return (
 
       <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
         <h1 className="text-lg mb-4">Profile</h1>
-        <VStack spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
+        <div spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
           <label>
             NAME:
             <input
@@ -96,7 +95,7 @@ return (
               onChange={(e) => setUpdatedSeller({ ...updatedSeller, password: e.target.value })}
             />
           </label>
-        </VStack>
+        </div>
         <div className="flex justify-between mt-6">
           <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>
             Edit

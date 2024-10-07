@@ -118,14 +118,17 @@ export const useUserStore = create((set) => ({
 
         return{success: true, message: "User created successfully."};
     },
-    deleteUser: async (username = "-1") => {
-        try {
-            const res = await fetch(`/api/users/${username}`, { // Use username in the URL
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+    deleteUser: async (userName) => {
+        console.log (userName);
+       // const x = {userName : userName}
+      try{
+       const res = await fetch('/api/user',{
+        method : "DELETE",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({userName:userName})
+    });
             const body = await res.json();
             if (!body.success) {
                 return body;

@@ -1,15 +1,14 @@
-import { VStack } from '@chakra-ui/react';
 import { useUserStore } from '../store/user';
 import React, { useEffect } from "react";
 import { useState } from 'react';
-import { useAdvertiserStore } from '../store/advertiser';
+import { useAdvertiserstore } from '../store/advertiser.js';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { set } from 'mongoose';
 
 const AdvertiserProfile = () => {
   const { user } = useUserStore(); 
-  const { advertiser, getAdvertiser, updateAdvertiser } = useAdvertiserStore(); 
+  const { advertiser, getAdvertiser, updateAdvertiser } = useAdvertiserstore(); 
 
   const [isRequired, setIsRequired] = useState(true);
   const handleButtonClick = () => {
@@ -52,7 +51,7 @@ return (
 
       <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
         <h1 className="text-lg mb-4">Profile</h1>
-        <VStack spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
+        <div spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
           <label>
             NAME:
             <input
@@ -152,7 +151,7 @@ return (
               onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, companyName: e.target.value })}
             />
           </label>
-        </VStack>
+        </div>
         <div className="flex justify-between mt-6">
           <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>
             Edit
@@ -170,4 +169,4 @@ return (
 };
 
 
-export default SellerProfile;
+export default AdvertiserProfile;
