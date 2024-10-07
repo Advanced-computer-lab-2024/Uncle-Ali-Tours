@@ -56,7 +56,7 @@ export const useUserStore = create((set) => ({
         type: "",
     },
     setUser: (user) => set({user}),
-    createUser: async (newUser) => {
+    createUser: async (newUser = {}) => {
         let typeRes;
         const type = newUser.type;
         delete newUser.type;
@@ -94,7 +94,7 @@ export const useUserStore = create((set) => ({
             }
         
         try {
-            const res = await fetch("/api/users", {
+            const res = await fetch("/api/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

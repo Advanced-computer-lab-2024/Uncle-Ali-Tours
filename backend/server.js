@@ -24,7 +24,7 @@ const corsOptions = {
   
   app.use(cors(corsOptions));
 
-app.use("/api/users", userRouts);
+app.use("/api/user", userRouts);
 app.use("/api/activityCategory", activityCategoryRouts);
 app.use("/api/activity", activityRoutes);
 app.use('/api/product',productRoutes);
