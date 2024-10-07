@@ -103,8 +103,8 @@ const deleteTourist = async (userName) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "jha",
-        type: "",
+        userName: "amin",
+        type: "tour guide",
     }, 
     setUser: (user) => set({user}),
     createUser: async (newUser = {}) => {
@@ -156,7 +156,7 @@ export const useUserStore = create((set) => ({
             if (!body.success) {
                 return body;
             }
-            set({user: {"userName": body.data.userName, "type": body.type}});
+            set({user: {"userName": body.data.userName, "type": body.data.type}});
         
 
         } catch (error) {

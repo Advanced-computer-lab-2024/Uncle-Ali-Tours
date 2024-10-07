@@ -5,24 +5,7 @@ export const useAttractionStore = create((set) => ({
     attractions: [],
     tags: [],
     setTags: (tags) => set({tags}),
-    getTags: async () =>{
-         const res = await fetch("/api/preferencetags", {
-             method: "GET",
-             headers: {
-                 "Content-Type": "application/json",
-             },
-         });
-         const body = await res.json();
-         if (!body.success){
-             return (body)
-         }
-         const tagObjects = body.data;
-         let tagNames = []
-         tagObjects.map((object) => (
-            tagNames += (object.name)
-         ));
-         set({tags: body.data})
-    },
+    
     setAttractions: (attractions) => set({attractions}),
     getAttractions: async (filter = {} , sort = {}) => {
         const queryString = new URLSearchParams({
@@ -41,6 +24,21 @@ export const useAttractionStore = create((set) => ({
         }
         set({attractions: body.data})
         return {success: true, message: "fetched attractions"};
-    }
-    }
+    },
+    createAttraction: async (newAttraction) => {
+        const res = await fetch("/api/attraction", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newAttraction),
+        });
+        const body = await res.json();
+        if(!body.success){
+            return body;
+        }
+
+        set((state) => ({attractions: [...state.attractions, body.data]}))
+        return {success: true, message: "created new attraction"};
+    },}
 ));

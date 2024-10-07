@@ -40,6 +40,7 @@ function ViewProducts() {
     }, [])
 
    const handlePress = async () => {
+    console.log(user.type)
     if (user.type === "seller")
       await getProducts({...filter,creator: user.userName} , sort);
     else
@@ -63,8 +64,7 @@ function ViewProducts() {
   const handleCreateProduct = async(newProduct) => {
 
     console.log(products.name)
-    newProduct.creator= user.username;
-    const {success, message} = await createProduct(newProduct);
+    const {success, message} = await createProduct({...newProduct, creator:user.userName});
     success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
 

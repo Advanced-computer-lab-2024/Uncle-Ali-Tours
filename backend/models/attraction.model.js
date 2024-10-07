@@ -10,21 +10,13 @@ const attractionModel = new mongoose.Schema({
     required: true,
     type: String
   },
-  pictures: [
+  pictures:
     {
       type: String
-    }
-  ],
-  location: {
-    type: {
-      type: String,  
-      enum: ['Point'],  
-      required: true
     },
-    coordinates: {
-      type: [Number],  
-      required: true
-    }
+  location: {
+    required: true,
+    type: String
   },
   openingHours: {
     required: true,

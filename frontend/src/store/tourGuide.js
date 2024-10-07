@@ -29,25 +29,25 @@ export const useGuideStore = create((set) => ({
               headers:{
                   "Content-Type":"application/json"
               },
-              body: JSON.stringify({name})
+              body: JSON.stringify({userName:name})
           });
           const data = await res.json();
           if(!data.success) return { success : false, message: data.message};
           set({guide: {}})
           return {success: true , message: data.message};
       },
-      updateGuide: async(oldGuide,newTourGuide)=>{
+      updateGuide: async(oldGuide,newTourGuide = {})=>{
         const res = await fetch('/api/tourGuide',{
             method : "PUT",
             headers:{
                 "Content-Type":"application/json"
             },
-            body: JSON.stringify({name:oldGuide, newTourGuide})
+            body: JSON.stringify({userName:oldGuide, newTourGuide})
         });
             const data = await res.json();
             if (!data.success) return {success: false, message: data.message};
             console.log(data)
-            set({guide: body.data})
+            set((state) => ({guide: {...state.guide,newTourGuide}}))
             return{success: true, message: "tour guide updated successfully."};
     }
     

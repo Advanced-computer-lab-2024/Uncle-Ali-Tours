@@ -8,9 +8,9 @@ export const createAttraction = async (req, res) => {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    if (!location.type || !location.coordinates || location.type !== 'Point' || location.coordinates.length !== 2) {
-      return res.status(400).json({ success: false, message: 'Invalid location format' });
-    }
+    // if (!location.type || !location.coordinates || location.type !== 'Point' || location.coordinates.length !== 2) {
+    //   return res.status(400).json({ success: false, message: 'Invalid location format' });
+    // }
 
     if (!ticketPrices.foreigner || !ticketPrices.native || !ticketPrices.student) {
       return res.status(400).json({ success: false, message: 'Invalid ticket prices format' });
