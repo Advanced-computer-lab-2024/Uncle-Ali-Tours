@@ -1,6 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
+import { useItineraryStore } from '../store/itinerary';
 function CreateItinerary() {
+    const {itineraries, addItinerary} = useItineraryStore(); 
     const [activityFields, setActivityFields] = useState([]);
     const [durationFields, setDurationFields] = useState([]);
     const [locationFields, setLocationFields] = useState([]);

@@ -8,7 +8,7 @@ import ActivityCategory from "./ActivityCategory";
 import ViewAttractions from "./ViewAttractions";
 import PreferenceTag from "./PreferenceTag";
 import ViewActivities from "./ViewActivities";
-import ViewIteneraries from "./viewIteneraries";
+import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
 import ItineraryPage from "./ItineraryPage";
 import CreateItinerary from "./CreateItinerary";
@@ -30,7 +30,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/viewAttractions" element={<ViewAttractions />} />
         <Route path="/viewActivities" element={<ViewActivities />} />
-        <Route path="/viewIteneraries" element={<ViewIteneraries />} />
+        <Route path="/viewItineraries" element={<ViewItineraries />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />  
         <Route path="/viewProducts" element={<ViewProducts />} />
         <Route path="/activityCategory" element={<ActivityCategory />} />
