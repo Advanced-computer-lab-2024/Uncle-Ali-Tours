@@ -48,7 +48,7 @@ export const useTouristStore = create((set) => ({
             const data = await res.json();
             if (!data.success) return {success: false, message: data.message};
             console.log(data)
-            set({tourist: body.data})
+            set((state) => ({tourist: {...state.tourist,newTourist}}))
             return{success: true, message: "tourist updated successfully."};
     }
     
