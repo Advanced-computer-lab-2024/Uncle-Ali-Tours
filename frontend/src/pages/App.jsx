@@ -20,6 +20,7 @@ import TourGuideProfilePage from "./TourGuideProfilePage";
 import Productpage from "./Productpage";
 import TouristProfile from './TouristProfile';
 import MuseumsPage from "./MuseumsPage";
+import ActivitiesPage from "./crudActivities";
 function App() {
   return (
     <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-2vh)] mt-[1vh] w-[calc(100vw-2vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
@@ -46,7 +47,7 @@ function App() {
 
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         <Route path="/TourGuideProfilePage" element={<TourGuideProfilePage/>}/>
-        
+        <Route path="/crudActivity" element={<ActivitiesPage/>}/>
       </Routes>
     </div>
   );

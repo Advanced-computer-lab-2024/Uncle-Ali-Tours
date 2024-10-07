@@ -12,6 +12,10 @@ function HomePage() {
         <Link to='/register'>
         <button className='bg-[#dc5809] m-2 py-2 px-6 rounded'> Signup</button>
         </Link>
+        
+        <Link to='/crudActivity'>
+        <button className='bg-[#dc5809] m-2 py-2 px-6 rounded'> Crud Activity</button>
+        </Link>
         </div>
     </div>
   )

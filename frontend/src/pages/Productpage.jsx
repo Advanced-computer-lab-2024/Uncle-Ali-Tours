@@ -72,7 +72,7 @@ function ViewProducts() {
     <div className='text-black'>
       <Toaster/>
         <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' name={"price"} placeholder='Price' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
+       
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
 
         <div className={` grid w-fit mx-auto`} >

@@ -82,7 +82,7 @@ export const updateTourist = async (req,res) => {
         }
     }
     try {
-        const touristExists = await Tourist.exists({userName});
+        const touristExists = await Tourist.find({userName});
         if(!touristExists){
             return res.status(404).json({ success: false, message: "tourist not found" });
         }

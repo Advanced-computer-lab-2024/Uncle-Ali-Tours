@@ -13,7 +13,7 @@ const TourGuideProfilePage = () =>{
     const {guide,getGuide,updateGuide} = useGuideStore();
     const [isRequired, setIsRequired] = useState(true);
     const handleButtonClick = () => {
-        setIsRequired(false); // You can also toggle with: !isRequired
+        setIsRequired(false);
     };
     
     const [updatedGuide,setUpdatedGuide]= useState({});  
