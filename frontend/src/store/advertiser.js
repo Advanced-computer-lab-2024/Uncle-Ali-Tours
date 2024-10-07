@@ -38,19 +38,24 @@ export const useAdvertiserstore = create((set) => ({
           set({advertiser: {}})
           return {success: true , message: data.message};
       },
-      updateAdvertiser: async(oldGuide,newTourGuide)=>{
-        const res = await fetch('/api/advertiser',{
-            method : "PUT",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({name:oldGuide, newTourGuide})
-        });
-            const data = await res.json();
-            if (!data.success) return {success: false, message: data.message};
-            console.log(data)
-            set({advertiser: body.data})
-            return{success: true, message: "tour guide updated successfully."};
+      updateAdvertiser : async (oldAdvertiser,newAdvertiser) => {
+        try {
+            const response = await fetch('/api/advertiser' , {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userName: oldAdvertiser, newAdvertiser }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                return {success: true, message: "Successful"}
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error("Error updating advertiser profile:", error);
+        }
     }
     
     }

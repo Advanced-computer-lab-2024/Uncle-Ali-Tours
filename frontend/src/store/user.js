@@ -52,7 +52,7 @@ const addTourist = async (newUser) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "youssef",
+        userName: "jha",
         type: "",
     }, 
     setUser: (user) => set({user}),

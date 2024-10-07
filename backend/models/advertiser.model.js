@@ -53,7 +53,6 @@ const advertiserModel = new mongoose.Schema({
     companyName: {
         required: false,
         type: String,
-        unique: true,
     },
     
 }, {

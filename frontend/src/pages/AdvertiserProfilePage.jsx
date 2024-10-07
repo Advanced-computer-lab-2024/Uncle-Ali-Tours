@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useAdvertiserstore } from '../store/advertiser.js';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import { set } from 'mongoose';
 
 const AdvertiserProfile = () => {
   const { user } = useUserStore(); 
@@ -18,7 +17,7 @@ const AdvertiserProfile = () => {
 const [updatedAdvertiser,setUpdatedAdvertiser]= useState({});  
 const handleButtonClickk = async () => {
     if(!isRequired){
-       const {success, message}  = await updateAdvertiser(user.username , updatedAdvertiser);
+       const {success, message}  = await updateAdvertiser(user.userName , updatedAdvertiser);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
     }
@@ -26,7 +25,7 @@ const handleButtonClickk = async () => {
 
   const navigate = useNavigate();
   const handleRedirect = () => {
-    navigate('/product');
+    navigate('/itineraryPage');
   };
 
   
@@ -53,7 +52,7 @@ return (
         <h1 className="text-lg mb-4">Profile</h1>
         <div spacing={4} align="stretch"> {/* Add spacing and stretch alignment */}
           <label>
-            NAME:
+            name:
             <input
               type="text"
               name="name"
@@ -64,7 +63,7 @@ return (
             />
           </label>
           <label>
-            PASSWORD:
+            password:
             <input
               type="text"
               name="password"
