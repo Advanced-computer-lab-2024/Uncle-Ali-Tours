@@ -30,6 +30,10 @@ const productSchema = new Schema({
         type: String,
     }
 ,
+creator:{
+    type:String,
+
+},
 Available_quantity: {
     type: Number,
 }

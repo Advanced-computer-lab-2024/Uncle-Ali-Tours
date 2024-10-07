@@ -1,121 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import { useProductStore } from '../store/product';  
-import Dialog from '../components/Dialog.jsx';
-import FormDialog from '../components/FormDialog.jsx';
-import toast, { Toaster } from 'react-hot-toast';
-import ProductCard from '../components/productContainer.jsx';  // Ensure this component is properly imported
-
-function ProductPage() {
+import React from 'react'
+import { useState, useEffect } from 'react'
+import { useProductStore } from '../store/product';
+import ProductCard from '../components/ProductCard.jsx';
+ import Dialog from '../components/Dialog.jsx'
+ import FormDialog from '../components/FormDialog.jsx'
+ import toast, { Toaster } from 'react-hot-toast';
+ import { formdialog } from '../components/FormDialog.jsx'; 
+ import { useUserStore } from '../store/user';
  
-  const { products, getProducts, createProduct,deleteProduct } = useProductStore();
-  console.log(getProducts);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    imgURL: ''
-  });
 
-  // Fetch products 
-  useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+function ViewProducts() {
+  const [currentProduct, setCurrentProduct] = useState({
 
-  const handlePress = async () => {
-    
-    await getProducts(filter, sort);
-    console.log(filter);
-    setFilter({});
-    
+  }
+)
+    const [filter, setFilter] = useState(
+        {}
+    );
+    const {user} = useUserStore();
+    const [sort, setSort] = useState(
+      {}
+  );
+    const [visibillity, setVisibillity] = useState(
+      false
+  );
+   const { showFormDialog } = formdialog()
+
+  const productChanger = (product) => {
+    setCurrentProduct(product);
+  }
+
+ 
+    const {getProducts, products, createProduct, deleteProduct, updateProduct} = useProductStore();
+
+
+    useEffect(() => {
+      if (user.type === "seller")
+        getProducts({creator: user.userName} , sort); 
+    }, [])
+
+   const handlePress = async () => {
+    if (user.type === "seller")
+      await getProducts({...filter,creator: user.userName} , sort);
+    else
+      await getProducts(filter , sort);
+   };
+   const handleSort = async () => {
+    setVisibillity((prev)=> !prev);
    };
 
-  // Delete product handler
-  const del = async (id) => {
-    const { success, message } = await deleteProduct(id);
-    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
-    getProducts(); // Refetch products after deletion
-  };
+    const del = async () => {
+      const {success, message} = await deleteProduct(currentProduct._id)
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
-  // Update product handler
-  const handleUpdate = async (updatedProduct) => {
-    const { success, message } = await updatedProduct(updatedProduct._id, updatedProduct);
-    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
-    getProducts(); // Refetch products after update
-  };
+    }
 
-  // Create product handler
-  const handleCreateProduct = async () => {
-    console.log(newProduct);
-    const { success, message } = await createProduct(newProduct);
-    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
-    getProducts(); // Refetch products after creating
-  };
+    const handleUpdate = async (updatedProduct) => {
+      if(updatedProduct.length>0){
+      const {success, message} = await updateProduct(currentProduct._id, updatedProduct)
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})}
+  }
+  const handleCreateProduct = async(newProduct) => {
 
-  return (
-    <div className='test'>
-      <div className='mt-4 text-xl'>Create New Product</div>
-      <div className='text-black'>
-        <input 
-          className='rounded' 
-          name="price" 
-          placeholder='Price'  
-          type="number" 
-          onChange={(e) => setNewProduct((prev) => ({ ...prev, price: e.target.value }))} 
-        />
-        <br />
-        <input 
-          className='rounded' 
-          name="newProduct" 
-          placeholder='New Product' 
-          onChange={(e) => setNewProduct((prev) => ({ ...prev, name: e.target.value }))} 
-        />
-        <br />
-        <input 
-          className='rounded' 
-          name="imgURL" 
-          placeholder='Image URL' 
-          onChange={(e) => setNewProduct((prev) => ({ ...prev, imgURL: e.target.value }))} 
-        />
-      </div>
-      
-      <div className='mb-4 text-xl'>
-        <button 
-          className='bg-black text-white m-6 p-2 rounded-xl transform transition-transform duration-300 hover:scale-105' 
-          onClick={handleCreateProduct}
-        >
-          CREATE PRODUCT
-        </button>
-      </div>
-
-      {/* Display products or message if no products are available */}
-      <div>
-        {products.length === 0 ? (
-          <div>No products available</div>
-        ) : (
-          products.map((product, index) => (
-            <ProductCard key={index} name={product.name} />
-          ))
-        )}
-      </div>
-
-      {/* Dialog components for delete and update */}
-      <Dialog 
-        msg={"Are you sure you want to delete this product?"} 
-        accept={() => del()} 
-        reject={() => console.log("rejected")} 
-        acceptButtonText='Delete' 
-        rejectButtonText='Cancel' 
-      />
-      <FormDialog 
-        msg={"Update values"} 
-        accept={handleUpdate} 
-        reject={() => console.log("rejected")} 
-        acceptButtonText='Update' 
-        rejectButtonText='Cancel' 
-        inputs={["name"]} 
-      />
-      <Toaster />
-    </div>
-  );
+    console.log(products.name)
+    newProduct.creator= user.username;
+    const {success, message} = await createProduct(newProduct);
+    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
 
-export default ProductPage;
+   return (
+    <div className='text-black'>
+      <Toaster/>
+        <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
+        <input className='w-[15ch] m-2 pl-1' name={"price"} placeholder='Price' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
+        <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
+
+        <div className={` grid w-fit mx-auto`} >
+        <button className='p-2 bg-black text-white' onClick={() => (showFormDialog())}>create product</button>
+        <div>
+      <div className='mb-4 text-xl'>
+            Available Products   
+        </div>
+        {
+            products.map((product, index)=> (
+                <ProductCard key={index} productChanger={productChanger}  product={product}/>   
+            ))
+        }
+        <Dialog msg={"Are you sure you want to delete this product?"} accept={del} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
+        <FormDialog msg={"Update values"} accept={handleUpdate} reject={() => (console.log("DD"))} acceptButtonText='update' rejectButtonText='Cancel' inputs={["name","imgURL","price","description","Available_quantity"]}/>
+   
+    
+    </div>
+       </div>
+        
+        <div><button onClick={() => (handleSort())}>{Object.keys(sort)[0]? "sorted by " + Object.keys(sort)[0] : "Sort"}</button>
+        <br></br>
+
+        <FormDialog msg={"created"} accept={handleCreateProduct} reject={() => (console.log("DD"))} acceptButtonText='create' rejectButtonText='Cancel' inputs={["name","imgURL","price","description","Available_quantity"]}/>
+        <div className={`${visibillity ? '' : 'hidden' }`} >
+         <div> <button onClick={()=>(setSort({'rating' : -1}))}>{"Rating High to Low"}</button></div>
+         <div> <button onClick={()=>(setSort({'rating' : 1}))}>{"Rating Low to High"}</button></div>
+          
+         <div> <button onClick={()=>(setSort({'price' : -1}))}>{"Price High to Low"}</button></div>
+                <button onClick={()=>(setSort({'price' : 1}))}>{"Price Low to High"}</button>
+          </div>
+        </div>
+        </div>
+  )
+}
+
+export default ViewProducts

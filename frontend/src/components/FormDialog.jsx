@@ -17,6 +17,7 @@ function FormDialog({msg, accept, reject, acceptButtonText= "accept", rejectButt
     const acceptClick = () => {
         accept(data)
         hideFormDialog()
+        setData({})
     }
 
     const rejectClick = () => {

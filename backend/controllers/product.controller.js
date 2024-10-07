@@ -61,19 +61,15 @@ export const deleteProduct = async (req, res) => {
 
 
 export const updateProduct = async (req, res) => {
-    const { name,description,Available_quantity, price } = req.body;
-   // const { id } = req.params;
-   if(!name) {
-   // console.log(name)
+    const { newProduct } = req.body;
+    const {id} = req.params;
+   console.log(id)
+   if(!id) {
     return res.status(400).json({success:false, message: 'Name is required' });}
 
     try {
-        const updatedProduct = await Product.findByIdAndUpdate( { name: name }, { description, price,Available_quantity }, { new: true });
-        if (updatedProduct) {
-            res.json({ success: true, data: updatedProduct });
-        } else {
-            res.status(404).json({ success: false, message: 'Product not found' });
-        }
+        const updatedProduct = await Product.findByIdAndUpdate( id, newProduct, { new: true });
+        res.json({ success: true, data: updatedProduct });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

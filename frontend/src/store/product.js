@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-
 export const useProductStore = create((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
 
   // Fetch products with filters and sorting
   getProducts: async (filter = {}, sort = {}) => {
+    console.log(filter)
     const queryString = new URLSearchParams({
       filter: JSON.stringify(filter),
       sort: JSON.stringify(sort),
@@ -44,7 +44,7 @@ export const useProductStore = create((set) => ({
         return { success: false, message: data.message };
       }
       // Refetch products after creating
-      await getProducts(); 
+   set((state)=>({products:[...state.products,data.data]}))
       return { success: true, message: 'Product created successfully!' };
     } catch (error) {
       return { success: false, message: error.message };
@@ -62,7 +62,7 @@ export const useProductStore = create((set) => ({
       });
       const data = await res.json();
       if (!data.success) return { success: false, message: data.message };
-      await getProducts(); // Refetch products after deletion
+      set(state => ({products:state.products.filter(product => product._id !== id)}));
       return { success: true, message: 'Product deleted successfully' };
     } catch (error) {
       return { success: false, message: error.message };
@@ -71,17 +71,18 @@ export const useProductStore = create((set) => ({
 
   // Update product and refetch products
   updateProduct: async (id, newProduct) => {
+    console.log(id, newProduct)
     try {
       const res = await fetch(`/api/product/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify({newProduct: newProduct})
       });
       const data = await res.json();
       if (!data.success) return { success: false, message: data.message };
-      await getProducts(); // Refetch products after updating
+      set((state) => ({products: state.products.map((product) => product._id === id ? data.data : product)}));
       return { success: true, message: "Product updated successfully." };
     } catch (error) {
       return { success: false, message: error.message };

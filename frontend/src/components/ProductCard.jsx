@@ -1,153 +1,41 @@
-// import React, { useState } from 'react';
-// import { useProductStore } from '../store/product';
-// import Product from '../../../backend/models/product..model';
+import React, { useEffect } from 'react'
+import { useState } from 'react';
+import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
+import {dialog} from '../components/Dialog.jsx'
+import { formdialog } from './FormDialog.jsx';  
+import { Link } from 'react-router-dom';
+function ProductCard({product, productChanger, accept, reject}) {
+  const keys = Object.keys(product)
+  keys.map((key)=> (
+    `${key}: ${product[key]}`
+  ))
+  const { showDialog } = dialog()
+  const { showFormDialog } = formdialog()
 
-// const ProductCard = ({ product, onEdit, onDelete }) => {
-//     const [updatedProduct, setUpdatedProduct] = useState({product });
-    
-//  const {deleteProduct, updateProduct}= useProductStore();
-//  const toast = usetoast();
-//  const onDelete = async(name)=>{
-//     const {success, message}=await deleteProduct(name);
-//     if (success) {
-//         toast({
-//           title: 'Error',
-//           description: message,
-//           status: 'error',
-//           duration: 3000,
-//           isClosable: true,
-//         });
-//       } else {
-//         toast({
-//           title: 'Success',
-//           description: message,
-//           status: 'success',
-//           duration: 3000,
-//           isClosable: true,
-//         });
-//  }}; //const {updateProduct}= useProductStore();
+  const handleClick = () => {
+    showDialog()
+    productChanger(product)
+  }
 
-//     const onEdit = async(name)=>{
-//     const {success, message}=await updateProduct(name,updateProduct);
-//     if (success) {
-//         toast({
-//           title: 'Error',
-//           description: message,
-//           status: 'error',
-//           duration: 3000,
-//           isClosable: true,
-//         });
-//         setUpdatedProduct((prevState) => ({
-//             ...prevState,
-//             name: updatedProduct.name,
-//             price: updatedProduct.price,
-//             image: updatedProduct.image,
-//           }));
-//       } else {
-//         toast({
-//           title: 'Success',
-//           description: message,
-//           status: 'success',
-//           duration: 3000,
-//           isClosable: true,
-//         })}};
+  
 
+  const handleUpdateClick = () => {
+    showFormDialog()
+    productChanger(product)
+  }
 
-//     return (
+  return (
+    <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
+        <div className='grid p-2'>
+       { keys.map((key,index)=> (
+       <p key={index}>{`${key}: ${product[key]}`}</p>
+       ))}
+       </div>
+       <button onClick={() => (handleUpdateClick())} className='mr-4 transform transition-transform duration-300 hover:scale-125' ><MdOutlineDriveFileRenameOutline size='18' color='black' /></button>
+        <button onClick={() => (handleClick())} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
         
-//     <div style={cardStyle}>
-//       <img src={product.image} alt={product.name} style={imageStyle} />
+       </div>
+  )
+}
 
-//       <div style={contentStyle}>
-//         <h3 style={headingStyle}>{product.name}</h3>
-//         <p style={priceStyle}>${product.price}</p>
-//       </div>
-//       <div>
-//         <input
-//           placeholder="Name"
-//           name="name"
-//           type="text"
-//           value={updateProduct.name}
-//           onChange={onEdit}
-//         />
-//       </div>
-      
-//       <div>
-//         <input
-//           placeholder="Price"
-//           name="price"
-//           type="number"
-//           value={updateProduct.price}
-//           onChange={onEdit}
-//         />
-//       </div>
-//       <div>
-//         <input
-//           placeholder="Image URL"
-//           name="imagURL"
-//           type="text"
-//           value={updateProduct.image}
-//           onChange={onEdit}
-//         />
-//       </div>
-
-      
-
-//       <div style={buttonContainerStyle}>
-//         <button onClick={onEdit} style={{ ...buttonStyle, backgroundColor: 'blue' }}>
-//           Edit
-//         </button>
-//         <button onClick={onDelete} style={{ ...buttonStyle, backgroundColor: 'red' }}>
-//           Delete
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// // Styles
-// const cardStyle = {
-//   boxShadow: '0px 4px 8px rgba(0,0,0,0.1)',
-//   borderRadius: '10px',
-//   overflow: 'hidden',
-//   transition: 'all 0.3s',
-//   width: '300px',
-//   margin: '20px',
-// };
-
-// const imageStyle = {
-//   width: '100%',
-//   height: '200px',
-//   objectFit: 'cover',
-// };
-
-// const contentStyle = {
-//   padding: '10px',
-// };
-
-// const headingStyle = {
-//   margin: '0 0 10px 0',
-// };
-
-// const priceStyle = {
-//   fontWeight: 'bold',
-//   fontSize: '20px',
-//   margin: '0',
-// };
-
-// const buttonContainerStyle = {
-//   display: 'flex',
-//   justifyContent: 'space-around',
-//   padding: '10px',
-// };
-
-// const buttonStyle = {
-//   padding: '8px 12px',
-//   color: '#fff',
-//   border: 'none',
-//   borderRadius: '5px',
-//   cursor: 'pointer',
-// };
-
-// export default ProductCard;
-
+export default ProductCard
