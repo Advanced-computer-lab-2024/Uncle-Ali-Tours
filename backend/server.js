@@ -12,17 +12,10 @@ import touristRoutes from './routes/tourist.route.js';
 import userRouts from './routes/user.route.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
-import cors from "cors";
 
 app.use(express.json());
 
-const corsOptions = {
-    origin: '*',
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  };
-  
-  app.use(cors(corsOptions));
+
 
 app.use("/api/user", userRouts);
 app.use("/api/activityCategory", activityCategoryRouts);

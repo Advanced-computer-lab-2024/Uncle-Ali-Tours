@@ -42,7 +42,7 @@ export const deleteUser = async (req, res) => {
     
     const user = await User.find({userName: userName});
     if(user.length === 0) {
-        return res.status(404).json({success:false, message: 'Category does not exist' });
+        return res.status(404).json({success:false, message: 'User does not exist' });
     }
 
     try {

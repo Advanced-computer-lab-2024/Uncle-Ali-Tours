@@ -6,17 +6,19 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const AdminDashboard = () => {
   const { deleteUser } = useUserStore();
-  const [accountId, setAccountId] = useState('');
+  const [accountUsername, setAccountUsername] = useState('');
   const [adminData, setAdminData] = useState({ userName: '', password: '' }); // Username and password for admin
   const [tourismData, setTourismData] = useState({ userName: '', password: '' }); // Username and password for tourism
 
 
 
   const handleDeleteAccount = async () => {
-    const passedUser = accountId.length > 0?accountId:"-1"
-    const {success, message} =  await deleteUser(passedUser);
-    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-  };
+    const passedUser = accountUsername.length > 0 ? accountUsername : "-1"; 
+    const { success, message } = await deleteUser(passedUser);
+    success
+        ? toast.success(message, { className: "text-white bg-gray-800" })
+        : toast.error(message, { className: "text-white bg-gray-800" });
+};
 
     const {createUser, user} = useUserStore();
 
@@ -47,9 +49,9 @@ const AdminDashboard = () => {
           <h2 className="text-2xl font-bold mb-4">Delete Account</h2>
           <input 
             type="text" 
-            value={accountId} 
-            onChange={(e) => setAccountId(e.target.value)} 
-            placeholder="Enter Account ID" 
+            value={accountUsername} 
+            onChange={(e) => setAccountUsername(e.target.value)} 
+            placeholder="Enter Username" // Updated to reflect username
             className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
           />
           <button 
