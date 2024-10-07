@@ -6,31 +6,24 @@ const sellerModel = new mongoose.Schema({
         required: true,
         default: ""
     },
-
     password: {
         type: String,
         required: true,
     },
-
     email : {
         required:true,
         type: String
     },
-
- 
     description: {
         type: String,
         required: false,
         default: ""
     },
-
     verified:{
         type : Boolean,
         default : false,
         required : false
     },
-   
-    
     mobileNumber: {
         type: Number,
         required: false,
