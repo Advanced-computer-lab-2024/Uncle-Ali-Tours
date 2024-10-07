@@ -13,10 +13,12 @@ const AdminDashboard = () => {
 
 
   const handleDeleteAccount = async () => {
-    const passedUser = accountId.length > 0?accountId:"-1"
-    const {success, message} =  await deleteUser(passedUser);
-    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-  };
+    const passedUser = accountId.length > 0 ? accountId : "-1"; // Now accountId is the username
+    const { success, message } = await deleteUser(passedUser); // Pass username instead of userId
+    success
+        ? toast.success(message, { className: "text-white bg-gray-800" })
+        : toast.error(message, { className: "text-white bg-gray-800" });
+};
 
     const {createUser, user} = useUserStore();
 
@@ -49,7 +51,7 @@ const AdminDashboard = () => {
             type="text" 
             value={accountId} 
             onChange={(e) => setAccountId(e.target.value)} 
-            placeholder="Enter Account ID" 
+            placeholder="Enter Username" // Updated to reflect username
             className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
           />
           <button 

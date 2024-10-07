@@ -80,7 +80,7 @@ export const useUserStore = create((set) => ({
                 case "admin":
                     typeRes = {success: true};
                     break;
-                    case "governor":
+                 case "governor":
                     typeRes = {success: true};
                     break;
     
@@ -117,9 +117,9 @@ export const useUserStore = create((set) => ({
 
         return{success: true, message: "User created successfully."};
     },
-    deleteUser: async (userId=-1) => {
+    deleteUser: async (username = "-1") => {
         try {
-            const res = await fetch(`/api/users/${userId}`, {
+            const res = await fetch(`/api/users/${username}`, { // Use username in the URL
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -129,11 +129,12 @@ export const useUserStore = create((set) => ({
             if (!body.success) {
                 return body;
             }
-           
+    
             return { success: true, message: "User deleted successfully" };
         } catch (error) {
             return { success: false, message: error.message };
         }
     }
+    
     
 }));
