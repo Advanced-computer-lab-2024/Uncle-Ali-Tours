@@ -2,7 +2,14 @@ import mongoose from "mongoose";
 
 const itinerarySchema = new mongoose.Schema({
   activities: [],
-
+  name: {
+    type: String,
+    required: true
+  },
+  preferenceTag: {
+    type: String,
+    required: true
+  },
   pickupLocation: {
     type: {
       type: String, // This should be 'Point' to work with GeoJSON data

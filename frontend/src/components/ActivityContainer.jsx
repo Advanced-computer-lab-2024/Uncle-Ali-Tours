@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 function ActivityContainer({activity, activityChanger}) {
   const keys = Object.keys(activity)
   keys.map((key)=> (
-    `${key}: ${activity[key]}`
+   `${key}: ${activity[key]}`
   ))
   const { showDialog } = dialog()
   const { showFormDialog } = formdialog()
@@ -23,8 +23,9 @@ function ActivityContainer({activity, activityChanger}) {
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
        { keys.map((key,index)=> (
-       <p key={index}>{`${key}: ${activity[key]}`}</p>
-       ))}
+    
+    key==="location" ? <p key={index}>location: {activity.location.coordinates[0]+" , "+activity.location.coordinates[1]}</p> : <p>{key}: {activity[key]}</p>
+  ))}
        </div>
 
         
