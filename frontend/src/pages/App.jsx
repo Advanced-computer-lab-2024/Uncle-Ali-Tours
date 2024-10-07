@@ -18,6 +18,7 @@ import UpdateItinerary from "./UpdateItinerary";
 import AdminDashboard from "./AdminDashboardPage";
 import TourGuideProfilePage from "./TourGuideProfilePage";
 import Productpage from "./Productpage";
+import TouristProfile from './TouristProfile';
 function App() {
   return (
     <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-2vh)] mt-[1vh] w-[calc(100vw-2vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
@@ -39,6 +40,7 @@ function App() {
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/product" element={<Productpage />} />
+        <Route path="/profile" element={<TouristProfile />} />
 
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         <Route path="/TourGuideProfilePage" element={<TourGuideProfilePage/>}/>

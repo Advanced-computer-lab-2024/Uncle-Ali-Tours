@@ -3,20 +3,30 @@ import { useProductStore } from '../store/product';
 import Dialog from '../components/Dialog.jsx';
 import FormDialog from '../components/FormDialog.jsx';
 import toast, { Toaster } from 'react-hot-toast';
-import ProductCard from '../components/productContainer';  // Ensure this component is properly imported
+import ProductCard from '../components/productContainer.jsx';  // Ensure this component is properly imported
 
 function ProductPage() {
-  const { products, getProducts, createProduct } = useProductStore();
+ 
+  const { products, getProducts, createProduct,deleteProduct } = useProductStore();
+  console.log(getProducts);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
     imgURL: ''
   });
 
-  // Fetch products on component mount
+  // Fetch products 
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [getProducts]);
+
+  const handlePress = async () => {
+    
+    await getProducts(filter, sort);
+    console.log(filter);
+    setFilter({});
+    
+   };
 
   // Delete product handler
   const del = async (id) => {
@@ -27,7 +37,7 @@ function ProductPage() {
 
   // Update product handler
   const handleUpdate = async (updatedProduct) => {
-    const { success, message } = await updateProduct(updatedProduct._id, updatedProduct);
+    const { success, message } = await updatedProduct(updatedProduct._id, updatedProduct);
     success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
     getProducts(); // Refetch products after update
   };

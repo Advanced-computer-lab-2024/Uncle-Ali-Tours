@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
 import { useProductStore } from '../store/product';
-import toast, { Toaster } from 'react-hot-toast';  // Use react-hot-toast consistently
+import toast, { Toaster } from 'react-hot-toast';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
   const { deleteProduct, updateProduct } = useProductStore();
-  const [updatedProduct, setUpdatedProduct] = useState({ ...product });  // Spread product fields
+  const [updatedProduct, setUpdatedProduct] = useState({ ...product });
 
   // Handle Delete
-  const handleDelete = async () => {
-    const { success, message } = await deleteProduct(product._id);  // Use '_id'
+  const del = async () => {
+    const { success, message } = await deleteProduct(product._id);
     if (success) {
-      toast.success("Product deleted successfully!");
-      onDelete(product._id);  // Notify parent to remove from state
+      toast.success('Product deleted successfully!');
+      onDelete(product._id);
     } else {
-      toast.error("Failed to delete product: " + message);
+      toast.error('Failed to delete product: ' + message);
     }
   };
 
   // Handle Edit
-  const handleEdit = async (e) => {
-    e.preventDefault();  // Prevent form submission
-    const { success, message, data } = await updateProduct(product._id, updatedProduct);  // Use '_id' and updated data
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const { success, message } = await updateProduct(product._id, updatedProduct);
     if (success) {
-      toast.success("Product updated successfully!");
-      onEdit(data);  // Notify parent to update the product in state
+      toast.success('Product updated successfully!');
+      onEdit(updatedProduct);
     } else {
-      toast.error("Failed to update product: " + message);
+      toast.error('Failed to update product: ' + message);
     }
   };
 
@@ -34,27 +34,32 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     const { name, value } = e.target;
     setUpdatedProduct((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+    console.log('Updated Product:', updatedProduct);
   };
 
-  // Add a check to ensure product exists
-  if (!product || !product.imgURL) {
-    return <div>Product information is loading...</div>;
+  // Check if product exists
+  if (!product) {
+    return <div>Product does not exist</div>;
   }
 
   return (
-    <div style={cardStyle}>
-      <img src={product.imgURL} alt={product.name} style={imageStyle} />  {/* Changed 'image' to 'imgURL' */}
-
-      <div style={contentStyle}>
-        <h3 style={headingStyle}>{product.name}</h3>
-        <p style={priceStyle}>${product.price}</p>
+    <div className="max-w-sm rounded overflow-hidden shadow-lg m-5 bg-white">
+      <img
+        className="w-full h-48 object-cover"
+        src={product.imgURL}
+        alt={product.name}
+      />
+      <div className="px-6 py-4">
+        <h3 className="font-bold text-xl mb-2">{product.name}</h3>
+        <p className="text-gray-700 text-base">${product.price}</p>
       </div>
-      
+
       {/* Edit Form */}
-      <form onSubmit={handleEdit} style={editFormStyle}>
+      <form onSubmit={handleUpdate} className="px-6 py-4">
         <input
+          className="w-full p-2 mb-2 border border-gray-300 rounded"
           placeholder="Name"
           name="name"
           type="text"
@@ -63,6 +68,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
           required
         />
         <input
+          className="w-full p-2 mb-2 border border-gray-300 rounded"
           placeholder="Price"
           name="price"
           type="number"
@@ -71,79 +77,33 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
           required
         />
         <input
+          className="w-full p-2 mb-4 border border-gray-300 rounded"
           placeholder="Image URL"
-          name="imgURL"  // Changed from 'image' to 'imgURL'
+          name="imgURL"
           type="text"
           value={updatedProduct.imgURL}
           onChange={handleInputChange}
           required
         />
-        <button type="submit" style={{ ...buttonStyle, backgroundColor: 'blue' }}>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-2"
+        >
           Update
         </button>
       </form>
 
-      <div style={buttonContainerStyle}>
-        {/* Remove Edit button since editing is handled via the form */}
-        <button onClick={handleDelete} style={{ ...buttonStyle, backgroundColor: 'red' }}>
+      <div className="px-6 pb-4">
+        <button
+          onClick={del}
+          className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+        >
           Delete
         </button>
       </div>
-      
       <Toaster />
     </div>
   );
-};
-
-// Styles
-const cardStyle = {
-  boxShadow: '0px 4px 8px rgba(0,0,0,0.1)',
-  borderRadius: '10px',
-  overflow: 'hidden',
-  transition: 'all 0.3s',
-  width: '300px',
-  margin: '20px',
-};
-
-const imageStyle = {
-  width: '100%',
-  height: '200px',
-  objectFit: 'cover',
-};
-
-const contentStyle = {
-  padding: '10px',
-};
-
-const headingStyle = {
-  margin: '0 0 10px 0',
-};
-
-const priceStyle = {
-  fontWeight: 'bold',
-  fontSize: '20px',
-  margin: '0',
-};
-
-const buttonContainerStyle = {
-  display: 'flex',
-  justifyContent: 'space-around',
-  padding: '10px',
-};
-
-const buttonStyle = {
-  padding: '8px 12px',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-};
-
-const editFormStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-  padding: '10px',
 };
 
 export default ProductCard;
