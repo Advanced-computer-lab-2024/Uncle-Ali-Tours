@@ -61,9 +61,7 @@ function ViewProducts() {
       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})}
   }
   const handleCreateProduct = async(newProduct) => {
-
-    console.log(products.name)
-    newProduct.creator= user.username;
+    newProduct.creator= user.userName;
     const {success, message} = await createProduct(newProduct);
     success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
@@ -72,7 +70,7 @@ function ViewProducts() {
     <div className='text-black'>
       <Toaster/>
         <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' name={"price"} placeholder='Price' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
+       
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
 
         <div className={` grid w-fit mx-auto`} >

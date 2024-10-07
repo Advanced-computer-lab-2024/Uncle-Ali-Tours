@@ -31,6 +31,7 @@ export const useProductStore = create((set) => ({
 
   // Create a new product and refetch products
   createProduct: async (newProduct) => {
+    console.log(newProduct)
     try {
       const res = await fetch('http://localhost:5000/api/product', {
         method: 'POST',
