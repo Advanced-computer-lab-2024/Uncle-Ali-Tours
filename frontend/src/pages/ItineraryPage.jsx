@@ -11,7 +11,7 @@ function ItineraryPage() {
   const {user} = useUserStore();
   const {itineraries, addItineraries, getItineraries,deleteItinerary} = useItineraryStore();  
   useEffect(() => {
-    getItineraries({creator: user.userName}); 
+    getItineraries({}); 
   }, [])
   const [curItinerary, setCurItinerary] = useState(-1);
   const changeItinerary = (id) => (

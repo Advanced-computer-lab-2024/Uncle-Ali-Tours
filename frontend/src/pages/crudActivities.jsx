@@ -1,8 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
-
-const googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Add your Google Maps API key here
-
 function ActivitiesPage() {
   // State for storing activities
   const [activities, setActivities] = useState([]);

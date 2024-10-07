@@ -40,8 +40,8 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
           </li>
         ))}
       </ul>
-      <p>pickup location: {itinerary.pickupLocation.coordinates[0]+" , "+itinerary.pickupLocation.coordinates[1]}</p>
-      <p>dropoff location: {itinerary.dropoffLocation.coordinates[0]+" , "+itinerary.dropoffLocation.coordinates[1]}</p>
+      <p>pickup location: {itinerary.pickupLocation}</p>
+      <p>dropoff location: {itinerary.dropoffLocation}</p>
       <h3>Locations:</h3>
       <ul>
         {itinerary.tourLocations.map((loc, index) => (
