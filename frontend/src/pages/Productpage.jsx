@@ -4,6 +4,7 @@ import { useProductStore } from '../store/product';
 import ProductCard from '../components/ProductCard.jsx';
  import Dialog from '../components/Dialog.jsx'
  import FormDialog from '../components/FormDialog.jsx'
+ import CreateForm, { createForm} from '../components/createForm.jsx';
  import toast, { Toaster } from 'react-hot-toast';
  import { formdialog } from '../components/FormDialog.jsx'; 
  import { useUserStore } from '../store/user';
@@ -25,7 +26,7 @@ function ViewProducts() {
       false
   );
    const { showFormDialog } = formdialog()
-
+  const {showCreateFormDialog} = createForm()
   const productChanger = (product) => {
     setCurrentProduct(product);
   }
@@ -57,9 +58,8 @@ function ViewProducts() {
     }
 
     const handleUpdate = async (updatedProduct) => {
-      if(updatedProduct.length>0){
       const {success, message} = await updateProduct(currentProduct._id, updatedProduct)
-      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})}
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
   const handleCreateProduct = async(newProduct) => {
 
@@ -76,7 +76,7 @@ function ViewProducts() {
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
 
         <div className={` grid w-fit mx-auto`} >
-        <button className='p-2 bg-black text-white' onClick={() => (showFormDialog())}>create product</button>
+        <button className='p-2 bg-black text-white' onClick={() => (showCreateFormDialog())}>create product</button>
         <div>
       <div className='mb-4 text-xl'>
             Available Products   
@@ -96,7 +96,7 @@ function ViewProducts() {
         <div><button onClick={() => (handleSort())}>{Object.keys(sort)[0]? "sorted by " + Object.keys(sort)[0] : "Sort"}</button>
         <br></br>
 
-        <FormDialog msg={"created"} accept={handleCreateProduct} reject={() => (console.log("DD"))} acceptButtonText='create' rejectButtonText='Cancel' inputs={["name","imgURL","price","description","Available_quantity"]}/>
+        <CreateForm msg={"created"} accept={handleCreateProduct} reject={() => (console.log("DD"))} acceptButtonText='create' rejectButtonText='Cancel' inputs={["name","imgURL","price","description","Available_quantity"]}/>
         <div className={`${visibillity ? '' : 'hidden' }`} >
          <div> <button onClick={()=>(setSort({'rating' : -1}))}>{"Rating High to Low"}</button></div>
          <div> <button onClick={()=>(setSort({'rating' : 1}))}>{"Rating Low to High"}</button></div>
