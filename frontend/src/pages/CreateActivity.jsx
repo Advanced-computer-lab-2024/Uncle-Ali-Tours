@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { useActivityStore } from '../store/activity'; 
 import toast, { Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user'; // Assuming user store for activity creator
-import { LoadScript, Autocomplete } from '@react-google-maps/api'; // For location input
 
 function CreateActivity() {
   const { user } = useUserStore(); // Assuming user is logged in and available
