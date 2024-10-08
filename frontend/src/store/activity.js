@@ -81,6 +81,28 @@ export const useActivityStore = create((set) => ({
         set({activities: body.data})
         return {success: true, message: "fetched activities"};
     },
+    createActivity: async (newActivity) => {
+      //  console.log(newProduct)
+        try {
+          const res = await fetch('http://localhost:5000/api/activity', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newActivity),
+          });
+          const data = await res.json();
+          if (!data.success) {
+            return { success: false, message: data.message };
+          }
+          // Refetch products after creating
+       set((state)=>({activities:[...state.activities,data.data]}))
+          return { success: true, message: 'activities created successfully!' };
+        } catch (error) {
+          return { success: false, message: error.message };
+        }
+      },
+    
     
     createActivityCategory: async (newCategory) => {
      try {
@@ -103,6 +125,41 @@ return{success: true, message: "ActivityCategory created successfully."};
 
 
     },
+    updateActivity: async (activityID, newActivity) => {
+        const res = await fetch(`/api/activity`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({id: activityID,newActivity: newActivity}),
+        });
+        const body = await res.json();
+        if(!body.success){
+            return body;
+        }
+
+        set((state) => ({activities: state.activities.map((activity) => activity._id === activityID ? body.data : activity)}));
+        return {success: true, message: "updated activty"};
+    },
+
+    deleteActivity: async (id) => {
+        try {
+          const res = await fetch(`/api/activity`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({_id: id}),
+          });
+          const data = await res.json();
+          if (!data.success) return { success: false, message: data.message };
+          set(state => ({activities:state.activities.filter(activity => activity._id !== id)}));
+          return { success: true, message: 'activity deleted successfully' };
+        } catch (error) {
+          return { success: false, message: error.message };
+        }
+      },
+    
     deleteActivityCategory: async (name) => {
       
         const res = await fetch('/api/activityCategory',{
