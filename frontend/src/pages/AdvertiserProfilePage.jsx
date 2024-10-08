@@ -25,7 +25,7 @@ const handleButtonClickk = async () => {
 
   const navigate = useNavigate();
   const handleRedirect = () => {
-    navigate('/itineraryPage');
+    navigate('/product');
   };
 
   

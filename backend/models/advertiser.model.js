@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const advertiserModel = new mongoose.Schema({
 
-    username: {
+    userName: {
         type:String,
         required:true,
          default: ""

@@ -24,7 +24,7 @@ function ActivityContainer({activity, activityChanger}) {
         <div className='grid p-2'>
        { keys.map((key,index)=> (
     
-    key==="location" ? <p key={index}>location: {activity.location.coordinates[0]+" , "+activity.location.coordinates[1]}</p> : <p>{key}: {activity[key]}</p>
+    key==="location" ? <p key={index}>location: {activity.location.coordinates}</p> : <p>{key}: {activity[key]}</p>
   ))}
        </div>
 

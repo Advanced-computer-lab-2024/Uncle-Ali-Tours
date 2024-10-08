@@ -4,7 +4,7 @@ export const createAdvertiser = async (req, res) => {
     const advertiser = req.body;
     const newAdvertiser = new Advertiser(advertiser);
 
-    if (!newAdvertiser.username || !newAdvertiser.password|| !newAdvertiser.email) {
+    if (!advertiser.userName || !advertiser.password|| !advertiser.email) {
         return res.status(400).json({ success: false, message: "All fields are required'" });
     }
 
@@ -12,7 +12,7 @@ export const createAdvertiser = async (req, res) => {
         await newAdvertiser.save();
         res.status(201).json({ success: true, message: "Advertiser account created successfully", data: newAdvertiser });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 

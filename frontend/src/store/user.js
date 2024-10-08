@@ -103,8 +103,8 @@ const deleteTourist = async (userName) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "amin",
-        type: "tour guide",
+        userName: "dds",
+        type: "tourist",
     }, 
     setUser: (user) => set({user}),
     createUser: async (newUser = {}) => {
