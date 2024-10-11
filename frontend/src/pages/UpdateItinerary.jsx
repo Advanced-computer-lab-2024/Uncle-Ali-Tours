@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 import { useItineraryStore } from '../store/itinerary';
-import toast, { Toaster } from 'react-hot-toast';
-import { useUserStore } from '../store/user';
-import { Link } from 'react-router-dom';
 import { useTagStore } from '../store/tag';
-import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../store/user';
 function UpdateItinerary() {
+    const navigate = useNavigate();
     const { user } = useUserStore();
     const { currentItinerary, setCurrentItinerary, updateItinerary } = useItineraryStore(); 
     const [currItinerary, setNewItinerary] = useState({});
@@ -58,6 +58,7 @@ function UpdateItinerary() {
     };
 
     const handleUpdate = async () => {
+        
       let tempArr = []
       activityFields.map((activity, index) => (
         tempArr = [...tempArr,{name:activity,duration:durationFields[index]}]
@@ -79,7 +80,7 @@ function UpdateItinerary() {
       } else {
         toast.error(message, { className: "text-white bg-gray-800" });
         // Stay on the page if adding itinerary failed
-      }     
+      }
     };
 
     const handleCancel = () => {
@@ -280,7 +281,6 @@ function UpdateItinerary() {
                   </Link>
               </div>
           </div>
-          <Toaster />
       </div>
     );
 }

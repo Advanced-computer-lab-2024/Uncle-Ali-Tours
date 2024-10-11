@@ -1,10 +1,9 @@
-import React from 'react'
-import { useState } from 'react';
+import React from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import {dialog} from '../components/Dialog.jsx'
-import { formdialog } from './FormDialog.jsx';  
 import { Link } from 'react-router-dom';
+import { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
+import { formdialog } from './FormDialog.jsx';
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
   const keys = Object.keys(itinerary)
@@ -47,7 +46,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
       <ul>
         {itinerary.tourLocations.map((loc, index) => (
           <li key={index}>
-            <p>{itinerary.tourLocations[index]}</p>
+            <p>{loc}</p>
           </li>
         ))}
       </ul>
@@ -55,7 +54,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
       <ul>
         {itinerary.availableDates.map((date, index) => (
           <li key={index}>
-            <p>{itinerary.availableDates[index]}</p>
+            <p>{date}</p>
           </li>
         ))}
       </ul>
@@ -63,7 +62,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
       <ul>
         {itinerary.availableTimes.map((time, index) => (
           <li key={index}>
-            <p>{itinerary.availableTimes[index]}</p>
+            <p>{time}</p>
           </li>
         ))}
       </ul>
@@ -71,7 +70,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
        </div>
         <div className='flex'>
         <Link 
-          to='/updateItinerary' 
+          to='/updateItinerary'
           onClick={()=>(setCurrentItinerary(itinerary))}
           className='mr-4 transform transition-transform duration-300 hover:scale-125'
         >

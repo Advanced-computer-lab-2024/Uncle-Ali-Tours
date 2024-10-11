@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 
 
@@ -82,8 +82,8 @@ export const useItineraryStore = create((set) => ({
             return body;
         }
 
-        set((state) => ({itineraries: state.itineraries.map((itinerary) => itineraries._id === itineraryID ? body.data : itinerary)}));
-        return {success: true, message: "updated interenary"};
+        set((state) => ({itineraries: state.itineraries.map((itinerary) => itinerary._id === itineraryID ? body.data : itinerary)}));
+        return {success: true, message: "updated itinerary"};
     },
 }
 ));
