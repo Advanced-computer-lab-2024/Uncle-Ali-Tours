@@ -29,14 +29,15 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
         <div className='grid p-2'>
        
       <h2>{itinerary.name}</h2>
+      <p>Preference Tag: {itinerary.preferenceTag}</p>
       <p>Language: {itinerary.language}</p>
       <p>Price: ${itinerary.price}</p>
       <h3>Activities:</h3>
       <ul>
         {itinerary.activities.map((activity, index) => (
-          <li key={index}>
-            <p>Name: {activity.name}</p>
-            <p>Duration: {activity.duration} hours</p>
+          <li key={index+1}>
+            <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
+            
           </li>
         ))}
       </ul>
