@@ -32,6 +32,7 @@ app.use("/api/advertiser", advertiserRoute);
 app.use("/api/tourist",touristRoutes);
 app.use("/api/prefrenceTag",preferencetagRoute);
 app.use("/api/attractions", attractionsRoute)
+
 app.listen(PORT, () => {
     connectDB();
     console.log(`server is running on port ${PORT}`);

@@ -29,9 +29,12 @@ const TourGuideProfilePage = () =>{
         navigate('/itineraryPage');
     };
 
-    useEffect(()=>{
-         getGuide({userName : user.userName},{});
-    })
+    useEffect(() => {
+        if (user.type !== 'tour guide') {
+            navigate('/');
+        }
+    }, []);
+
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
             <Toaster/>

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useUserStore } from '../store/user';
 import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { deleteUser } = useUserStore();
   const [accountUsername, setAccountUsername] = useState('');
   const [accountType, setAccountType] = useState('');
@@ -21,6 +23,13 @@ const AdminDashboard = () => {
 };
 
     const {createUser, user} = useUserStore();
+
+    useEffect(() => {
+        if (user.type !== 'admin') {
+            navigate('/');
+        }
+    }, []);
+
 
     const handleAddAdmin =  async function(type) {
         const passedUser = adminData

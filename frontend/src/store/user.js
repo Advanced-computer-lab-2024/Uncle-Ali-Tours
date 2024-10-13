@@ -103,10 +103,10 @@ const deleteTourist = async (userName) => {
 
 export const useUserStore = create((set) => ({
     user: {
-        userName: "dds",
-        type: "tourist",
+        userName: "",
+        type: "",
     }, 
-    setUser: (user) => set({user}),
+    setUser: (user) => set({user:user}),
     createUser: async (newUser = {}) => {
         let typeRes;
         const type = newUser.type;
@@ -156,6 +156,7 @@ export const useUserStore = create((set) => ({
             if (!body.success) {
                 return body;
             }
+            localStorage.setItem("user", JSON.stringify({"userName": body.data.userName, "type": body.data.type}));
             set({user: {"userName": body.data.userName, "type": body.data.type}});
         
 
@@ -166,7 +167,6 @@ export const useUserStore = create((set) => ({
         }
 
         
-
         return{success: true, message: "User created successfully."};
     },
     deleteUser: async (userName, type) => {
@@ -209,6 +209,31 @@ export const useUserStore = create((set) => ({
         } catch (error) {
             return { success: false, message: error.message };
         }
+    },
+    login:  async (credentials = {}) => {
+        try {
+            const res = await fetch("/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(credentials),
+            });
+            const body = await res.json();
+            if (!body.success) {
+                return body;
+            }
+            console.log(body.data[0].type);
+            set({user: {"userName": body.data[0].userName, "type": body.data[0].type}});
+            localStorage.setItem("user", JSON.stringify({"userName": body.data[0].userName, "type": body.data[0].type}));
+            return {success: true, message: "Login successful.", type: body.data[0].type};
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
+    logout: () => {
+        set({user: {userName: "", type: ""}});
+        localStorage.removeItem("user");
     }
     
     

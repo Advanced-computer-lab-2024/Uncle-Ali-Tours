@@ -22,8 +22,56 @@ import TouristProfile from './TouristProfile';
 import MuseumsPage from "./MuseumsPage";
 import ActivityPage from "./ActivityPage";
 import CreateActivity from "./CreateActivity";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUserStore } from "../store/user";
+import { useGuideStore } from "../store/tourGuide";
+import { useSellerStore } from "../store/seller";
+import { useTouristStore } from "../store/tourist";
+import { useAdvertiserstore } from "../store/advertiser";
 function App() {
+  const { logout, setUser } = useUserStore();
+  const { getGuide } = useGuideStore();
+  const { getSeller } = useSellerStore();
+  const { getTourist } = useTouristStore();
+  const { getAdvertiser } = useAdvertiserstore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      setUser(user);
+      console.log(user);
+      switch (user.type) {
+        case "tour guide":
+          getGuide({userName : user.userName},{});
+          break;
+        case "advertiser":
+          getAdvertiser({userName : user.userName},{});
+          break;
+        case "seller":
+          getSeller({userName : user.userName},{});
+          break;
+        case "tourist":
+          getTourist({userName : user.userName},{});
+          break;
+        case "admin":
+          break;
+      
+        default:
+          break;
+      }
+    }
+  },[]);
+
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
+    <div>
     <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-2vh)] mt-[1vh] w-[calc(100vw-2vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
       <Navbar />
       <Routes>
@@ -52,6 +100,12 @@ function App() {
         <Route path="/createActivity" element={<CreateActivity/>}/>
     
       </Routes>
+    </div>
+    <div className="mx-auto w-fit">
+        <button onClick={() => handleLogout()} className="mx-auto">
+          LOGOUT
+        </button>
+      </div>
     </div>
   );
 }

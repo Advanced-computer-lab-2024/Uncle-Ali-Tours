@@ -5,12 +5,15 @@ export const loginUser = async (req, res) => {
     const credentials = req.body;
     try {
         const user = await User.find(credentials);
+        if(user.length === 0) {
+            return res.status(404).json({success: false, message: 'Wrong credentials' });
+        }
         res.json({success: user.length > 0, data: user});
-        //todo: handle cases
     } catch (error) {
         res.status(500).json({success: false, message: error.message });
     }
 }
+
 
 export const createUser = async (req, res) => {
     const user = req.body;

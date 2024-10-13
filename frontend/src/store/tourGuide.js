@@ -17,7 +17,7 @@ export const useGuideStore = create((set) => ({
         });
         const body = await res.json();
         if (!body.success){
-            return (body)
+            return ({body})
         }
         set({guide: body.data[0]})
         return {success: true, message: "fetched attractions"};

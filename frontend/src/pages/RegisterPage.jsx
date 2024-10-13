@@ -3,6 +3,10 @@ import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useAdvertiserstore } from '../store/advertiser';
+import { useGuideStore } from '../store/tourGuide';
+import { useSellerStore } from '../store/seller';
+import { useTouristStore } from '../store/tourist';
 function RegisterPage() {
     const [newUser, setNewUser] = React.useState({
         userName: "",
@@ -24,6 +28,10 @@ function RegisterPage() {
 
 
     const {createUser} = useUserStore();
+    const {getAdvertiser} = useAdvertiserstore();
+    const {getGuide} = useGuideStore();
+    const {getSeller} = useSellerStore();
+    const {getTourist} = useTouristStore();
 
     const handleAddUser =  async function(type) {
         const passedUser = newUser
@@ -34,12 +42,15 @@ function RegisterPage() {
         await new Promise(r => setTimeout(r, 2000));
         switch (type) {
             case "tour guide":
+                await getGuide({userName : newUser.userName},{});
                 navigate("/TourGuideProfilePage");
                 break;
             case "advertiser":
+                await getAdvertiser({userName : newUser.userName},{});
                 navigate("/advertiserProfile");
                 break;
             case "seller":
+                await getSeller({userName : newUser.userName},{});
                 navigate("/sellerProfile");
                 break;
             default:
@@ -55,8 +66,9 @@ function RegisterPage() {
         const {success, message} = await createUser(passedTourist);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
          if (success) {
-          await new Promise(r => setTimeout(r, 2000));
-          navigate("/touristProfile");
+            await new Promise(r => setTimeout(r, 2000));
+            await getTourist({userName : tourist.userName},{});
+            navigate("/touristProfile");
          }
     }
 
