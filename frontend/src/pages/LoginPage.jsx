@@ -3,27 +3,38 @@ import { useState, useEffect } from 'react'
 import { useUserStore } from '../store/user'
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import { useGuideStore } from "../store/tourGuide";
+import { useSellerStore } from "../store/seller";
+import { useTouristStore } from "../store/tourist";
+import { useAdvertiserstore } from "../store/advertiser";
 function LoginPage() {
   const [credentials, setCredentials] = useState({
     userName: '',
     password: ''
   })
   const {login} = useUserStore()
+  const { getGuide } = useGuideStore();
+  const { getSeller } = useSellerStore();
+  const { getTourist } = useTouristStore();
+  const { getAdvertiser } = useAdvertiserstore();
   const navigate = useNavigate()
 
-  const redirect = (type) => {
+  const redirect = async (type) => {
     switch (type) {
       case "tour guide":
+        await getGuide({userName : credentials.userName},{});
         navigate("/TourGuideProfilePage");
         break;
       case "advertiser":
+        await getAdvertiser({userName : credentials.userName},{});
         navigate("/advertiserProfile");
         break;
       case "seller":
+        await getSeller({userName : credentials.userName},{});
         navigate("/sellerProfile");
         break;
       case "tourist":
+        getTourist({userName : credentials.userName},{});
         navigate("/touristProfile");
         break;
       case "admin":

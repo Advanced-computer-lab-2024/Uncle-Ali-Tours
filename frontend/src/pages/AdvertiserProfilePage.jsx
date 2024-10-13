@@ -63,17 +63,6 @@ return (
             />
           </label>
           <label>
-            password:
-            <input
-              type="text"
-              name="password"
-              defaultValue={advertiser.password || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, password: e.target.value })}
-            />
-          </label>
-          <label>
             WEBSITE:
             <input
               type="text"

@@ -20,6 +20,7 @@ export const useTouristStore = create((set) => ({
         if (!body.success){
             return (body)
         }
+        delete body.data[0].password;
         set({tourist: body.data[0]})
         return {success: true, message: "fetched attractions"};
         },

@@ -19,6 +19,7 @@ export const useSellerStore = create((set) => ({
         if (!body.success) {
             return body;
         }
+        delete body.data[0].password;
         set({ sell: body.data[0] });
         console.log(body.data[0])
         return { success: true, message: "Fetched seller data" };

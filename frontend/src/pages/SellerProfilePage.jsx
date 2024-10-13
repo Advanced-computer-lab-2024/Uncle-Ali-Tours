@@ -84,17 +84,6 @@ return (
               onChange={(e) => setUpdatedSeller({ ...updatedSeller, mobileNumber: e.target.value })}
             />
           </label>
-          <label>
-            Password:
-            <input
-              type="text"
-              name="password"
-              defaultValue={sell.password || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedSeller({ ...updatedSeller, password: e.target.value })}
-            />
-          </label>
         </div>
         <div className="flex justify-between mt-6">
           <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>
