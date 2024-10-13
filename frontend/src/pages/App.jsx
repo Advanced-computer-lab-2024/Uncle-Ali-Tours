@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Link } from "react-router-dom";
 import ActivityCategory from "./ActivityCategory";
 import ViewAttractions from "./ViewAttractions";
 import PreferenceTag from "./PreferenceTag";
@@ -22,6 +22,7 @@ import TouristProfile from './TouristProfile';
 import MuseumsPage from "./MuseumsPage";
 import ActivityPage from "./ActivityPage";
 import CreateActivity from "./CreateActivity";
+import ChangePassword from "./ChangePassword";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -93,6 +94,7 @@ function App() {
         <Route path="/product" element={<Productpage />} />
         <Route path="/TouristProfile" element={<TouristProfile />} />
         <Route path="/MuseumsPage" element={<MuseumsPage/>}/>
+        <Route path="/changePassword" element={<ChangePassword/>}/>
 
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         <Route path="/TourGuideProfilePage" element={<TourGuideProfilePage/>}/>
@@ -102,9 +104,12 @@ function App() {
       </Routes>
     </div>
     <div className="mx-auto w-fit">
-        <button onClick={() => handleLogout()} className="mx-auto">
+        <button onClick={() => handleLogout()} className="mx-auto px-2">
           LOGOUT
         </button>
+        <Link to='/changePassword' className="mx-auto">
+          changePassword
+        </Link>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import { deleteUser } from '../../../backend/controllers/user.controller';
+import ChangePassword from '../pages/ChangePassword';
 
 
 const addTourGuide = async (newUser) => {
@@ -234,7 +235,23 @@ export const useUserStore = create((set) => ({
     logout: () => {
         set({user: {userName: "", type: ""}});
         localStorage.removeItem("user");
-    }
+    },
+
+    changePassword: async ({userName,oldPassword, newPassword}) => {
+        try {
+            const res = await fetch("/api/user/changePassword", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({userName: userName, oldPassword:oldPassword, newPassword:newPassword}),
+            });
+            const body = await res.json();
+            return body;
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
     
     
 }));

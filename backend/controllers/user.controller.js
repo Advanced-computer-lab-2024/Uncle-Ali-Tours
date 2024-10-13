@@ -55,3 +55,21 @@ export const deleteUser = async (req, res) => {
         res.status(500).json({success:false, message: error.message });
     }
 }
+
+export const changePassword = async (req, res) => {
+    const { userName, oldPassword, newPassword } = req.body;
+    if(!userName || !oldPassword || !newPassword) {
+        return res.status(400).json({success:false, message: 'All fields are required' });  
+    }
+    const user = await User.find({userName: userName, password: oldPassword});
+    if(user.length === 0) {
+        return res.status(404).json({success:false, message: 'Wrong credentials' });
+    }
+    try {
+        await User.findOneAndUpdate({ userName: userName }, { password: newPassword });
+        res.json({success:true, message: 'Password changed successfully' });
+    }
+    catch (error) {
+        res.status(500).json({success:false, message: error.message });
+    }
+}
