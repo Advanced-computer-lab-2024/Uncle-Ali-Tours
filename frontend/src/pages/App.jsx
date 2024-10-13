@@ -58,6 +58,9 @@ function App() {
           break;
         case "admin":
           break;
+
+        case "governor":
+          break;
       
         default:
           break;
@@ -66,10 +69,6 @@ function App() {
   },[]);
 
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
 
   return (
     <div>
@@ -78,7 +77,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/viewAttractions" element={<ViewAttractions />} />
         <Route path="/viewActivities" element={<ViewActivities />} />
@@ -93,7 +91,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/product" element={<Productpage />} />
         <Route path="/TouristProfile" element={<TouristProfile />} />
-        <Route path="/MuseumsPage" element={<MuseumsPage/>}/>
+        <Route path="/attraction" element={<MuseumsPage/>}/>
         <Route path="/changePassword" element={<ChangePassword/>}/>
 
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
@@ -104,9 +102,6 @@ function App() {
       </Routes>
     </div>
     <div className="mx-auto w-fit">
-        <button onClick={() => handleLogout()} className="mx-auto px-2">
-          LOGOUT
-        </button>
         <Link to='/changePassword' className="mx-auto">
           changePassword
         </Link>

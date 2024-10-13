@@ -26,6 +26,10 @@ function HomePage() {
         case "admin":
           navigate("/admin");
           break;
+
+        case "governor":
+          navigate("/attraction");
+          break;
       
         default:
           break;

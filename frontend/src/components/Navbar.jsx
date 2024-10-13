@@ -1,6 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../store/user';
 function Navbar() {
+  const navigate = useNavigate();
+  const { logout } = useUserStore();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div>
         <nav className='flex rounded-lg justify-between items-center mx-[1.5vh] mt-[1.5vh] h-16 bg-[#161821f0] text-lg relative shadow-sm font-mono' role='navigation'>
@@ -14,6 +23,7 @@ function Navbar() {
             <Link to='/' className='p-4'>Home</Link>
             <Link to='/' className='p-4'>About</Link>
             <Link to='/' className='p-4'>Contact</Link>
+            <button onClick={() => handleLogout()} className='bg-[#dc5809] m-2 py-1 px-4 rounded-full'>Logout</button>
             </div>
         </nav>
     </div>
