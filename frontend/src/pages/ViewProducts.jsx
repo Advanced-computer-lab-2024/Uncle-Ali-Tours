@@ -39,7 +39,7 @@ function ViewProducts() {
         </div>
         {
             products.map((product, index)=> (
-                <ProductContainer key={index}  product={product}/>   
+                !product.archive && <ProductContainer key={index}  product={product}/>   
             ))
         }
         <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>

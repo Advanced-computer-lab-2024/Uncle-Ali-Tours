@@ -34,6 +34,10 @@ creator:{
     type:String,
 
 },
+archive:{
+    type:Boolean,
+    default:false
+},
 Available_quantity: {
     type: Number,
 }

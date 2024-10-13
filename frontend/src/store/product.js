@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { archiveProduct } from '../../../backend/controllers/product.controller';
 export const useProductStore = create((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
@@ -85,6 +86,24 @@ export const useProductStore = create((set) => ({
       if (!data.success) return { success: false, message: data.message };
       set((state) => ({products: state.products.map((product) => product._id === id ? data.data : product)}));
       return { success: true, message: "Product updated successfully." };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  archiveProduct: async (id, archive) => {
+    try {
+      const res = await fetch(`/api/product/archiveProduct/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({archive: archive})
+      });
+      const data = await res.json();
+      if (!data.success) return { success: false, message: data.message };
+      set((state) => ({products: state.products.map((product) => product._id === id ? data.data : product)}));
+      return { success: true, message: "Product archived successfully." };
     } catch (error) {
       return { success: false, message: error.message };
     }

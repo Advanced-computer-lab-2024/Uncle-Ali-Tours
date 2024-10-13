@@ -75,6 +75,21 @@ export const updateProduct = async (req, res) => {
     }
 };
 
+export const archiveProduct = async (req, res) => {
+    const { id } = req.params;
+    const { archive } = req.body;
+    if(!id) {
+        return res.status(400).json({success:false, message: 'id is required' });
+        
+    }
+    try {
+        const archivedProduct = await Product.findByIdAndUpdate(id, { archive: archive }, { new: true });
+        res.json({ success: true, data: archivedProduct });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 
 
