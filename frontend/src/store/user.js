@@ -224,7 +224,7 @@ export const useUserStore = create((set) => ({
             if (!body.success) {
                 return body;
             }
-            console.log(body.data[0].type);
+            console.log(body.data[0]);
             set({user: {"userName": body.data[0].userName, "type": body.data[0].type}});
             localStorage.setItem("user", JSON.stringify({"userName": body.data[0].userName, "type": body.data[0].type}));
             return {success: true, message: "Login successful.", type: body.data[0].type};

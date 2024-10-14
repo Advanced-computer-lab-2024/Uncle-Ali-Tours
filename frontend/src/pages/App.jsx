@@ -23,6 +23,7 @@ import MuseumsPage from "./MuseumsPage";
 import ActivityPage from "./ActivityPage";
 import CreateActivity from "./CreateActivity";
 import ChangePassword from "./ChangePassword";
+import FileComplaint from "./FileComplaint";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -30,6 +31,7 @@ import { useGuideStore } from "../store/tourGuide";
 import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
+
 function App() {
   const { logout, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -93,7 +95,7 @@ function App() {
         <Route path="/TouristProfile" element={<TouristProfile />} />
         <Route path="/attraction" element={<MuseumsPage/>}/>
         <Route path="/changePassword" element={<ChangePassword/>}/>
-
+        <Route path="/fileComplaint" element={<FileComplaint/>}/>
         <Route path="/updateItinerary" element={<UpdateItinerary />} />
         <Route path="/TourGuideProfilePage" element={<TourGuideProfilePage/>}/>
         <Route path="/activityPage" element={<ActivityPage/>}/>

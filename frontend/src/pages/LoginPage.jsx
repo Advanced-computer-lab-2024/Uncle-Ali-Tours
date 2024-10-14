@@ -67,10 +67,10 @@ function LoginPage() {
 
   const handleSubmit = async () => {
     const {success, message, type} =  await login(credentials)
-    console.log(type)
     success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
     if (success) {
       await new Promise(r => setTimeout(r, 2000));
+
       redirect(type);
     }
   }
