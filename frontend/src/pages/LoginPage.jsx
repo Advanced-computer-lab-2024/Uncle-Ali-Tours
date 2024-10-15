@@ -70,7 +70,6 @@ function LoginPage() {
   useEffect(() => {
     localStorage.removeItem('email')
     document.addEventListener("keydown", handleKeyPress, false);
-
     return () => {
       document.removeEventListener("keydown", handleKeyPress, false);
     };
@@ -79,10 +78,10 @@ function LoginPage() {
 
   const handleSubmit = async () => {
     const {success, message, type} =  await login(credentials)
-    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    const t = success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
     if (success) {
       await new Promise(r => setTimeout(r, 2000));
-
+      toast.remove(t)
       redirect(type);
     }
   }
@@ -106,7 +105,7 @@ function LoginPage() {
             <button onClick={() => (handleSubmit())} className='bg-black text-white m-6 p-2 rounded'>Login</button>
         </div>
         <ForgotPassword visable={forgotPassword} hide={hideTab} verify={verify}/>
-        <VerifyOTP visable={true} hide={hideTab} email={email}/>
+        <VerifyOTP visable={visVerify} hide={hideTab} email={email}/>
     </div>
   )
 }

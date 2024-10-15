@@ -35,10 +35,11 @@ function ChangePassword() {
             forgot: forgot
         }
         const {success, message} =  await changePassword(data)
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+        const t = success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
         if (success) {
             localStorage.removeItem('email')
             await new Promise(r => setTimeout(r, 1000));
+            toast.remove(t)
             navigate('/')
         }
 

@@ -58,10 +58,10 @@ export const deleteUser = async (req, res) => {
 
 export const changePassword = async (req, res) => {
     const { userName, oldPassword, newPassword, forgot, email } = req.body;
-    console.log(req.body);
+    try {
     if(forgot) {
         await User.findOneAndUpdate({ email: email }, { password: newPassword });
-        res.json({success:true, message: 'Password changed successfully' });
+        return res.json({success:true, message: 'Password changed successfully' });
     }
 
     if(!userName || !oldPassword || !newPassword) {
@@ -71,11 +71,11 @@ export const changePassword = async (req, res) => {
     if(user.length === 0) {
         return res.status(404).json({success:false, message: 'Wrong credentials' });
     }
-    try {
+    
         await User.findOneAndUpdate({ userName: userName }, { password: newPassword });
         res.json({success:true, message: 'Password changed successfully' });
     }
     catch (error) {
-        res.status(500).json({success:false, message: error.message });
+        return res.status(500).json({success:false, message: error.message });
     }
 }

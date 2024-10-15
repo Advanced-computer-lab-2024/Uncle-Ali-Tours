@@ -64,10 +64,10 @@ export const verifyOTP = async (req, res) => {
         const { email, otp } = req.body;
         const userOTP = await OTP.findOne({ email });
         if (!email) {
-            throw new Error("Email not found");
+            throw new Error("OTP request not found");
         }
         if (!userOTP) {
-            throw new Error("OTP request found");
+            throw new Error("OTP request not found");
         }
         const {expiry, otp: hashedOTP} = userOTP;
         const match = await compare(otp, hashedOTP);
