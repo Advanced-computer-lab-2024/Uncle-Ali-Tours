@@ -151,7 +151,7 @@ export const useUserStore = create((set) => ({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({"userName": newUser.userName, "password": newUser.password, "type": type}),
+                body: JSON.stringify({"userName": newUser.userName, "password": newUser.password, "type": type, "email": newUser.email}),
             });
             const body = await res.json();
             if (!body.success) {
@@ -237,14 +237,50 @@ export const useUserStore = create((set) => ({
         localStorage.removeItem("user");
     },
 
-    changePassword: async ({userName,oldPassword, newPassword}) => {
+    changePassword: async ({userName = "",oldPassword = "", newPassword = "", forgot = false, email = ""}) => {
+        console.log(forgot);
         try {
             const res = await fetch("/api/user/changePassword", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({userName: userName, oldPassword:oldPassword, newPassword:newPassword}),
+                body: JSON.stringify({userName: userName, oldPassword:oldPassword, newPassword:newPassword, forgot:forgot, email:email}),
+            });
+            const body = await res.json();
+            return body;
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
+
+    forgetPassword: async (email) => {
+        try {
+            const res = await fetch("/api/otp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email: email, subject: "Password Reset", message: "Your OTP is: "}),
+            });
+            const body = await res.json();
+            if (!body.success) {
+                return body;
+            }
+            return {success: true, message: "OTP sent successfully."};
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
+
+    verifyOTP: async (email, otp) => {
+        try {
+            const res = await fetch("/api/otp/verify", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email: email, otp: otp}),
             });
             const body = await res.json();
             return body;

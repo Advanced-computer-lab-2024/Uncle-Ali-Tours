@@ -1,10 +1,17 @@
 import Seller from "../models/seller.model.js";
+import User from "../models/user.model.js";
 
 export const createSeller = async (req, res) => {
     const sellerData = req.body;
 
     if (!sellerData.userName || !sellerData.password|| !sellerData.email) {
         return res.status(400).json({ success: false, message: "All fields are required'" });
+    }
+
+    const duplicat = [...await User.find({userName: sellerData.userName}),...await User.find({email: sellerData.email})];
+    if(duplicat.length > 0) {
+        return res.status(400).json({success: false, message: 'User already exists' });
+        
     }
 
     const newSeller = new Seller(sellerData);

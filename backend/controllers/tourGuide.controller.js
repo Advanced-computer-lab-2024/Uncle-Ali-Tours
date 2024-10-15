@@ -10,9 +10,10 @@ export const creatTourGuide = async(req,res) =>{
             return res.status(400).json({success:false, message: 'All fields are required' });
     }
 
-    const duplicat = await User.find({userName: tourGuide.userName});
+    const duplicat = [...await User.find({userName: tourGuide.userName}),...await User.find({email: tourGuide.email})];
+    console.log(duplicat);
     if(duplicat.length > 0) {
-        return res.status(400).json({success: false, message: 'UserName already exists' });
+        return res.status(400).json({success: false, message: 'User already exists' });
     }
 
     if( !tourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){

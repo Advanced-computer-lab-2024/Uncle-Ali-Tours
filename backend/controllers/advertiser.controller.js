@@ -1,11 +1,17 @@
 import Advertiser from "../models/advertiser.model.js"; 
-
+import User from "../models/user.model.js";
 export const createAdvertiser = async (req, res) => {
     const advertiser = req.body;
     const newAdvertiser = new Advertiser(advertiser);
 
     if (!advertiser.userName || !advertiser.password|| !advertiser.email) {
         return res.status(400).json({ success: false, message: "All fields are required'" });
+    }
+
+    const duplicat = [...await User.find({userName: advertiser.userName}),...await User.find({email: advertiser.email})];
+    if(duplicat.length > 0) {
+        return res.status(400).json({success: false, message: 'User already exists' });
+        
     }
 
     try {

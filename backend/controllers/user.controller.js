@@ -17,7 +17,7 @@ export const loginUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
     const user = req.body;
-    if(!user.userName || !user.password || !user.type) {
+    if(!user.userName || !user.password || !user.type || !user.email) {
         return res.status(400).json({success:false, message: 'All fields are required' });
         
     }
@@ -57,7 +57,13 @@ export const deleteUser = async (req, res) => {
 }
 
 export const changePassword = async (req, res) => {
-    const { userName, oldPassword, newPassword } = req.body;
+    const { userName, oldPassword, newPassword, forgot, email } = req.body;
+    console.log(req.body);
+    if(forgot) {
+        await User.findOneAndUpdate({ email: email }, { password: newPassword });
+        res.json({success:true, message: 'Password changed successfully' });
+    }
+
     if(!userName || !oldPassword || !newPassword) {
         return res.status(400).json({success:false, message: 'All fields are required' });  
     }

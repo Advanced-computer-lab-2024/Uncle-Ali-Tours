@@ -8,6 +8,7 @@ function HomePage() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    localStorage.removeItem('email')
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       switch (user.type) {

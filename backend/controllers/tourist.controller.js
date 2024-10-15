@@ -8,9 +8,9 @@ export const createTourist = async(req,res)=>{
     if( !tourist.email | !tourist.userName | !tourist.password | !tourist.mobileNumber | !tourist.nationality | !tourist.dateOfBirth | !tourist.occupation){
             return res.status(400).json({success:false, message: 'All fields are required' });
     }
-    const duplicat = await User.find({userName: tourist.userName});
+    const duplicat = [...await User.find({userName: tourist.userName}),...await User.find({email: tourist.email})];
     if(duplicat.length > 0) {
-        return res.status(400).json({success: false, message: 'UserName already exists' });
+        return res.status(400).json({success: false, message: 'User already exists' });
         
     }
     if( !tourist.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){

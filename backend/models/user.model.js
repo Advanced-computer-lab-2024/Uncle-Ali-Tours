@@ -12,7 +12,13 @@ const userSchema = mongoose.Schema({
     },
     type: {
         type: String,
-        required: true,}
+        required: true,},
+
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     },
     {
     timestamp: true,
