@@ -13,7 +13,7 @@ import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
 import attractionsRoute from './routes/attraction.routes.js';
 import complaintRoutes from './routes/complaint.route.js';
-
+import optRoutes from './routes/otp.route.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -34,6 +34,7 @@ app.use("/api/tourist",touristRoutes);
 app.use("/api/prefrenceTag",preferencetagRoute);
 app.use("/api/attractions", attractionsRoute)
 app.use("/api/complaint", complaintRoutes);
+app.use("/api/otp", optRoutes);
 
 app.listen(PORT, () => {
     connectDB();
