@@ -17,11 +17,11 @@ const activitySchema = new mongoose.Schema({
         type: {
             type: String,  // This should be 'Point' to work with GeoJSON data
             enum: ['Point'],  // Only 'Point' is allowed for GeoJSON
-            required: true
+            required: false
         },
         coordinates: {
             type: [Number],  // An array to store [longitude, latitude] as per GeoJSON
-            required: true
+            required: false
         }
     },
     price: {

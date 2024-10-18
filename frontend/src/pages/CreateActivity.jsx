@@ -113,14 +113,14 @@ function CreateActivity() {
         />
 
 
-           
+{/*            
             <input
               type="text"
               name="location"
               placeholder="Enter location"
               className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
               required
-            />
+            /> */} 
           
 
         <input
@@ -142,6 +142,25 @@ function CreateActivity() {
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
         />
+        <input
+          type="boolean"
+          name="bookingOpen"
+          placeholder="bookingOpen"
+          value={newActivity.bookingOpen}
+          onChange={handleInputChange}
+          className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
+          required
+        />
+        <input
+          type="text"
+          name="creator"
+          placeholder="Creator"
+          value={newActivity.creator}
+          onChange={handleInputChange}
+          className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
+          required
+        />
+        
 
         {/* Tags Section */}
         <h3 className="text-lg font-semibold mb-2">Tags</h3>
