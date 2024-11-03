@@ -5,18 +5,26 @@ import { useUserStore } from '../store/user';
 import { Link } from 'react-router-dom';
 import { useTagStore } from '../store/tag';
 import { useNavigate } from 'react-router-dom';
+import Rating from 'react-rating';
+
 function UpdateItinerary() {
     const { user } = useUserStore();
-    const { currentItinerary, setCurrentItinerary, updateItinerary } = useItineraryStore(); 
+    const { currentItinerary, setCurrentItinerary, updateItinerary } = useItineraryStore();
+    const { createProductReview } = useItineraryStore(); 
     const [currItinerary, setNewItinerary] = useState({});
     const originalItinerary = currentItinerary;
     const { tags, getTags } = useTagStore();
     const {navigate} = useNavigate();
+
+    
+    const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+
     useEffect(() => {
         getTags();
         setNewItinerary(currentItinerary); // Set the initial itinerary values
     }, [currentItinerary]); // Dependency on currentItinerary
-
+    
     const [activityFields, setActivityFields] = useState([]);
     const [durationFields, setDurationFields] = useState([]);
     const [locationFields, setLocationFields] = useState([]);
@@ -94,6 +102,30 @@ function UpdateItinerary() {
     const handleSelectionChange = (e) => {
         setSelectedOption(e.target.value);
         setNewItinerary({ ...currItinerary, preferenceTag: e.target.value });
+    };
+
+    const handleSubmits = async (e) => {
+        e.preventDefault(); // Prevent default form submission
+        
+        console.log('Itinerary ID:', itineraryID);
+        console.log('Rating:', rating);
+        console.log('Comment:', comment);
+    
+        if (!itineraryID) {
+          console.error('Error: itineraryId is missing');
+          return;
+        }
+        
+        // Call createProductReview with itineraryID
+        const { success, message } = await createProductReview(itineraryID, rating, comment);
+        if (success) {
+          alert('Review added successfully!');
+          // Clear the form fields
+          setRating(0);
+          setComment('');
+        } else {
+          alert('Failed to add review: ' + message);
+        }
     };
 
     return (
@@ -272,7 +304,20 @@ function UpdateItinerary() {
                       value={currItinerary.dropoffLocation || ""} // Ensure the value is tied to currItinerary
                       onChange={(e) => setNewItinerary({ ...currItinerary, dropoffLocation: e.target.value })} 
                   />
+                  
               </div>
+
+              <div>
+      <h3>Add a Review</h3>
+      <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
+      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
+      <button onClick={handleSubmits}>Submit</button>
+    </div>
+
+              <div className='flex flex-col items-center space-y-4'>
+              
+          </div>
+
               <div>
                   <button className='px-5 py-2 bg-green-700 text-white cursor-pointer border-none m-6 p-2 rounded transform transition-transform duration-300 hover:scale-105' onClick={handleSubmit}>Update</button>
                   <Link to='/itineraryPage'>

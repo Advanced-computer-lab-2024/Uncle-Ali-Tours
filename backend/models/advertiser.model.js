@@ -47,8 +47,7 @@ const advertiserModel = new mongoose.Schema({
    
     email: {
         required: true,
-        type: String,
-        unique: true 
+        type: String
     },
     companyName: {
         required: false,

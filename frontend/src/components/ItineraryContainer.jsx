@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
+import {useUserStore} from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
-import { useUserStore } from '../store/user.js';
+import { Card } from 'react-bootstrap';
+import Rating from './Rating';
+
+
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {user} = useUserStore();
+  //const {user} = useUserStore();
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
+  const { createProductReview } = useItineraryStore();
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const user = useUserStore((state) => state.user);
+  //const itineraryID = itinerary._id;
+
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
     `${key}: ${itinerary[key]}`
   ))
   const { showDialog } = dialog()
   const { showFormDialog } = formdialog()
+
+  
 
   const handleClick = () => {
     showDialog()
@@ -23,8 +35,43 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     showFormDialog()
     itineraryChanger(itinerary)
   }
+
   console.log("User data:", user);
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
+    const itineraryID = itinerary._id;
+    console.log('Itinerary ID:', itineraryID);
+    console.log('Rating:', rating);
+    console.log('Comment:', comment);
+    if (!itineraryID) {
+      console.error('Error: itineraryId is missing');
+      return;
+    }
+    
+    
+    console.log('User retrieved from states:', user);
+    const { userId, name } = user;
+    if (!userId || !name) {
+    return { success: false, message: 'User ID and name are required.' };
+    }
+    
+    const { success, message } = await createProductReview(itineraryID, rating, comment,user);
+    
+    if (success) {
+      alert('Review added successfully!');
+      setRating(0);
+      setComment('');
+    } else {
+      alert('Failed to add review: ' + message);
+    }
+};
+
+
+ 
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
@@ -69,7 +116,24 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
         ))}
       </ul>
       <p>Accessibility: {itinerary.accessibility}</p>
-       </div>
+      <p>creator: {itinerary.creator}</p>
+</div>
+
+<Card.Text as='div'>
+          <Rating
+            value={itinerary.rating}
+            text={`${itinerary.numReviews} reviews`}
+          />
+        </Card.Text>
+
+<div>
+      <h3>Add a Review</h3>
+      <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
+      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
+      <button onClick={handleSubmit}>Submit</button>
+    </div>
+
+
         <div className='flex'>
         <Link 
           to='/updateItinerary'

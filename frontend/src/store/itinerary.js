@@ -1,8 +1,8 @@
 import { create } from 'zustand';
+import axios from 'axios';
 
 
-
-export const useItineraryStore = create((set) => ({
+export const useItineraryStore = create((set,get) => ({
     currentItinerary:{},
     setCurrentItinerary:(itinerary) => set({currentItinerary:itinerary}),
     itineraries: [],
@@ -85,6 +85,65 @@ export const useItineraryStore = create((set) => ({
         set((state) => ({itineraries: state.itineraries.map((itinerary) => itinerary._id === itineraryID ? body.data : itinerary)}));
         return {success: true, message: "updated itinerary"};
     },
+
+
+    createProductReview: async (itineraryId, rating, comment, user) => {
+        try {
+            if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+                return { success: false, message: 'Rating must be a number between 1 and 5.' };
+            }
+    
+            if (typeof comment !== 'string' || comment.trim() === '') {
+                return { success: false, message: 'Comment cannot be empty.' };
+            }
+    
+            // Check if user is defined, else return an error
+            if (!user || !user.userId || !user.name) {
+                return { success: false, message: 'User information is required.' };
+            }
+    
+            const { userId, name } = user;
+            console.log('User received in function:', user);
+            console.log('Itinerary ID:', itineraryId);
+            console.log('Rating:', rating);
+            console.log('Comment:', comment);
+          
+            const res = await fetch(`/api/itinerary/${itineraryId}/reviews`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ rating, comment, user: userId, name }),
+            });
+    
+            const data = await res.json();
+    
+            if (data.success && data.review) {
+                const currentItinerary = get().currentItinerary || { reviews: [], numReviews: 0, rating: 0 };
+    
+                const updatedItinerary = {
+                    ...currentItinerary,
+                    reviews: [...currentItinerary.reviews, data.review],
+                    numReviews: data.numReviews,
+                    rating: data.rating,
+                };
+    
+                set({ currentItinerary: updatedItinerary });
+                return { success: true, message: data.message };
+            } else {
+                console.error('Error from API:', data.message);
+                return { success: false, message: data.message || 'Could not add review' };
+            }
+        } catch (error) {
+            console.error('Error creating review:', error.message);
+            return { success: false, message: 'Could not add review' };
+        }
+    }
+    
+
+
+
+
 }
 ));
 

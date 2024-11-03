@@ -17,7 +17,7 @@ const AdvertiserProfile = () => {
 const [updatedAdvertiser,setUpdatedAdvertiser]= useState({});  
 const handleButtonClickk = async () => {
     if(!isRequired){
-       const {success, message}  = await updateAdvertiser(user.userName , updatedAdvertiser);
+       const {success, message}  = await updateAdvertiser(user.username , updatedAdvertiser);
        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
     }
@@ -42,7 +42,7 @@ return (
         <div className="w-24 h-24 rounded-full bg-gray-900 mr-5"></div>
         <div>
         <h1 className="text-white text-2xl font-bold">
-      {advertiser.username || 'John Doe'}
+      {advertiser.userName || 'John Doe'}
     </h1>
           <h2 className="text-gray-400 text-xl">Advertiser</h2>
         </div>
@@ -56,7 +56,7 @@ return (
             <input
               type="text"
               name="name"
-              defaultValue={advertiser.username || ''}
+              defaultValue={advertiser.userName || ''}
               className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2" // Darker background and padding for alignment
               readOnly={isRequired}
               onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, username: e.target.value })}
