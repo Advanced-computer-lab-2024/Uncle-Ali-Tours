@@ -22,10 +22,13 @@ const touristModel = new mongoose.Schema({
         type: Date
     },myWallet:{
         type: Number,
-        default: 0
+        default: 100
     },occupation:{
         required:true,
         type: String
+    },myPoints:{
+        type: Number,
+        default: 14000
     },},{
         timestamps: true
     });

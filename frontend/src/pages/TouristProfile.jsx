@@ -4,16 +4,20 @@ import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import {useTouristStore} from '../store/tourist'
 import { useUserStore } from '../store/user';
-
+import Dialog, { dialog } from '../components/Dialog.jsx';
 const TouristProfile = () => {
   
 
   const {user} = useUserStore();
-  const {tourist,getTourist,updateTourist} = useTouristStore();
+  const {tourist,getTourist,updateTourist , redeemPoints} = useTouristStore();
   const [isRequired, setIsRequired] = useState(true);
   const [updatedTourist,setUpdatedTourist]= useState({}); 
+  const [isWalletVisible, setIsWalletVisible] = useState(false);
+  const walletMoney = (tourist.myWallet * user.currencyRate).toFixed(2); // Convert price based on currencyRate
+  const [isRedeemDialogVisible, setIsRedeemDialogVisible] = useState(false);
+  const pointsMoney = ((tourist.myPoints/100) * user.currencyRate).toFixed(2); // Convert price based on currencyRate
+  const { showDialog } = dialog();
 
-   
  
   // 28
 
@@ -43,9 +47,14 @@ const handleProfileUpdate = async () => {
 
 }
 
+const handleWalletClick = () => {
+  setIsWalletVisible(!isWalletVisible);
+};
 
+const handleRedeemClick = () => {
+  showDialog();
+};
 
- 
 
   // Handle product filter based on name, price, etc.
  
@@ -69,8 +78,25 @@ return (
            
            <Link to='/viewProducts'>
           <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link>
-        
+           
            </div>
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
+           {isWalletVisible && (
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white p-4 rounded shadow-lg">
+            <p>You have {walletMoney} {user.chosenCurrency} in your wallet.</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsWalletVisible(false)}>Close</button>
+            </div>
+           )}
+           <Dialog
+           msg={`You have ${tourist.myPoints} points. Do you want to redeem these points for ${pointsMoney} ${user.chosenCurrency}?`}
+           accept={redeemPoints}
+           reject={() => console.log("Redemption canceled")}
+           acceptButtonText="Redeem Points"
+           rejectButtonText="Cancel"
+           />
+
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
+           <br />
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
           

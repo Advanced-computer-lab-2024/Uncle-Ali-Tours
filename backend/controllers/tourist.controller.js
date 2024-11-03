@@ -1,5 +1,6 @@
 import Tourist from "../models/tourist.model.js";
 import User from "../models/user.model.js";
+
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -62,9 +63,7 @@ export const updateTourist = async (req,res) => {
     if(newTourist.userName){
         return res.status(400).json({success:false, message: 'user name is not editable'});
     }
-    if(newTourist.myWallet){
-        return res.status(400).json({success:false, message: 'wallet is not editable'});
-    }
+
     if(newTourist.email){
         if( !newTourist.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
             return res.status(400).json({success:false, message: 'email format is wrong' });
@@ -110,5 +109,34 @@ export const deleteTourist = async(req, res) => {
         res.json({success:true, message: 'tourist deleted successfully' });
     } catch (error) {
         res.status(500).json({success:false, message: error.message });
+    }
+}
+
+export const redeemPoints = async (req, res) => {
+    const { userName } = req.body;
+    try {
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Calculate points to currency
+        const pointsToCurrency = tourist.myPoints / 100;
+
+        // Update wallet and reset points
+        const updatedTourist = await Tourist.findOneAndUpdate(
+            { userName },
+            { myWallet: tourist.myWallet + pointsToCurrency, myPoints: 0 },
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `Redeemed ${tourist.myPoints} points.`,
+            data: updatedTourist,
+        });
+    } catch (error) {
+        console.error("Error redeeming points:", error);
+        res.status(500).json({ success: false, message: "Server error during points redemption" });
     }
 }
