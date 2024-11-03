@@ -24,6 +24,7 @@ import ActivityPage from "./ActivityPage";
 import CreateActivity from "./CreateActivity";
 import ChangePassword from "./ChangePassword";
 import FileComplaint from "./FileComplaint";
+import ChangeCurrency from "./ChangeCurrency";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -31,6 +32,7 @@ import { useGuideStore } from "../store/tourGuide";
 import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
+
 
 function App() {
   const { logout, setUser } = useUserStore();
@@ -100,6 +102,7 @@ function App() {
         <Route path="/TourGuideProfilePage" element={<TourGuideProfilePage/>}/>
         <Route path="/activityPage" element={<ActivityPage/>}/>
         <Route path="/createActivity" element={<CreateActivity/>}/>
+        <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
     
       </Routes>
     </div>

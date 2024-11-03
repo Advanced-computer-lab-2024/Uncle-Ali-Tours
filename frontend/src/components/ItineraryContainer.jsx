@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { formdialog } from './FormDialog.jsx';
+import { useUserStore } from '../store/user.js';
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
+  const {user} = useUserStore();
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
@@ -21,8 +23,8 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     showFormDialog()
     itineraryChanger(itinerary)
   }
-
- 
+  console.log("User data:", user);
+  const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
@@ -30,7 +32,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
       <h2>{itinerary.name}</h2>
       <p>Preference Tag: {itinerary.preferenceTag}</p>
       <p>Language: {itinerary.language}</p>
-      <p>Price: ${itinerary.price}</p>
+      <p>Price: {displayPrice} {user.chosenCurrency}</p>
       <h3>Activities:</h3>
       <ul>
         {itinerary.activities.map((activity, index) => (

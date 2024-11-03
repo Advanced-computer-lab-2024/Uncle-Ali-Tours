@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     userName: {
         type: String,
         required: true,
@@ -19,6 +19,14 @@ const userSchema = mongoose.Schema({
         required: true,
         unique: true,
     },
+    chosenCurrency: {
+        type: String,
+        default: "EGP",
+    },
+    currencyRate: {
+        type: Number,
+        default: 1.0,
+    }
     },
     {
     timestamp: true,

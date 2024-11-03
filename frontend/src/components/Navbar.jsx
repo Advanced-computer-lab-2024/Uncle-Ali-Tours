@@ -23,6 +23,7 @@ function Navbar() {
             <Link to='/' className='p-4'>Home</Link>
             <Link to='/' className='p-4'>About</Link>
             <Link to='/' className='p-4'>Contact</Link>
+            <Link to='/changeCurrency' className='p-4'>Currency</Link>
             <button onClick={() => handleLogout()} className='bg-[#dc5809] m-2 py-1 px-4 rounded-full'>Logout</button>
             </div>
         </nav>

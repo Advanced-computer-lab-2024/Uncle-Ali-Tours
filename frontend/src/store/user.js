@@ -106,6 +106,8 @@ export const useUserStore = create((set) => ({
     user: {
         userName: "",
         type: "",
+        chosenCurrency:"",
+        currencyRate:1,
     }, 
     setUser: (user) => set({user:user}),
     createUser: async (newUser = {}) => {
@@ -157,9 +159,8 @@ export const useUserStore = create((set) => ({
             if (!body.success) {
                 return body;
             }
-            localStorage.setItem("user", JSON.stringify({"userName": body.data.userName, "type": body.data.type}));
-            set({user: {"userName": body.data.userName, "type": body.data.type}});
-        
+            localStorage.setItem("user", JSON.stringify({"userName": body.data.userName, "type": body.data.type ,"chosenCurrency":"EGP" ,"currencyRate":1}));
+            set({user: {"userName": body.data.userName, "type": body.data.type , "chosenCurrency":"EGP" ,"currencyRate":1 }});
 
         } catch (error) {
 
@@ -225,8 +226,8 @@ export const useUserStore = create((set) => ({
                 return body;
             }
             console.log(body.data[0]);
-            set({user: {"userName": body.data[0].userName, "type": body.data[0].type}});
-            localStorage.setItem("user", JSON.stringify({"userName": body.data[0].userName, "type": body.data[0].type}));
+            set({user: {"userName": body.data[0].userName, "type": body.data[0].type , "chosenCurrency": body.data[0].chosenCurrency || "EGP", "currencyRate": body.data[0].currencyRate || 1 }});
+            localStorage.setItem("user", JSON.stringify({"userName": body.data[0].userName, "type": body.data[0].type , "chosenCurrency": body.data[0].chosenCurrency || "EGP", "currencyRate": body.data[0].currencyRate || 1}));
             return {success: true, message: "Login successful.", type: body.data[0].type};
         } catch (error) {
             return {success: false, message: error.message};

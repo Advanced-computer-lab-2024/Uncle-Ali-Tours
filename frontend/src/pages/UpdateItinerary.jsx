@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { useItineraryStore } from '../store/itinerary';
-import { useTagStore } from '../store/tag';
+import toast, { Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user';
+import { Link } from 'react-router-dom';
+import { useTagStore } from '../store/tag';
+import { useNavigate } from 'react-router-dom';
 function UpdateItinerary() {
-    const navigate = useNavigate();
     const { user } = useUserStore();
     const { currentItinerary, setCurrentItinerary, updateItinerary } = useItineraryStore(); 
     const [currItinerary, setNewItinerary] = useState({});
     const originalItinerary = currentItinerary;
     const { tags, getTags } = useTagStore();
-
+    const {navigate} = useNavigate();
     useEffect(() => {
         getTags();
         setNewItinerary(currentItinerary); // Set the initial itinerary values
@@ -58,7 +58,6 @@ function UpdateItinerary() {
     };
 
     const handleUpdate = async () => {
-        
       let tempArr = []
       activityFields.map((activity, index) => (
         tempArr = [...tempArr,{name:activity,duration:durationFields[index]}]
@@ -72,7 +71,7 @@ function UpdateItinerary() {
         if(currItinerary.activities !== tempArr && tempArr.length!==0){
           changes.activities = tempArr;
         }
-        console.log(changes);
+        console.log(changes);3
         const {success, message} = await updateItinerary(currItinerary._id,changes);
       if (success) {
         toast.success(message, { className: "text-white bg-gray-800" });
@@ -80,7 +79,7 @@ function UpdateItinerary() {
       } else {
         toast.error(message, { className: "text-white bg-gray-800" });
         // Stay on the page if adding itinerary failed
-      }
+      }     
     };
 
     const handleCancel = () => {
@@ -235,7 +234,7 @@ function UpdateItinerary() {
                       className='rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2'
                       name={"timeline"}
                       placeholder='Timeline'
-                      value={currItinerary.timeline || ""} // Ensure the value is tied to currItinerary
+                      value={currItinerary.timeLine || ""} // Ensure the value is tied to currItinerary
                       onChange={(e) => setNewItinerary({ ...currItinerary, timeline: e.target.value })} 
                   />
                   <input
@@ -281,6 +280,7 @@ function UpdateItinerary() {
                   </Link>
               </div>
           </div>
+          <Toaster />
       </div>
     );
 }
