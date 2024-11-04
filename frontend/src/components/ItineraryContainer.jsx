@@ -5,7 +5,6 @@ import { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import {useUserStore} from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
-import { Card } from 'react-bootstrap';
 import Rating from './Rating';
 
 

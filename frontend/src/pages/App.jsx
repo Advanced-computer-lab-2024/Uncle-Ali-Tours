@@ -58,6 +58,7 @@ function App() {
           getSeller({userName : user.userName},{});
           break;
         case "tourist":
+          console.log("ss")
           getTourist({userName : user.userName},{});
           break;
         case "admin":

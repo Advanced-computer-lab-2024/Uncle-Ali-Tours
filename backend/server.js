@@ -13,10 +13,12 @@ import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
 import attractionsRoute from './routes/attraction.routes.js';
 import complaintRoutes from './routes/complaint.route.js';
-import optRoutes from './routes/otp.route.js';
+import optRoutes from './routes/otp.route.js'; 
+import cors from 'cors';
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+app.use(cors());
 app.use(express.json());
 
 

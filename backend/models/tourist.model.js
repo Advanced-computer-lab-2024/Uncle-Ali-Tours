@@ -11,7 +11,8 @@ const touristModel = new mongoose.Schema({
     },password:{
         required:true,
         type: String
-    },mobileNumber:{
+    },
+    mobileNumber:{
         required:true,
         type: Number
     },nationality:{
@@ -26,7 +27,11 @@ const touristModel = new mongoose.Schema({
     },occupation:{
         required:true,
         type: String
-    },myPoints:{
+    },purchasedProducts:[{
+        type: mongoose.Schema.Types.ObjectId,
+         ref: 'Product'
+    }],
+    myPoints:{
         type: Number,
         default: 14000
     },},{

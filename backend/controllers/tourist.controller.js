@@ -41,7 +41,8 @@ export const getTourist = async(req,res) => {
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
         const Tourists = await Tourist.find(parsedFilter).sort(parsedSort);
-        res.status(200).json({success:true, data: Tourists});
+        console.log(Tourists[0])
+       return res.status(200).json({success:true, data: Tourists});
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
@@ -140,3 +141,29 @@ export const redeemPoints = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during points redemption" });
     }
 }
+
+export const checkPurchaseStatusByUsername = async (req, res) => {
+    const { username, productId } = req.params;
+
+    try {
+        // Find the tourist by username
+        const tourist = await Tourist.findOne({ userName : username }).populate('purchasedProducts');
+
+        if (!tourist) {
+            return res.status(404).json({ message: 'Tourist not found.' });
+        }
+
+        // Check if the productId exists in the purchasedProducts array
+        const hasPurchased = tourist.purchasedProducts.some(p => p._id.toString() === productId);
+
+        if (hasPurchased) {
+            res.status(200).json({ canReview: true, message: 'You can rate/review this product.' });
+        } else {
+            res.status(200).json({ canReview: false, message: 'You must purchase this product before rating or reviewing it.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking purchase status.', error });
+    }
+};
+
+

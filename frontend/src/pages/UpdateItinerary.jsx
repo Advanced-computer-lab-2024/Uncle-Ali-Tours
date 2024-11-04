@@ -5,7 +5,6 @@ import { useUserStore } from '../store/user';
 import { Link } from 'react-router-dom';
 import { useTagStore } from '../store/tag';
 import { useNavigate } from 'react-router-dom';
-import Rating from 'react-rating';
 
 function UpdateItinerary() {
     const { user } = useUserStore();
