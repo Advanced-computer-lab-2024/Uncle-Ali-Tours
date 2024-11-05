@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useSellerStore } from '../store/seller';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-
 const SellerProfile = () => {
   const { user } = useUserStore(); 
   const { sell, getSeller, updateSeller } = useSellerStore(); 

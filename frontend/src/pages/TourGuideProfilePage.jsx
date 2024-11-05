@@ -5,7 +5,7 @@ import { useGuideStore } from '../store/tourGuide';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import UploadPicture from '../components/UploadPicture.jsx';
 
 
 const TourGuideProfilePage = () =>{
@@ -48,6 +48,13 @@ const TourGuideProfilePage = () =>{
            <label>Nationality : <input type = "text" name='nationality' defaultValue={guide.nationality} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, nationality: e.target.value})}></input></label>
            <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={guide.dateOfBirth ? guide.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, dateOfBirth: e.target.value})}></input></label>           
            </div>
+
+           <div>
+            
+            <UploadPicture userType="tourGuide" />
+
+        </div>
+
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>itinerary</button>
