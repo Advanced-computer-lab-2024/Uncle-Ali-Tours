@@ -6,12 +6,14 @@ import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import UploadPicture from '../components/UploadPicture.jsx';
+import Dialog, { dialog } from '../components/Dialog.jsx';
 
 
 const TourGuideProfilePage = () =>{
     const {user} = useUserStore();
     const {guide,getGuide,updateGuide} = useGuideStore();
     const [isRequired, setIsRequired] = useState(true);
+    const { showDialog } = dialog()
     const handleButtonClick = () => {
         setIsRequired(false);
     };
@@ -34,6 +36,10 @@ const TourGuideProfilePage = () =>{
             navigate('/');
         }
     }, []);
+
+    const handleDeleteClick = () => {
+        showDialog()
+    }
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
@@ -58,6 +64,10 @@ const TourGuideProfilePage = () =>{
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>itinerary</button>
+           <div>
+           <Dialog msg={"Are you sure you want to delete your account?"} accept={() => (console.log("deleted"))} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
+            <button className='bg-red-600 text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button>
+           </div>
         </div>
     );
 }

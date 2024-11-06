@@ -50,6 +50,21 @@ export const useGuideStore = create((set) => ({
             console.log(data)
             set((state) => ({guide: {...state.guide,newTourGuide}}))
             return{success: true, message: "tour guide updated successfully."};
+    },
+    checkBookings: async (userName) => {
+        const res = await fetch(`/api/tourGuide/checkBookings/${userName}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+    
+        if (!data.success) {
+          return { success: false, message: data.message || "Failed to check bookings" };
+        }
+    
+        return { success: true, message: data.message };
     }
     
     }

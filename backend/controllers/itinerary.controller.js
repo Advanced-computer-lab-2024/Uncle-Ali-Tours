@@ -169,3 +169,60 @@ export const createProductReview = asyncHandler(async (req, res) => {
         throw new Error('Itinerary not found');
     }
 });
+// Add to itinerary.controller.js
+
+export const activateItinerary = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const itinerary = await Itinerary.findById(id);
+        console.log(req.body);
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+
+        if (itinerary.isActivated) {
+            return res.status(400).json({ success: false, message: "Itinerary is already activated" });
+        }
+
+        itinerary.isActivated = true;
+        await itinerary.save();
+
+        res.status(200).json({ success: true, message: "Itinerary activated", data: itinerary });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        console.log(error.message);
+    }
+};
+
+export const deactivateItinerary = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const itinerary = await Itinerary.findById(id);
+        console.log(req.body);
+        if (!itinerary) {
+            console.log("Itinerary not found")
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+            
+        }
+
+        if (!itinerary.isActivated) {
+            console.log("Itinerary is already deactivated")
+            return res.status(400).json({ success: false, message: "Itinerary is already deactivated" });
+        }
+
+        if (itinerary.numberOfBookings === 0) {
+            console.log("Cannot deactiv")
+            return res.status(400).json({ success: false, message: "Cannot deactivate itinerary; itinerary has no bookings" });
+        }
+
+        itinerary.isActivated = false;
+        await itinerary.save();
+
+        res.status(200).json({ success: true, message: "Itinerary deactivated", data: itinerary });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        console.log(error.message);
+    }
+};

@@ -86,6 +86,62 @@ export const useItineraryStore = create((set,get) => ({
         return {success: true, message: "updated itinerary"};
     },
 
+    // Add to useItineraryStore in the frontend store
+
+    activateItinerary: async (itineraryID) => {
+        try {
+            const res = await fetch(`/api/itinerary/activate`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: itineraryID }),
+            });
+
+            const body = await res.json();
+
+            if (!body.success) {
+                return { success: false, message: body.message };
+            }
+
+            set((state) => ({
+                itineraries: state.itineraries.map((itinerary) =>
+                    itinerary._id === itineraryID ? { ...itinerary, isActivated: true } : itinerary
+                ),
+            }));
+            return { success: true, message: "Itinerary activated successfully" };
+        } catch (error) {
+            console.error("Error activating itinerary:", error.message);
+            return { success: false, message: "Could not activate itinerary" };
+        }
+    },
+
+    deactivateItinerary: async (itineraryID) => {
+        try {
+            const res = await fetch(`/api/itinerary/deactivate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: itineraryID }),
+            });
+
+            const body = await res.json();
+
+            if (!body.success) {
+                return { success: false, message: body.message };
+            }
+
+            set((state) => ({
+                itineraries: state.itineraries.map((itinerary) =>
+                    itinerary._id === itineraryID ? { ...itinerary, isActivated: false } : itinerary
+                ),
+            }));
+            return { success: true, message: "Itinerary deactivated successfully" };
+        } catch (error) {
+            console.error("Error deactivating itinerary:", error.message);
+            return { success: false, message: "Could not deactivate itinerary" };
+        }
+    },
+
 
     createProductReview: async (itineraryId, rating, comment, user) => {
         try {
@@ -148,19 +204,3 @@ export const useItineraryStore = create((set,get) => ({
 ));
 
 
-
-// getItineraries: async () => {
-    //     const res = await fetch("/api/itinerary", {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-            
-    //     });
-    //     const body = await res.json();
-    //     if (!body.success){
-    //         return (body)
-    //     }
-    //     set({Itinerarys: body.data})
-    //     return {success: true, message: "fetched itineraries"};
-    // },

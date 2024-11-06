@@ -1,6 +1,6 @@
 import TourGuide from "../models/tourGuide.model.js";
 import User from "../models/user.model.js";
-
+import { useItineraryStore } from "../../frontend/src/store/itinerary.js";
 export const creatTourGuide = async(req,res) =>{
     const tourGuide = req.body;
     const today = new Date();
@@ -112,5 +112,34 @@ export const deleteTourGuide = async(req, res) => {
         res.json({success:true, message: 'tour Guide deleted successfully' });
     } catch (error) {
         res.status(500).json({success:false, message: error.message });
+    }
+}
+export const checkTourGuideBookings = async (req, res) => {
+    const { userName } = req.params;  // Get tour guide's userName from request params
+
+    try {
+        // Fetch itineraries created by this tour guide
+        const itineraries = await Itinerary.find({ creator: userName });
+
+        // Check if any itinerary has bookings (numberOfBookings > 0)
+        const hasBookings = itineraries.some(itinerary => itinerary.numberOfBookings > 0);
+
+        if (hasBookings) {
+            return res.status(200).json({
+                success: true,
+                message: "At least one itinerary has bookings.",
+            });
+        } else {
+            return res.status(200).json({
+                success: true,
+                message: "No itineraries with bookings found.",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error checking bookings",
+            error: error.message,
+        });
     }
 }
