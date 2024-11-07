@@ -121,40 +121,32 @@ export const updateItinerary = async (req, res) => {
 }
 
 
-export const createProductReview = asyncHandler(async (req, res) => {
-    const { rating, comment, user, name } = req.body;
-
+export const createProductReview = async (req, res) => {
+    const { rating, comment,name  } = req.body;
     console.log('Received rating:', rating);
     console.log('Received comment:', comment);
-    console.log('Received itinerary ID:', req.params.id);
-    console.log('Received user ID:', user);
-    console.log('Received user name:', name);
-
+    console.log('Received username:', name);
     const itinerary = await Itinerary.findById(req.params.id);
-
+    console.log('Received itinerary:', itinerary);
     if (itinerary) {
-        const alreadyReviewed = itinerary.reviews.find(
-            (r) => r.user.toString() === user
-        );
-
-        if (alreadyReviewed) {
-            res.status(400);
-            throw new Error('Itinerary already reviewed');
-        }
-
+        // const alreadyReviewed = itinerary.reviews.find(
+        //     (r) => r.user.toString() === name // Use 'name' which is defined
+        // );
+        // if (alreadyReviewed) {
+        //     res.status(400);
+        //     throw new Error('Itinerary already reviewed');
+        // }
         const review = {
-            name,
             rating: Number(rating),
             comment,
-            user,
+            name,  
         };
-
+        console.log('Received review:', review);
         itinerary.reviews.push(review);
         itinerary.numReviews = itinerary.reviews.length;
         itinerary.rating =
             itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) /
             itinerary.reviews.length;
-
         await itinerary.save();
 
         res.status(201).json({
@@ -168,7 +160,7 @@ export const createProductReview = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('Itinerary not found');
     }
-});
+};
 // Add to itinerary.controller.js
 
 export const activateItinerary = async (req, res) => {

@@ -7,6 +7,7 @@ import {useUserStore} from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
 import { adjustableDialog } from './AdjustableDialog.jsx';
+import { Card } from 'react-bootstrap';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -17,10 +18,9 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const [comment, setComment] = useState('');
   const user = useUserStore((state) => state.user);
   const [isActivated, setIsActivated] = useState(itinerary.isActivated);
-  //const itineraryID = itinerary._id;
   const status = (itinerary.isActivated)? "Activated" : "Deactivated";
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
-
+   
 
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
@@ -62,16 +62,8 @@ const handleActivateClick = () => {
       console.error('Error: itineraryId is missing');
       return;
     }
-    
-    
     console.log('User retrieved from states:', user);
-    const { userId, name } = user;
-    if (!userId || !name) {
-    return { success: false, message: 'User ID and name are required.' };
-    }
-    
     const { success, message } = await createProductReview(itineraryID, rating, comment,user);
-    
     if (success) {
       alert('Review added successfully!');
       setRating(0);
@@ -80,6 +72,7 @@ const handleActivateClick = () => {
       alert('Failed to add review: ' + message);
     }
 };
+
 
 
 const activate = async () => {
@@ -110,8 +103,18 @@ const deactivate = async () => {
           </li>
         ))}
       </ul>
-      <p>pickup location: {itinerary.pickupLocation}</p>
-      <p>dropoff location: {itinerary.dropoffLocation}</p>
+      <p>
+            Pickup Location: 
+            {itinerary.pickupLocation ? 
+                `${itinerary.pickupLocation.type} - Coordinates: ${itinerary.pickupLocation.coordinates?.join(', ') || 'No coordinates available'}` 
+                : 'N/A'}
+        </p>
+        <p>
+            Dropoff Location: 
+            {itinerary.dropoffLocation ? 
+                `${itinerary.dropoffLocation.type} - Coordinates: ${itinerary.dropoffLocation.coordinates?.join(', ') || 'No coordinates available'}` 
+                : 'N/A'}
+        </p>
       <h3>Locations:</h3>
       <ul>
         {itinerary.tourLocations.map((loc, index) => (
@@ -141,7 +144,7 @@ const deactivate = async () => {
       <p>Status: {status}</p>
       <p>creator: {itinerary.creator}</p>
 </div>
-{/* 
+
 <Card.Text as='div'>
           <Rating
             value={itinerary.rating}
@@ -150,11 +153,11 @@ const deactivate = async () => {
         </Card.Text>
 
 <div>
-      <h3>Add a Review</h3>
+<h3>Add a Review</h3>
       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
       <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
       <button onClick={handleSubmit}>Submit</button>
-    </div> */}
+    </div> 
 
 
         <div className='flex justify-between'>
