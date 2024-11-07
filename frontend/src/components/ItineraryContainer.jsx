@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import {useUserStore} from '../store/user.js';
@@ -11,7 +11,6 @@ import { Card } from 'react-bootstrap';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  //const {user} = useUserStore();
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
   const { createProductReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -20,7 +19,13 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const [isActivated, setIsActivated] = useState(itinerary.isActivated);
   const status = (itinerary.isActivated)? "Activated" : "Deactivated";
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
-   
+  const navigate = useNavigate();
+
+  const handleViewReviewsClick = () => {
+    setCurrentItinerary(itinerary); // Set the itinerary in the store
+    navigate('/viewReviews');       // Navigate to the view reviews page
+  };
+
 
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
@@ -157,8 +162,18 @@ const deactivate = async () => {
       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
       <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
       <button onClick={handleSubmit}>Submit</button>
+
+      
     </div> 
 
+
+    <div>
+        <button 
+          onClick={handleViewReviewsClick}
+          className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105'>
+          View Reviews
+        </button>
+      </div>
 
         <div className='flex justify-between'>
         <div className='flex'>
