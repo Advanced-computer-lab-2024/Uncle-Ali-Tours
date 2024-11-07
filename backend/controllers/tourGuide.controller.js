@@ -1,6 +1,45 @@
 import TourGuide from "../models/tourGuide.model.js";
 import User from "../models/user.model.js";
-import { useItineraryStore } from "../../frontend/src/store/itinerary.js";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Configure multer storage for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(process.cwd(), 'uploads/tourGuides');
+        fs.mkdirSync(uploadPath, { recursive: true });
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Set a file size limit of 5MB
+});
+
+// Upload file handler function
+export const uploadFile = (req, res) => {
+    const userType = req.body.userType;
+
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    res.json({
+        success: true,
+        message: `File uploaded successfully as ${userType === "tourGuide" ? "photo" : "logo"}`,
+        filePath: `/uploads/tourGuides/${req.file.filename}`,
+    });
+};
+
+// Export upload middleware for use in the route
+export { upload };
+
+
 export const creatTourGuide = async(req,res) =>{
     const tourGuide = req.body;
     const today = new Date();
