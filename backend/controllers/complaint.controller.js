@@ -50,6 +50,21 @@ export const updateComplaintStatus = async (req, res) => {
     }
 };
 
+export const getTouristComplaints = async (req, res) => {
+    const { creator } = req.params;
+
+    try {
+        const complaints = await Complaint.find({ creator });
+        if (complaints.length === 0) {
+            return res.status(404).json({ success: false, message: 'No complaints found' });
+        }
+
+        return res.status(200).json({ success: true, data: complaints });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const getAllComplaints = async (req, res) => {
     try {
         const complaints = await Complaint.find(); 
