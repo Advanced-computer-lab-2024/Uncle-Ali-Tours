@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import {useTouristStore} from '../store/tourist'
 import { useUserStore } from '../store/user';
-import { useTouristStore } from '../store/tourist';
 import Dialog, { dialog } from '../components/Dialog.jsx';
 import axios from 'axios';
 const TouristProfile = () => {
