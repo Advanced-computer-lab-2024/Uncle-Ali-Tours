@@ -33,7 +33,7 @@ import { useGuideStore } from "../store/tourGuide";
 import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
-
+import ViewReviews from '../pages/ViewReviews';
 
 function App() {
   const { logout, setUser } = useUserStore();
@@ -108,6 +108,7 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
 
     
+        <Route path="/viewReviews" element={<ViewReviews />} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

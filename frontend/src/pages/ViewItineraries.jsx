@@ -8,7 +8,7 @@ import PreferenceTag from './PreferenceTag.jsx';
 
 function ViewItineraries() {
     const [filter, setFilter] = useState(
-        {}
+        {isActivated: true}
     );
     const [curActivity, setCuritinrary] = useState(-1);
     const changeitinrary = (id) => (
@@ -24,8 +24,8 @@ function ViewItineraries() {
   
   const SortingList=["High to low","Low to High"];
    const handlePress = async () => {
-    await getItineraries(filter , sort);
-    setFilter({});
+    await getItineraries({ ...filter, isActivated: true } , sort);
+    setFilter({ isActivated: true });
     console.log(filter);
    };
    const handleSort =  () => {

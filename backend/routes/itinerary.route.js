@@ -1,5 +1,5 @@
 import express from "express";
-import { createItinerary, deleteItinerary, getItinerary, updateItinerary, createProductReview } from "../controllers/itinerary.controller.js";
+import { createItinerary, deleteItinerary, getItinerary, updateItinerary, createProductReview ,activateItinerary,deactivateItinerary } from "../controllers/itinerary.controller.js";
 
 const router = express.Router();
 
@@ -8,5 +8,6 @@ router.get("/", getItinerary);
 router.delete("/", deleteItinerary);
 router.put("/", updateItinerary);
 router.post('/:id/reviews', createProductReview);
-
+router.post('/deactivate', deactivateItinerary);
+router.post('/activate', activateItinerary);
 export default router;
