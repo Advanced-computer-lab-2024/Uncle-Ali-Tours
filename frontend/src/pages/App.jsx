@@ -25,6 +25,7 @@ import CreateActivity from "./CreateActivity";
 import ChangePassword from "./ChangePassword";
 import FileComplaint from "./FileComplaint";
 import ChangeCurrency from "./ChangeCurrency";
+import Complaints from "./Complaints";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -104,6 +105,8 @@ function App() {
         <Route path="/activityPage" element={<ActivityPage/>}/>
         <Route path="/createActivity" element={<CreateActivity/>}/>
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
+        <Route path="/complaints" element={<Complaints/>}/>
+
     
       </Routes>
     </div>

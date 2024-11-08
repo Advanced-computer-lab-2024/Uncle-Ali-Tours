@@ -3,6 +3,25 @@ import { deleteUser } from '../../../backend/controllers/user.controller';
 import ChangePassword from '../pages/ChangePassword';
 
 
+export const fetchComplaints = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/complaint');
+        const result = await response.json();
+        
+        if (response.ok) {
+            console.log("Fetched complaints from API:", result.data); // Log to verify data structure
+            return result.data; // Ensure the structure matches expected data
+        } else {
+            console.error("Error fetching complaints:", result.message);
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        return [];
+    }
+};
+
+
 const addTourGuide = async (newUser) => {
     const res = await fetch("/api/tourGuide", {
         method: "POST",
@@ -274,6 +293,8 @@ export const useUserStore = create((set) => ({
         }
     },
 
+    
+
     verifyOTP: async (email, otp) => {
         try {
             const res = await fetch("/api/otp/verify", {
@@ -289,6 +310,7 @@ export const useUserStore = create((set) => ({
             return {success: false, message: error.message};
         }
     },
+    
     
     
 }));
