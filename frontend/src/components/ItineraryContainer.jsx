@@ -8,6 +8,7 @@ import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
 import { adjustableDialog } from './AdjustableDialog.jsx';
 import { Card } from 'react-bootstrap';
+import axios from 'axios';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -25,6 +26,40 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     setCurrentItinerary(itinerary); // Set the itinerary in the store
     navigate('/viewReviews');       // Navigate to the view reviews page
   };
+  
+
+// components/containers/ItineraryContainer.js
+
+
+const ItineraryContainer = ({ itinerary }) => {
+  const handleBooking = async (itineraryId) => {
+    try {
+      const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+      await axios.post('/api/bookings', 
+        { itineraryId }, 
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      alert('Itinerary booked successfully!');
+    } catch (error) {
+      console.error('Booking failed:', error);
+      alert('Failed to book itinerary');
+    }
+  };
+
+  return (
+    <div>
+      <h3>{itinerary.name}</h3>
+      {/* Other itinerary details */}
+      <button onClick={() => handleBooking(itinerary.id)}>Book</button>
+    </div>
+  );
+};
+
+
+
+
 
 
   const keys = Object.keys(itinerary)
@@ -193,6 +228,7 @@ const deactivate = async () => {
         </div>
         </div>
   )
+  
 }
 
 export default ItineraryContainer
