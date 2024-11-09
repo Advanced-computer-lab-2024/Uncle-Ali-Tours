@@ -17,9 +17,9 @@ function ViewItineraries() {
     const {itineraries, getItineraries} = useItineraryStore();
     const [visibillity, setVisibillity] = useState(false);
   const [sort, setSort] = useState({});
-  const { id } = useParams();
   
 useEffect(() => {
+  console.log(applyPreferences , tourist , tourist.myPreferences , tourist.myPreferences?.length > 0)
   if (applyPreferences && tourist && tourist.myPreferences && tourist.myPreferences.length > 0) {
     setFilter((prevFilter) => ({
       ...prevFilter,
@@ -35,37 +35,19 @@ useEffect(() => {
 }, [applyPreferences, tourist]);
 
 useEffect(() => {
-  if (id) {
-    // Fetch only the specific itinerary by ID
-    const fetchSingleItinerary = async () => {
-      try {
-        const response = await fetch(`/api/itineraries/${id}`);
-        const data = await response.json();
-        if (data.success) {
-          setFilter(data.data);  // Set filter to show only this itinerary
-        } else {
-          alert("Itinerary not found");
-        }
-      } catch (error) {
-        console.error("Error fetching itinerary:", error);
-      }
-    };
-    fetchSingleItinerary();
-  } else {
-    // Fetch all itineraries if no ID is specified
     getItineraries(filter, sort);
-  }
-}, [id, filter, sort]);
+}, [filter, sort]);
 
 
 
   
   const SortingList=["High to low","Low to High"];
+
    const handlePress = async () => {
     await getItineraries({ ...filter, isActivated: true } , sort);
-    setFilter({ isActivated: true });
     console.log(filter);
    };
+
    const handleSort =  () => {
     setVisibillity((prev) => !prev);
    };
