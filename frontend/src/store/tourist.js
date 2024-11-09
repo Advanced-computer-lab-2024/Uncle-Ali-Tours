@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import { deleteTourist, getTourist, updateTourist } from '../../../backend/controllers/tourist.controller';
+import { badgeLevel, deleteTourist, getTourist, updateTourist } from '../../../backend/controllers/tourist.controller';
 import { useUserStore } from './user';
 import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
@@ -80,7 +80,38 @@ export const useTouristStore = create((set) => ({
             console.error("Error redeeming points:", error);
             toast.error("Failed to redeem points.");
         }
-    }
-    
-    }
-    ));
+    },
+    badgeLevel: async () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.userName) {
+            toast.error("User not found.");
+            return;
+        }
+            const queryString = new URLSearchParams({
+              userName : user.userName
+            }).toString();
+        // console.log(user)
+        try {
+            const response = await fetch(`/api/tourist/badge?${queryString}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                // body: JSON.stringify({ userName: user.userName })
+            });
+            const data = await response.json();
+            if (data.success) {
+                set((state) => ({
+                    tourist: { ...state.tourist, badge: data.data },
+                }));
+                return { success: true, badge: data.data };
+                
+            } else {
+                toast.error(data.message);
+                return { success: false };
+            }
+        } catch (error) {
+            console.error("Error fetching badge level:", error);
+            toast.error("Failed to fetch badge level.");
+            return { success: false };
+        }
+    },
+    }));

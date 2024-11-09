@@ -9,13 +9,18 @@ import Rating from './Rating';
 import { adjustableDialog } from './AdjustableDialog.jsx';
 import { Card } from 'react-bootstrap';
 import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
+import { FiLoader } from 'react-icons/fi';
+import { set } from 'mongoose';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
+  const [email,setEmail]=useState("");
   const { createProductReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const [isActivated, setIsActivated] = useState(itinerary.isActivated);
   const status = (itinerary.isActivated)? "Activated" : "Deactivated";
@@ -61,6 +66,8 @@ const ItineraryContainer = ({ itinerary }) => {
 
 
 
+  const [isLoading, setIsLoading] = useState(false);
+  //const itineraryID = itinerary._id;
 
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
@@ -89,8 +96,51 @@ const handleActivateClick = () => {
 
 
   
+  // console.log("User data:", user);
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
 
+  const handleShare = (id) => {
+    const link = `${window.location.origin}/itineraryDetail/${id}`;
+    
+    // Copy the link to clipboard
+    navigator.clipboard.writeText(link).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch(() => {
+      alert("Failed to copy link.");
+    });
+  };
+
+  const handleShareViaMail = async(id) => {
+    setIsLoading(true)
+    // const userName = user.userName;
+    const link = `${window.location.origin}/itineraryDetail/${id}`;
+    // console.log(id);
+    // console.log(user.userName);
+    // console.log(link);
+    // console.log(email); 
+    const res = await fetch('/api/share/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userName: user.userName, link : link, email:email})
+  });
+  const {success, message} = await res.json()
+  if(success){
+    toast.success(message, {className: "text-white bg-gray-800"}) 
+    setIsModalOpen(false);
+  }
+  else{
+    toast.error(message, {className: "text-white bg-gray-800"})
+  }
+  setIsLoading(false)
+}
+
+    
+    // // Copy the link to clipboard
+    // navigator.clipboard.writeText(link).then(() => {
+    //   alert("Link copied to clipboard!");
+    // }).catch(() => {
+    //   alert("Failed to copy link.");
+    // });
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
@@ -129,7 +179,7 @@ const deactivate = async () => {
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
-       
+       <Toaster />
       <h2>{itinerary.name}</h2>
       <p>Preference Tag: {itinerary.preferenceTag}</p>
       <p>Language: {itinerary.language}</p>
@@ -225,10 +275,42 @@ const deactivate = async () => {
           {buttonStatus} 
         </button>
         
+        <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(itinerary._id)}>copy link</button>
+        <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
+        Share via Mail
+        </button>
+        {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
+          <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
+            <h3 className="text-xl mb-4">Share Itinerary via Email</h3>
+            
+            <label className="block mb-2">
+              To:
+              <input 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                className="w-full p-2 border rounded mt-1"
+                placeholder="Recipient's email"
+              />
+            </label>
+
+            <div className="flex justify-end mt-4">
+              <button className="p-2 bg-red-500 text-white rounded mr-2" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="p-2 bg-green-500 text-white rounded w-[8ch]" onClick={() => handleShareViaMail(itinerary._id)}>
+                {isLoading ? <FiLoader className='mx-auto animate-spin'/> : "Send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
         </div>
         </div>
   )
   
 }
+
 
 export default ItineraryContainer

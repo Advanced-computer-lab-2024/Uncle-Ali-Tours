@@ -34,6 +34,9 @@ import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
 import ViewReviews from '../pages/ViewReviews';
+import ItineraryDetail from "./ItineraryDetail"
+
+
 
 function App() {
   const { logout, setUser } = useUserStore();
@@ -107,6 +110,7 @@ function App() {
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
 
+        <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
     
         <Route path="/viewReviews" element={<ViewReviews />} />
       </Routes>

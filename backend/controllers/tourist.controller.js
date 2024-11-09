@@ -56,7 +56,7 @@ export const updateTourist = async (req,res) => {
 
     const keys = Object.keys(newTourist)
 
-    for (let i=0;i<keys.length;i++){
+    for (let i=0;i<keys.length-1;i++){
         if(newTourist[keys[i]].length <= 0){
             return res.status(400).json({success:false, message: 'fields are requierd to update'})
         }
@@ -163,6 +163,67 @@ export const checkPurchaseStatusByUsername = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Error checking purchase status.', error });
+};
+}
+
+export const badgeLevel = async (req, res) => {
+    const { userName } = req.query;
+    console.log(userName);
+    try {
+        const tourist = await Tourist.findOne({ userName });
+        console.log(tourist)
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        let level = "level 1";
+        if(tourist.myPoints>500000){
+            level="level 3";
+        }
+        else if(tourist.myPoints>100000){
+            level="level 2";
+        }
+        else{
+            level="level 1";
+        }
+
+        console.log(level)
+        
+        const updatedTourist = await Tourist.findOneAndUpdate(
+            { userName },
+            { badge: level},
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `Badge ${tourist.badge} .`,
+            data: updatedTourist.badge,
+        });
+    } catch (error) {
+        console.error("Error badging:", error);
+        res.status(500).json({ success: false, message: "Server error during badging" });
+    }
+};
+
+
+export const updateMyPreferences = async (req, res) => {
+    const { userName, myPreferences } = req.body; // myPreferences can be an empty array
+    try {
+        // Fetch the tourist using the correct model
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Replace `myPreferences` with the provided array (even if it's empty)
+        tourist.myPreferences = myPreferences;
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'Preferences updated successfully' });
+    } catch (error) {
+        console.error("Error updating preferences:", error);
+        res.status(500).json({ success: false, message: "Server error during preferences update" });
     }
 };
 
