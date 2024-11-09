@@ -35,6 +35,7 @@ import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
 import ViewReviews from '../pages/ViewReviews';
 import ItineraryDetail from "./ItineraryDetail"
+import ActivityDetail from "./ActivityDetail";
 
 
 
@@ -111,7 +112,8 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
-    
+        <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
+
         <Route path="/viewReviews" element={<ViewReviews />} />
       </Routes>
     </div>
