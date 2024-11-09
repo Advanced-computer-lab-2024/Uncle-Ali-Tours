@@ -8,8 +8,8 @@ import ItineraryContainer from '../components/ItineraryContainer.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useUserStore } from '../store/user.js';
 import AdjustableDialog , {adjustableDialog} from '../components/AdjustableDialog.jsx';
-import React from 'react';
-import ItineraryContainer from '../containers/ItineraryContainer';
+
+
 function ItineraryPage(itinerary ,itineraryChanger) {
   const {user} = useUserStore();
   const {itineraries, addItineraries, getItineraries,deleteItinerary,activateItinerary,deactivateItinerary} = useItineraryStore();  
