@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
+import { useGuideStore } from '../store/tourGuide.js';
 import {useUserStore} from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
@@ -20,6 +21,12 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+
+  const { createTourGuideReview } = useGuideStore();
+  const [tourGuideRating, setTourGuideRating] = useState(0);
+  const [tourGuideComment, setTourGuideComment] = useState('');
+
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const [isActivated, setIsActivated] = useState(itinerary.isActivated);
@@ -27,6 +34,12 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+
+  const handleRedirectToReviews = () => {
+    navigate('/tourguidereviews');
+  };
+
 
   const handleViewReviewsClick = () => {
     setCurrentItinerary(itinerary); // Set the itinerary in the store
@@ -110,7 +123,7 @@ const handleActivateClick = () => {
 }
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmitItineraryReview = async (e) => {
     e.preventDefault(); 
     const itineraryID = itinerary._id;
     console.log('Itinerary ID:', itineraryID);
@@ -129,6 +142,25 @@ const handleActivateClick = () => {
     } else {
       alert('Failed to add review: ' + message);
     }
+};
+
+const handleSubmitTourGuideReview = async (e) => {
+  e.preventDefault();
+  const tourGuideName = itinerary.creator;  
+
+if (!tourGuideName) {
+    console.error('Error: tour guide name is missing');
+    return;
+}
+  const { success, message } = await createTourGuideReview(tourGuideName, tourGuideRating, tourGuideComment,user);
+  if (success) {
+    alert('Review added successfully!');
+    setTourGuideRating(0);
+    setTourGuideComment('');
+
+  } else {
+    alert('Failed to add review: ' + message);
+  }
 };
 
 
@@ -193,6 +225,22 @@ const deactivate = async () => {
       <p>creator: {itinerary.creator}</p>
 </div>
 
+<button 
+  onClick={handleRedirectToReviews} 
+  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+>
+  View Tour Guide Reviews
+</button>
+
+
+<div>
+        <h3>Rate and Review the Creator</h3>
+        <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
+        <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
+        <button onClick={handleSubmitTourGuideReview}>Submit</button>
+      </div>
+
+
 <Card.Text as='div'>
           <Rating
             value={itinerary.rating}
@@ -204,7 +252,7 @@ const deactivate = async () => {
 <h3>Add a Review</h3>
       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
       <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
-      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleSubmitItineraryReview}>Submit</button>
 
       
     </div> 
