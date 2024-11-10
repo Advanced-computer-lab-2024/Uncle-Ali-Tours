@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 
 
-export const useActivityStore = create((set) => ({
+export const useActivityStore = create((set,get) => ({
     activities: [],
     categories: [], 
     tags: [],
@@ -189,6 +189,67 @@ return{success: true, message: "ActivityCategory created successfully."};
                 categories: state.categories.map((category) => (category == oldCategory ? data.data.name : category)),
             }))
             return{success: true, message: "ActivityCategory updated successfully."};
-    }
+    },
+
+
+    createActivityReview: async (activityId, rating, comment, user) => {
+        
+        console.log("Request Payload:", { rating, comment, user });
+        if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+            return { success: false, message: 'Rating must be a number between 1 and 5.' };
+        }
+
+        if (typeof comment !== 'string' || comment.trim() === '') {
+            return { success: false, message: 'Comment cannot be empty.' };
+        }
+
+        const { userName: name } = user;
+        console.log('User received in function:', name);
+        // Check if user is defined, else return an error
+        if (!user || !name) {
+            return { success: false, message: 'User information is required.' };
+        }
+
+        console.log('Before fetch call');
+        const res = await fetch(`/api/activity/${activityId}/reviews`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ rating, comment, name }),
+        });
+        console.log("Raw Response:", res);
+        console.log("Response Status:", res.status, res.statusText);
+        if (!res.ok) {
+            const errorText = await res.text(); 
+            console.error(`HTTP Error: ${res.status} ${res.statusText}. Response: ${errorText}`);
+            return { success: false, message: `HTTP Error: ${res.status} ${res.statusText}` };
+        }
+        console.log('After fetch call');
+        console.log("Raw Response:", res);
+        const data = await res.json();
+        console.log("Response Data:", data);
+        if (data.success && data.review) {
+            const activities = get().activities || { reviews: [], numReviews: 0, rating: 0 };
+
+            const updatedActivity = {
+                ...activities,
+                reviews: [...activities.reviews, data.review],
+                numReviews: data.numReviews,
+                rating: data.rating,
+            };
+            console.log("Updated Activity:", updatedActivity);
+            set({ activities: updatedActivity });
+            return { success: true, message: data.message };
+        } else {
+            console.error('Error from API:', data.message);
+            return { success: false, message: data.message || 'Could not add review' };
+        }
+    
+}
+
+
+
+
 }
 ));
