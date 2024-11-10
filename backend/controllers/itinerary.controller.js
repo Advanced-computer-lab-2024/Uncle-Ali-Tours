@@ -121,7 +121,7 @@ export const updateItinerary = async (req, res) => {
 }
 
 
-export const createProductReview = async (req, res) => {
+export const createItineraryReview = async (req, res) => {
     const { rating, comment,name  } = req.body;
     console.log('Received rating:', rating);
     console.log('Received comment:', comment);

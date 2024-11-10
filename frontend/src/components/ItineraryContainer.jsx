@@ -15,9 +15,9 @@ import { set } from 'mongoose';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary} = useItineraryStore();  
-  const [email,setEmail]=useState("");
-  const { createProductReview } = useItineraryStore();
+  const {currentItinerary, setCurrentItinerary} = useItineraryStore();
+  const [email,setEmail]=useState("");  
+  const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,49 +26,28 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const status = (itinerary.isActivated)? "Activated" : "Deactivated";
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleViewReviewsClick = () => {
     setCurrentItinerary(itinerary); // Set the itinerary in the store
     navigate('/viewReviews');       // Navigate to the view reviews page
   };
-  
 
-// components/containers/ItineraryContainer.js
-
-
-const ItineraryContainer = ({ itinerary }) => {
-  const handleBooking = async (itineraryId) => {
-    try {
-      const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-      await axios.post('/api/bookings', 
-        { itineraryId }, 
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      alert('Itinerary booked successfully!');
-    } catch (error) {
-      console.error('Booking failed:', error);
-      alert('Failed to book itinerary');
-    }
-  };
-
-  return (
-    <div>
-      <h3>{itinerary.name}</h3>
-      {/* Other itinerary details */}
-      <button onClick={() => handleBooking(itinerary.id)}>Book</button>
-    </div>
-  );
+const handleBooking = async (itineraryId) => {
+  try {
+    const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+    await axios.post('/api/bookings', 
+      { itineraryId }, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    alert('Itinerary booked successfully!');
+  } catch (error) {
+    console.error('Booking failed:', error);
+    alert('Failed to book itinerary');
+  }
 };
-
-
-
-
-
-  const [isLoading, setIsLoading] = useState(false);
-  //const itineraryID = itinerary._id;
-
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
     `${key}: ${itinerary[key]}`
@@ -92,12 +71,8 @@ const handleActivateClick = () => {
   itineraryChanger(itinerary); // Set the current itinerary in the parent state
   showAdjustableDialog();      // Open the dialog
 };
-
-
-
-  
-  // console.log("User data:", user);
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
+
 
   const handleShare = (id) => {
     const link = `${window.location.origin}/itineraryDetail/${id}`;
@@ -134,13 +109,6 @@ const handleActivateClick = () => {
   setIsLoading(false)
 }
 
-    
-    // // Copy the link to clipboard
-    // navigator.clipboard.writeText(link).then(() => {
-    //   alert("Link copied to clipboard!");
-    // }).catch(() => {
-    //   alert("Failed to copy link.");
-    // });
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
@@ -153,7 +121,7 @@ const handleActivateClick = () => {
       return;
     }
     console.log('User retrieved from states:', user);
-    const { success, message } = await createProductReview(itineraryID, rating, comment,user);
+    const { success, message } = await createItineraryReview(itineraryID, rating, comment,user);
     if (success) {
       alert('Review added successfully!');
       setRating(0);
@@ -179,7 +147,7 @@ const deactivate = async () => {
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
-       <Toaster />
+       
       <h2>{itinerary.name}</h2>
       <p>Preference Tag: {itinerary.preferenceTag}</p>
       <p>Language: {itinerary.language}</p>
@@ -193,18 +161,8 @@ const deactivate = async () => {
           </li>
         ))}
       </ul>
-      <p>
-            Pickup Location: 
-            {itinerary.pickupLocation ? 
-                `${itinerary.pickupLocation.type} - Coordinates: ${itinerary.pickupLocation.coordinates?.join(', ') || 'No coordinates available'}` 
-                : 'N/A'}
-        </p>
-        <p>
-            Dropoff Location: 
-            {itinerary.dropoffLocation ? 
-                `${itinerary.dropoffLocation.type} - Coordinates: ${itinerary.dropoffLocation.coordinates?.join(', ') || 'No coordinates available'}` 
-                : 'N/A'}
-        </p>
+      <p>pickup location: {itinerary.pickupLocation}</p>
+      <p>dropoff location: {itinerary.dropoffLocation}</p>
       <h3>Locations:</h3>
       <ul>
         {itinerary.tourLocations.map((loc, index) => (
@@ -260,6 +218,12 @@ const deactivate = async () => {
         </button>
       </div>
 
+      <div>
+      <button className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105' 
+      onClick={() => handleBooking(itinerary.id)}>Book</button>
+    </div>
+
+
         <div className='flex justify-between'>
         <div className='flex'>
         <Link 
@@ -306,11 +270,12 @@ const deactivate = async () => {
           </div>
         </div>
       )}
+
+
         </div>
         </div>
   )
   
 }
-
 
 export default ItineraryContainer

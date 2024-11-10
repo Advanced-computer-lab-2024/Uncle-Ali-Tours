@@ -143,7 +143,7 @@ export const useItineraryStore = create((set,get) => ({
     },
 
 
-    createProductReview: async (itineraryId, rating, comment, user) => {
+    createItineraryReview: async (itineraryId, rating, comment, user) => {
         
         console.log("Request Payload:", { rating, comment, user });
         if (typeof rating !== 'number' || rating < 1 || rating > 5) {
