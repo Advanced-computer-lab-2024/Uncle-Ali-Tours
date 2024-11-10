@@ -37,6 +37,9 @@ import ViewReviews from '../pages/ViewReviews';
 import ItineraryDetail from "./ItineraryDetail"
 import ActivityDetail from "./ActivityDetail";
 import TourGuideReviews from '../pages/TourGuideReviews';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
+
+
 
 
 
@@ -117,6 +120,7 @@ function App() {
 
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
+        <Route path="/touristitinerarycontainer" element={<TouristItineraryContainer/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

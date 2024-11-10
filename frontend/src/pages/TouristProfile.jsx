@@ -6,11 +6,9 @@ import {useTouristStore} from '../store/tourist'
 import { useUserStore } from '../store/user';
 import Dialog, { dialog } from '../components/Dialog.jsx';
 import { useTagStore } from '../store/tag';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const TouristProfile = () => {
-  
-
   const {user} = useUserStore();
   const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel} = useTouristStore();
   const [isRequired, setIsRequired] = useState(true);
@@ -25,6 +23,8 @@ const TouristProfile = () => {
   const [complaints, setComplaints] = useState([]); // State to hold complaints data
   const [showComplaints, setShowComplaints] = useState(false);
   const {tags, getTags} = useTagStore();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     getTags();
@@ -44,7 +44,9 @@ const fetchBadge = async () => {
     }
 };
 
-
+const handleRedirect = () => {
+  navigate('/touristitinerarycontainer');
+};
 
  // Initialize preferences state from tourist data
  useEffect(() => {
@@ -164,6 +166,15 @@ const handleRedeemClick = () => {
            <Link to='/viewProducts'>
           <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link>
            
+
+          <button
+                onClick={handleRedirect}
+                className='bg-black text-white m-6 p-2 rounded'
+            >
+            Tourist Itinerary
+            </button>
+
+
            </div>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
            {isWalletVisible && (
