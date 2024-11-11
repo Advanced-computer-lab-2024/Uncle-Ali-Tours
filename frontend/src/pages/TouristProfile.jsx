@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import {useTouristStore} from '../store/tourist'
 import { useUserStore } from '../store/user';
 import Dialog, { dialog } from '../components/Dialog.jsx';
+import { useRequestStore } from '../store/requests.js';
 const TouristProfile = () => {
   
 
@@ -17,8 +18,10 @@ const TouristProfile = () => {
   const [isRedeemDialogVisible, setIsRedeemDialogVisible] = useState(false);
   const pointsMoney = ((tourist.myPoints/100) * user.currencyRate).toFixed(2); // Convert price based on currencyRate
   const { showDialog } = dialog();
-
- 
+  const [complaints, setComplaints] = useState([]); // State to hold complaints data
+  const [showComplaints, setShowComplaints] = useState(false); // Toggle display
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+  const { createRequest } = useRequestStore();
   // 28
 
   // const [filter, setFilter] = useState({
@@ -50,19 +53,48 @@ const handleProfileUpdate = async () => {
 const handleWalletClick = () => {
   setIsWalletVisible(!isWalletVisible);
 };
-
+const handleDeleteClick = () => {
+  setIsDeleteVisible(!isDeleteVisible);
+};
 const handleRedeemClick = () => {
   showDialog();
 };
 
+const handleFetchComplaints = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/complaint/by-creator/${user.userName}`);
+    const data = await response.json()
+    if (data.success) {
+      setComplaints(data.data);
+      setShowComplaints(true);
+    } else {
+      toast.error('No complaints found.');
+    }
+  } catch (error) {
+    console.error('Error fetching complaints:', error);
+    toast.error('Failed to fetch complaints.');
+  }
+};
+
+const handleDeleteAccountRequest = async () => {
+  const deleteRequest = {
+    userName: user.userName,
+    userType: user.type,
+    userID: user._id,
+    type: 'delete',
+  };
+  const { success, message } = await createRequest(deleteRequest);
+  console.log(deleteRequest);
+  if (success) {
+    toast.success('Account deletion request submitted successfully.');
+    setIsDeleteVisible(false); // Close the delete dialog
+  } else {
+    toast.error(message);
+  }
+};
 
   // Handle product filter based on name, price, etc.
  
-
-  
-
-      
-
 return (
     <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
        <Toaster/>
@@ -82,7 +114,7 @@ return (
            </div>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
            {isWalletVisible && (
-            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white p-4 rounded shadow-lg">
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
             <p>You have {walletMoney} {user.chosenCurrency} in your wallet.</p>
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsWalletVisible(false)}>Close</button>
             </div>
@@ -98,8 +130,36 @@ return (
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
            <br />
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
-          
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button> 
+           <br />      
+           {/* Complaints Button */}
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
+
+          {/* Display Complaints */}
+          {showComplaints && (
+            <div className="mt-4 bg-gray-700 p-4 rounded">
+              <h2 className="text-xl mb-2">My Complaints</h2> (
+              { complaints.map((complaint) => (
+                  <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
+                    <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
+                    <p>Body: {complaint.body}</p>
+                    <p>Status: {complaint.status}</p>
+                    <p>Reply: {complaint.reply ? complaint.reply : "No replies yet"}</p>
+                  </div>
+                ))}
+              )
+            </div>
+          )}
+          <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}
+
         
 </div>);
 }

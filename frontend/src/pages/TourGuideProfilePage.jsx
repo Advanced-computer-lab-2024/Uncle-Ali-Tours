@@ -7,6 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import UploadPicture from '../components/UploadPicture.jsx';
 import Dialog, { dialog } from '../components/Dialog.jsx';
+import { useRequestStore } from '../store/requests.js';
 
 
 const TourGuideProfilePage = () =>{
@@ -37,9 +38,28 @@ const TourGuideProfilePage = () =>{
         }
     }, []);
 
+    const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+    const { createRequest } = useRequestStore();
     const handleDeleteClick = () => {
-        showDialog()
-    }
+        setIsDeleteVisible(!isDeleteVisible);
+    };
+    const handleDeleteAccountRequest = async () => {
+        const deleteRequest = {
+          userName: user.userName,
+          userType: user.type,
+          userID: user._id,
+          type: 'delete',
+        };
+        const { success, message } = await createRequest(deleteRequest);
+        console.log(deleteRequest);
+        if (success) {
+          toast.success('Account deletion request submitted successfully.');
+          setIsDeleteVisible(false); // Close the delete dialog
+        } else {
+          toast.error(message);
+        }
+      };
+      
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
@@ -66,8 +86,15 @@ const TourGuideProfilePage = () =>{
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>itinerary</button>
            <div>
            <Dialog msg={"Are you sure you want to delete your account?"} accept={() => (console.log("deleted"))} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
-            <button className='bg-red-600 text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button>
-           </div>
+           <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}           </div>
         </div>
     );
 }

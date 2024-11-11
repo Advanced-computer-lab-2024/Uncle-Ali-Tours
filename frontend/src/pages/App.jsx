@@ -26,6 +26,7 @@ import ChangePassword from "./ChangePassword";
 import FileComplaint from "./FileComplaint";
 import ChangeCurrency from "./ChangeCurrency";
 import Complaints from "./Complaints";
+import ViewDeleteRequests from "./ViewDeleteRequests";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -106,9 +107,8 @@ function App() {
         <Route path="/createActivity" element={<CreateActivity/>}/>
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
-
-    
         <Route path="/viewReviews" element={<ViewReviews />} />
+        <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
       </Routes>
     </div>
     <div className="mx-auto w-fit">

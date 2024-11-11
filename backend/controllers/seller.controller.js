@@ -1,6 +1,6 @@
 import Seller from "../models/seller.model.js";
 import User from "../models/user.model.js";
-
+import Product from '../models/product.model.js'; 
 export const createSeller = async (req, res) => {
     const sellerData = req.body;
 
@@ -77,11 +77,10 @@ export const deleteSeller = async (req, res) => {
 
     try {
         const sellerExists = await Seller.exists({ userName: userName });
-
         if (!sellerExists) {
             return res.status(404).json({ success: false, message: "Seller not found" });
         }
-
+        await Product.findAndDelete({creator:userName});
         await Seller.findOneAndDelete({ userName: userName });
         res.json({ success: true, message: "Seller profile deleted successfully" });
     } catch (error) {

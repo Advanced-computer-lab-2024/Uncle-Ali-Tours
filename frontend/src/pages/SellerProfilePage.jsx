@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useSellerStore } from '../store/seller';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { useRequestStore } from '../store/requests.js';
+
+
+
 const SellerProfile = () => {
   const { user } = useUserStore(); 
   const { sell, getSeller, updateSeller } = useSellerStore(); 
@@ -12,6 +16,36 @@ const SellerProfile = () => {
   const handleButtonClick = () => {
     setIsRequired(false); 
 };
+
+const handleFileUpload = async () => {
+  if (!idFile || !taxationCardFile) {
+    toast.error("Please upload both ID and Taxation Registry Card.");
+    return;
+  }
+
+  // Form submission logic for file upload
+  const formData = new FormData();
+  formData.append("idFile", idFile);
+  formData.append("taxationCardFile", taxationCardFile);
+  formData.append("username", user.username);
+
+  try {
+    const response = await fetch('/api/upload-documents', {  // Replace with your backend endpoint
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      toast.success("Documents uploaded successfully.");
+    } else {
+      toast.error(result.message || "Failed to upload documents.");
+    }
+  } catch (error) {
+    toast.error("An error occurred during the upload.");
+  }
+};
+
 
 const [updatedSeller,setUpdatedSeller]= useState({});  
 const handleButtonClickk = async () => {
@@ -31,6 +65,30 @@ const handleButtonClickk = async () => {
   useEffect(()=>{
     getSeller({userName : user.userName},{});
 },[])
+
+const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+const { createRequest } = useRequestStore();
+const handleDeleteClick = () => {
+  setIsDeleteVisible(!isDeleteVisible);
+};
+const handleDeleteAccountRequest = async () => {
+  const deleteRequest = {
+    userName: user.userName,
+    userType: user.type,
+    userID: user._id,
+    type: 'delete',
+  };
+  const { success, message } = await createRequest(deleteRequest);
+  console.log(deleteRequest);
+  if (success) {
+    toast.success('Account deletion request submitted successfully.');
+    setIsDeleteVisible(false); // Close the delete dialog
+  } else {
+    toast.error(message);
+  }
+};
+
+
 
 
 return (
@@ -60,6 +118,7 @@ return (
               readOnly={isRequired}
               onChange={(e) => setUpdatedSeller({ ...updatedSeller, userName: e.target.value })}
             />
+            
           </label>
           <label>
             Email:
@@ -82,6 +141,29 @@ return (
               readOnly={isRequired}
               onChange={(e) => setUpdatedSeller({ ...updatedSeller, mobileNumber: e.target.value })}
             />
+             {/* Document Upload Section */}
+        <div className="mt-6">
+          <h2 className="text-xl mb-2">Upload Required Documents</h2>
+          <label className="block mb-2">
+            ID:
+            <input
+              type="file"
+              onChange={(e) => setIdFile(e.target.files[0])}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
+            />
+          </label>
+          <label className="block mb-2">
+            Taxation Registry Card:
+            <input
+              type="file"
+              onChange={(e) => setTaxationCardFile(e.target.files[0])}
+              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
+            />
+          </label>
+          <button onClick={handleFileUpload} className="bg-green-600 p-2 mt-4 rounded">
+            Upload Documents
+          </button>
+        </div>
           </label>
         </div>
         <div className="flex justify-between mt-6">
@@ -94,6 +176,15 @@ return (
           <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>
             Product 
           </button>
+          <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}
         </div>
       </div>
     </div>

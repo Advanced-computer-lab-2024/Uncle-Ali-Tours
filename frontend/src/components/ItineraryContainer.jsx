@@ -47,8 +47,9 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   }
   // Modify the `handleActivateClick` function in `ItineraryContainer.jsx`:
 const handleActivateClick = () => {
-  itineraryChanger(itinerary); // Set the current itinerary in the parent state
   showAdjustableDialog();      // Open the dialog
+  itineraryChanger(itinerary); // Set the current itinerary in the parent state
+  
 };
 
 
@@ -179,7 +180,7 @@ const deactivate = async () => {
         <div className='flex'>
         <Link 
           to='/updateItinerary'
-          onClick={()=>(setCurrentItinerary())}
+          onClick={()=>(handleUpdateClick())}
           className='mr-4 transform transition-transform duration-300 hover:scale-125'
         >
           <MdOutlineDriveFileRenameOutline size='18' color='black' />

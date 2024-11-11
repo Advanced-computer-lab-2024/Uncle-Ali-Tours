@@ -73,6 +73,18 @@ dropoffLocation: {
     type: String,
     required: false
   },
+  isPayed: {
+    type: Boolean,
+    default: true, 
+  },
+  numberOfBookings: {
+    type: Number,
+    default: 0,
+  },
+  isActivated: {
+    type: Boolean,
+    default: true, 
+  },
   reviews: [reviewSchema],
      rating: {
        type: Number,
