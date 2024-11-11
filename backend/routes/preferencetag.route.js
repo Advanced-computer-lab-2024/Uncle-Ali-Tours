@@ -1,5 +1,8 @@
 import express from "express";
-import {createTag, deleteTag, updateTag, getTags,
+import {
+    createTag, deleteTag,
+    getTags,
+    updateTag,
 } from "../controllers/preference.tags.js";
 
 const router = express.Router();

@@ -86,9 +86,14 @@ export const updateTourist = async (req,res) => {
             return res.status(404).json({ success: false, message: "tourist not found" });
         }
         const updatedTourist = await Tourist.findOneAndUpdate({ userName: userName }, newTourist, { new: true });
+        if (newTourist.email){
+            const dd = await User.findOneAndUpdate({userName}, {email: newTourist.email}, {new: true});
+            console.log(dd);
+        }
         res.status(200).json({success:true, data:  updatedTourist});
     }
     catch (error) {
+        console.log(error.message);
         res.status(500).json({success:false, message: error.message });
     }
 }

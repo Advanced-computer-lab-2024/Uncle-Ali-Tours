@@ -32,7 +32,7 @@ export const getAttraction = async(req,res) => {
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const Attractionss = await Attraction.find(parsedFilter).sort(parsedSort);
+        const Attractionss = await Attraction.find(parsedFilter).sort(parsedSort).select('-__v -createdAt -updatedAt');
         res.status(200).json({success:true, data: Attractionss});
     } catch (error) {
         res.status(404).json({ message: error.message });
