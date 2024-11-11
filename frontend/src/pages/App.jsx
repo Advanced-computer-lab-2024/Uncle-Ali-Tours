@@ -1,60 +1,61 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import { Link, Route, Routes } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import HomePage from "./HomePage";
-import LoginPage from "./LoginPage";
-import RegisterPage from "./RegisterPage";
-import { Route, Routes, Link } from "react-router-dom";
+import { useAdvertiserstore } from "../store/advertiser";
+import { useSellerStore } from "../store/seller";
+import { useGuideStore } from "../store/tourGuide";
+import { useTouristStore } from "../store/tourist";
+import { useUserStore } from "../store/user";
 import ActivityCategory from "./ActivityCategory";
-import ViewAttractions from "./ViewAttractions";
+import ActivityDetail from "./ActivityDetail";
+import ActivityPage from "./ActivityPage";
+import AdminDashboard from "./AdminDashboardPage";
+import AdvertiserProfile from "./AdvertiserProfilePage";
+import BookedFlights from "./BookedFlights";
+import BookedHotels from "./BookedHotels";
+import ChangeCurrency from "./ChangeCurrency";
+import ChangePassword from "./ChangePassword";
+import Complaints from "./Complaints";
+import CreateActivity from "./CreateActivity";
+import CreateItinerary from "./CreateItinerary";
+import FileComplaint from "./FileComplaint";
+import FlightBookingPage from "./FlightBookingPage";
+import HomePage from "./HomePage";
+import HotelBookingPage from "./HotelBookingPage";
+import ItineraryDetail from "./ItineraryDetail";
+import ItineraryPage from "./ItineraryPage";
+import LoginPage from "./LoginPage";
+import MuseumsPage from "./MuseumsPage";
 import PreferenceTag from "./PreferenceTag";
+import Productpage from "./Productpage";
+import RegisterPage from "./RegisterPage";
+import SellerProfilePage from "./SellerProfilePage";
+import TourGuideProfilePage from "./TourGuideProfilePage";
+import TourGuideReviews from "./TourGuideReviews";
+import TouristProfile from './TouristProfile';
+import TouristViewActivities from "./TouristViewActivities";
+import TouristViewItineraries from "./TouristViewItineraries";
+import ViewTransportationActivity from "./TransportationActivity";
+import TransportationActivityDetail from "./TransportationActivityDetail";
+import UpdateActivity from "./UpdateActivity";
+import UpdateItinerary from "./UpdateItinerary";
 import ViewActivities from "./ViewActivities";
+import ViewAttractions from "./ViewAttractions";
+import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
-import ItineraryPage from "./ItineraryPage";
-import CreateItinerary from "./CreateItinerary";
-import SellerProfilePage from "./SellerProfilePage";
-import AdvertiserProfile from "./AdvertiserProfilePage";
-import UpdateItinerary from "./UpdateItinerary";
-import AdminDashboard from "./AdminDashboardPage";
-import TourGuideProfilePage from "./TourGuideProfilePage";
-import Productpage from "./Productpage";
-import TouristProfile from './TouristProfile';
-import MuseumsPage from "./MuseumsPage";
-import ActivityPage from "./ActivityPage";
-import CreateActivity from "./CreateActivity";
-import ChangePassword from "./ChangePassword";
-import FileComplaint from "./FileComplaint";
-import ChangeCurrency from "./ChangeCurrency";
-import Complaints from "./Complaints";
-import UpdateActivity from "./UpdateActivity";
-import ViewDeleteRequests from "./ViewDeleteRequests";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUserStore } from "../store/user";
-import { useGuideStore } from "../store/tourGuide";
-import { useSellerStore } from "../store/seller";
-import { useTouristStore } from "../store/tourist";
-import { useAdvertiserstore } from "../store/advertiser";
-import ViewReviews from '../pages/ViewReviews';
-import ItineraryDetail from "./ItineraryDetail"
-import ActivityDetail from "./ActivityDetail";
-import ViewTransportationActivity from "./transportationActivity";
-import TransportationActivityDetail from "./TransportationActivityDetail";
-import TourGuideReviews from '../pages/TourGuideReviews';
-import TouristItineraryContainer from '../components/TouristItineraryContainer';
-import TouristViewItineraries from "../pages/TouristViewItineraries";
-import TouristViewActivities from "./TouristViewActivities";
+import ViewReviews from "./ViewReviews";
+
 
 
 
 
 function App() {
-  const { logout, setUser } = useUserStore();
+  const {  setUser } = useUserStore();
   const { getGuide } = useGuideStore();
   const { getSeller } = useSellerStore();
   const { getTourist } = useTouristStore();
   const { getAdvertiser } = useAdvertiserstore();
-  const navigate = useNavigate();
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -118,6 +119,11 @@ function App() {
         <Route path="/activityPage" element={<ActivityPage/>}/>
         <Route path="/createActivity" element={<CreateActivity/>}/>
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
+        <Route path="/hotelBooking" element={<HotelBookingPage/>}/>
+        <Route path="/flightBooking" element={<FlightBookingPage/>}/>
+        <Route path="/bookedFlights" element={<BookedFlights/>}/>
+        <Route path="/bookedHotels" element={<BookedHotels/>}/>
+    
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
 

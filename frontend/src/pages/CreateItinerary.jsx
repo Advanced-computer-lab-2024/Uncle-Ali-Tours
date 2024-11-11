@@ -1,12 +1,9 @@
-import React from 'react'
-import { useState } from 'react';
-import { useItineraryStore } from '../store/itinerary';
+import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { useUserStore } from '../store/user';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useItineraryStore } from '../store/itinerary';
 import { useTagStore } from '../store/tag';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../store/user';
 function CreateItinerary() {
     const {user} = useUserStore();
     const {newItinerary, addItineraries} = useItineraryStore(); 
@@ -97,7 +94,7 @@ function CreateItinerary() {
       } else {
         toast.error(message, { className: "text-white bg-gray-800" });
         // Stay on the page if adding itinerary failed
-      }      
+      }
     }
       // State for storing the selected option
       const [selectedOption, setSelectedOption] = useState("");

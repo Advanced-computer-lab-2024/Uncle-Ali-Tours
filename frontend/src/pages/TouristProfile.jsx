@@ -1,13 +1,12 @@
-import React, { useState,useEffect } from 'react'; 
+import React, { useEffect, useState } from 'react';
 //import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import {useTouristStore} from '../store/tourist'
-import { useUserStore } from '../store/user';
+import { Link, useNavigate } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
-import { useTagStore } from '../store/tag';
-import { useNavigate } from 'react-router-dom';
 import { useRequestStore } from '../store/requests.js';
+import { useTagStore } from '../store/tag';
+import { useTouristStore } from '../store/tourist';
+import { useUserStore } from '../store/user';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -172,7 +171,7 @@ const handleDeleteAccountRequest = async () => {
            <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={tourist.dateOfBirth ? tourist.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, dateOfBirth: e.target.value})}></input></label>   
            
            <Link to='/viewProducts'>
-          <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link>
+          <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link> <Link to ='/bookedFlights'> <button className='bg-black text-white m-6 p-2 rounded' >flight booking</button></Link> <Link to ='/bookedHotels'> <button className='bg-black text-white m-6 p-2 rounded' >hotel booking</button></Link>
            
 
           <button
