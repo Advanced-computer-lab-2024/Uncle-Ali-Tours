@@ -1,17 +1,17 @@
 // controllers/bookingController.js
-const Booking = require('../models/Booking');
+import Booking from '../models/Booking.js';
 
 exports.bookItinerary = async (req, res) => {
   try {
-    const userId = req.user.id; // Access user ID from auth middleware
-    const { itineraryId } = req.body;
+    
+    const { itineraryId,userName } = req.body;
 
     if (!itineraryId) {
       return res.status(400).json({ message: 'Itinerary ID is required.' });
     }
 
     // Create and save the new booking
-    const newBooking = new Booking({ userId, itineraryId });
+    const newBooking = new Booking({ userName, itineraryId });
     await newBooking.save();
 
     res.status(201).json({ message: 'Itinerary booked successfully!', booking: newBooking });

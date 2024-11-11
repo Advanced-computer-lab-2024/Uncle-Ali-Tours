@@ -37,7 +37,7 @@ const handleBooking = async (itineraryId) => {
   try {
     const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
     await axios.post('/api/bookings', 
-      { itineraryId }, 
+      { itineraryId, userName: user.userName }, 
       {
         headers: { Authorization: `Bearer ${token}` }
       }

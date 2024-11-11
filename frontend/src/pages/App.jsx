@@ -36,6 +36,8 @@ import { useAdvertiserstore } from "../store/advertiser";
 import ViewReviews from '../pages/ViewReviews';
 import ItineraryDetail from "./ItineraryDetail"
 import ActivityDetail from "./ActivityDetail";
+import ViewTransportationActivity from "./transportationActivity";
+import TransportationActivityDetail from "./TransportationActivityDetail";
 
 
 
@@ -113,8 +115,10 @@ function App() {
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
+        <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
 
         <Route path="/viewReviews" element={<ViewReviews />} />
+        <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

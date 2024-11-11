@@ -247,6 +247,8 @@ const handleRedeemClick = () => {
           )
         </div>
       )}
+      <Link to='/transportationActivity'>
+      <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
     </div>
   );
 };    
