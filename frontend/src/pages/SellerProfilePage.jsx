@@ -20,12 +20,9 @@ const SellerProfile = () => {
   const { getProducts, products } = useProductStore();
     const [filter, setFilter] = useState({});
   const [isRequired, setIsRequired] = useState(true);
-  const [updatedSeller, setUpdatedSeller] = useState({});
   const [showChart, setShowChart] = useState(false); // Toggle for chart visibility
 
-  const handleButtonClick = () => setIsRequired(false);
 
-  const handleButtonClickk = async () => {
 
 const handleFileUpload = async () => {
   if (!idFile || !taxationCardFile) {
@@ -57,13 +54,13 @@ const handleFileUpload = async () => {
 };
 
 
-// const handleButtonClickk = async () => {
-//     if(!isRequired){
-//        const {success, message}  = await updateSeller(user.userName , updatedSeller);
-//        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+const handleButtonClickk = async () => {
+    if(!isRequired){
+       const {success, message}  = await updateSeller(user.userName , updatedSeller);
+       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
-//     }
-// }
+    }
+}
   const [updatedSeller, setUpdatedSeller] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null); // To preview the image
@@ -173,9 +170,10 @@ const handleDeleteAccountRequest = async () => {
       ],
     };
   };
-
+  
   return (
     <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+      <p>dd</p>
       <Toaster />
 
       <div className="flex items-center border-b border-gray-600 pb-5 mb-5">
@@ -311,6 +309,5 @@ const handleDeleteAccountRequest = async () => {
     </div>
   );
 };
-}
 
 export default SellerProfile;

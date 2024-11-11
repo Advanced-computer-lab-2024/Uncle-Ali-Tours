@@ -209,24 +209,7 @@ const handleDeleteAccountRequest = async () => {
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button> 
            <br />      
-           {/* Complaints Button */}
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
-
-          {/* Display Complaints */}
-          {showComplaints && (
-            <div className="mt-4 bg-gray-700 p-4 rounded">
-              <h2 className="text-xl mb-2">My Complaints</h2> (
-              { complaints.map((complaint) => (
-                  <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
-                    <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
-                    <p>Body: {complaint.body}</p>
-                    <p>Status: {complaint.status}</p>
-                    <p>Reply: {complaint.reply ? complaint.reply : "No replies yet"}</p>
-                  </div>
-                ))}
-              )
-            </div>
-          )}
+          
           <br />
           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
            {isDeleteVisible && (
@@ -238,23 +221,7 @@ const handleDeleteAccountRequest = async () => {
            )}
 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
-             {/* Complaints Button */}
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
 
-{/* Display Complaints */}
-{showComplaints && (
-  <div className="mt-4 bg-gray-700 p-4 rounded">
-    <h2 className="text-xl mb-2">My Complaints</h2> (
-     { complaints.map((complaint) => (
-        <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
-          <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
-          <p>Body:{complaint.body}</p>
-          <p>Status: {complaint.status}</p>
-        </div>
-      ))}
-    )
-  </div>
-)}
            <br />
 
            <h2>Select Your Vacation Preferences:</h2>
