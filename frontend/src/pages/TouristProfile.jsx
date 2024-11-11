@@ -18,7 +18,24 @@ const TouristProfile = () => {
   const pointsMoney = ((tourist.myPoints/100) * user.currencyRate).toFixed(2); // Convert price based on currencyRate
   const { showDialog } = dialog();
 
+  const [complaints, setComplaints] = useState([]); // State to hold complaints data
+  const [showComplaints, setShowComplaints] = useState(false); // Toggle display
+
  
+const handleFetchComplaints = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/complaint/by-creator/${user.userName}`);
+    const data = await response.json()
+    if (data.success) {
+      setComplaints(data.data);
+      setShowComplaints(true);
+    } else {
+      toast.error('No complaints found.');
+    }
+  } catch (error) {
+    console.error('Error fetching complaints:', error);
+    toast.error('Failed to fetch complaints.');
+  }}
   // 28
 
   // const [filter, setFilter] = useState({
@@ -99,7 +116,23 @@ return (
            <br />
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
-          
+             {/* Complaints Button */}
+      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
+
+{/* Display Complaints */}
+{showComplaints && (
+  <div className="mt-4 bg-gray-700 p-4 rounded">
+    <h2 className="text-xl mb-2">My Complaints</h2> (
+     { complaints.map((complaint) => (
+        <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
+          <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
+          <p>Body:{complaint.body}</p>
+          <p>Status: {complaint.status}</p>
+        </div>
+      ))}
+    )
+  </div>
+)}
         
 </div>);
 }

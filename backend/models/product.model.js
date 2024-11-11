@@ -23,11 +23,27 @@ const productSchema = new Schema({
         type: String,
        // required: true,
     },
-    rate: {
-        type: Number,
-    },
-    review: {
-        type: String,
+    rate: [
+        {
+          rating: Number,
+          user: {
+            userName: String,
+            userId: mongoose.Schema.Types.ObjectId,
+          },
+        },
+      ],
+      review: [
+        {
+          reviewText: String,
+          user: {
+            userName: String,
+            userId: mongoose.Schema.Types.ObjectId,
+          },
+        },
+      ],
+    sales: {
+        type:Number,
+        default:0
     }
 ,
 creator:{

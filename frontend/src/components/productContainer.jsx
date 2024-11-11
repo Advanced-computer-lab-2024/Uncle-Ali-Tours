@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import toast , {Toaster}from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 function ProductContainer({ product, productChanger, tourist }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -22,12 +22,44 @@ function ProductContainer({ product, productChanger, tourist }) {
     };
 
     // Handle submit based on dialog type
-    const handleSubmit = () => {
-        if (dialogType === 'rate') {
-            toast.success(`Rating submitted: ${rating}/5`, { className: "text-white bg-gray-800" });
-        } else if (dialogType === 'review') {
-            toast.success(`Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+    const handleSubmit = async () => {
+        if (dialogType === 'rate' && rating > 5) {
+            toast.error("Rating cannot exceed 5", { className: "text-white bg-gray-800" });
+            closeDialog();
+            return; // Exit without submitting if rating is invalid
         }
+        if (dialogType === 'review' && review === "") {
+            toast.error("Please put a review before submitting", { className: "text-white bg-gray-800" });
+            return; // Exit without submitting if rating is invalid
+        }
+        
+        const requestData = { user: { userName: tourist.userName } };
+
+        // Add rating or reviewText based on dialogType
+        if (dialogType === 'rate') {
+            requestData.rating = rating;
+        } else if (dialogType === 'review') {
+            requestData.reviewText = review;
+        }
+
+        try {
+            const response = await fetch(`/api/product/${product._id}/rate-review`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+            } else {
+                toast.error(data.message || 'Failed to submit');
+            }
+        } catch (error) {
+            console.error('Error submitting rating/review:', error);
+            toast.error('An error occurred. Please try again.', { className: "text-white bg-gray-800" });
+        }
+        
         closeDialog();
     };
 

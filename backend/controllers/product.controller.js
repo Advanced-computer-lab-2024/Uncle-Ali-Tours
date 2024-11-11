@@ -90,6 +90,31 @@ export const archiveProduct = async (req, res) => {
     }
 };
 
+export const addRatingReview =  async (req, res) => {
+    const { productId } = req.params;
+    const { rating, reviewText, user } = req.body;
+
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found." });
+        }
+
+        // Update based on the presence of rating or reviewText
+        if (rating) {
+            product.rate.push({ user: user.userName, rating });
+        }
+        if (reviewText) {
+            product.review.push({ user: user.userName, reviewText });
+        }
+
+        await product.save();
+        res.status(200).json({ success: true, message: 'Rating/Review submitted successfully.' });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).json({ success: false, message: "Server error." });
+    }
+};
 
 
 
