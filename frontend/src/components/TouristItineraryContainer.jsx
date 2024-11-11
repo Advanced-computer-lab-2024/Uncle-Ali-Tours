@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
-import { dialog } from '../components/Dialog.jsx';
+import Dialog, { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useGuideStore } from '../store/tourGuide.js';
 import {useUserStore} from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
-import { adjustableDialog } from './AdjustableDialog.jsx';
 import { Card } from 'react-bootstrap';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 
-function TouristItineraryContainer({ itinerary, itineraryChanger }) {
+
+function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
@@ -24,73 +23,29 @@ function TouristItineraryContainer({ itinerary, itineraryChanger }) {
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
 
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  console.log(itinerary);
-  
-  if (!itinerary) {
-    console.error('Itinerary is not available');
-    return null;
-  }
-  
+
+
+  const { bookItinerary } = useItineraryStore();
+
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
   };
-
-
   const handleViewReviewsClick = () => {
-    setCurrentItinerary(itinerary); 
+    setCurrentItinerary(itinerary);
     navigate('/viewReviews');       
   };
-
-const handleBooking = async (itineraryId) => {
-  try {
-    const token = localStorage.getItem('token');
-    await axios.post('/api/bookings', 
-      { itineraryId }, 
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    alert('Itinerary booked successfully!');
-  } catch (error) {
-    console.error('Booking failed:', error);
-    alert('Failed to book itinerary');
-  }
-};
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
     `${key}: ${itinerary[key]}`
   ))
-  const { showDialog } = dialog()
-  const { showFormDialog } = formdialog()
-  const { showAdjustableDialog } = adjustableDialog()
-
-  
-
-  const handleClick = () => {
-    showDialog()
-    itineraryChanger(itinerary)
-  }
-  const handleUpdateClick = () => {
-    showFormDialog()
-    itineraryChanger(itinerary)
-  }
-  // Modify the `handleActivateClick` function in `ItineraryContainer.jsx`:
-const handleActivateClick = () => {
-  itineraryChanger(itinerary); // Set the current itinerary in the parent state
-  showAdjustableDialog();      // Open the dialog
-};
-  const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
-
-  
+  const displayPrice = (itinerary.price * user.currencyRate).toFixed(2);
   const handleShare = (id) => {
     const link = `${window.location.origin}/itineraryDetail/${id}`;
-    
-    // Copy the link to clipboard
     navigator.clipboard.writeText(link).then(() => {
       alert("Link copied to clipboard!");
     }).catch(() => {
@@ -116,8 +71,6 @@ const handleActivateClick = () => {
   }
   setIsLoading(false)
 }
-
-
   const handleSubmitItineraryReview = async (e) => {
     e.preventDefault(); 
     const itineraryID = itinerary._id;
@@ -128,6 +81,12 @@ const handleActivateClick = () => {
       console.error('Error: itineraryId is missing');
       return;
     }
+
+    if (!itinerary.isBooked) {
+      alert('You can only review this itinerary once it is booked.');
+      return;
+    }
+
     console.log('User retrieved from states:', user);
     const { success, message } = await createItineraryReview(itineraryID, rating, comment,user);
     if (success) {
@@ -147,6 +106,10 @@ if (!tourGuideName) {
     console.error('Error: tour guide name is missing');
     return;
 }
+if (!itinerary.isBooked) {
+  alert('You can only review this tour guide once the itinerary is booked.');
+  return;
+}
   const { success, message } = await createTourGuideReview(tourGuideName, tourGuideRating, tourGuideComment,user);
   if (success) {
     alert('Review added successfully!');
@@ -157,7 +120,16 @@ if (!tourGuideName) {
     alert('Failed to add review: ' + message);
   }
 };
-
+const handleBookClick = async () => {
+  const { success, message } = await bookItinerary(itinerary._id);
+  if (success) {
+    toast.success(message, { className: "text-white bg-gray-800" });
+    alert("Booked Sucess");
+    console.log("Booked Successfully");
+  } else {
+    toast.error(message, { className: "text-white bg-gray-800" });
+  }
+};
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
@@ -171,6 +143,7 @@ if (!tourGuideName) {
         {itinerary.activities.map((activity, index) => (
           <li key={index+1}>
             <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
+            
           </li>
         ))}
       </ul>
@@ -201,44 +174,39 @@ if (!tourGuideName) {
         ))}
       </ul>
       <p>Accessibility: {itinerary.accessibility}</p>
-      <p>Number Of Bookings: {itinerary.numberOfBookings}</p>
-      <p>Status: {status}</p>
       <p>creator: {itinerary.creator}</p>
+      <div>
+      {itinerary ? (
+        <p>Booked: {itinerary.isBooked ? 'Yes' : 'No'}</p>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
 </div>
-
 <button 
   onClick={handleRedirectToReviews} 
   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
 >
   View Tour Guide Reviews
 </button>
-
-
 <div>
         <h3>Rate and Review the Creator</h3>
         <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
         <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
         <button onClick={handleSubmitTourGuideReview}>Submit</button>
       </div>
-
-
 <Card.Text as='div'>
           <Rating
             value={itinerary.rating}
             text={`${itinerary.numReviews} reviews`}
           />
         </Card.Text>
-
 <div>
 <h3>Add a Review</h3>
       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
       <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
       <button onClick={handleSubmitItineraryReview}>Submit</button>
-
-      
     </div> 
-
-
     <div>
         <button 
           onClick={handleViewReviewsClick}
@@ -246,28 +214,16 @@ if (!tourGuideName) {
           View Reviews
         </button>
       </div>
-
-      <div>
-      <button className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105' 
-      onClick={() => handleBooking(itinerary.id)}>Book</button>
-    </div>
-
-
+      <button
+        onClick={handleBookClick}
+        disabled={itinerary.isBooked} // disable button if already booked
+        className={`p-2 ${itinerary.isBooked ? 'bg-gray-500' : 'bg-blue-500'} text-white rounded`}
+      >
+        {itinerary.isBooked ? 'Booked' : 'Book Now'}
+      </button>
         <div className='flex justify-between'>
         <div className='flex'>
-        <Link 
-          to='/updateItinerary'
-          onClick={()=>(setCurrentItinerary())}
-          className='mr-4 transform transition-transform duration-300 hover:scale-125'
-        >
-          <MdOutlineDriveFileRenameOutline size='18' color='black' />
-        </Link>
-        <button onClick={() => (handleClick())} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
-        </div>
-        <button onClick={() => (handleActivateClick())} className='px-1 py-0.5 bg-green-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105'  > 
-          {buttonStatus} 
-        </button>
-        
+        </div>    
         <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(itinerary._id)}>copy link</button>
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail
@@ -276,7 +232,6 @@ if (!tourGuideName) {
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
           <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
             <h3 className="text-xl mb-4">Share Itinerary via Email</h3>
-            
             <label className="block mb-2">
               To:
               <input 
@@ -287,7 +242,6 @@ if (!tourGuideName) {
                 placeholder="Recipient's email"
               />
             </label>
-
             <div className="flex justify-end mt-4">
               <button className="p-2 bg-red-500 text-white rounded mr-2" onClick={() => setIsModalOpen(false)}>
                 Cancel
@@ -299,12 +253,9 @@ if (!tourGuideName) {
           </div>
         </div>
       )}
-
-
         </div>
         </div>
   )
   
 }
-
 export default TouristItineraryContainer

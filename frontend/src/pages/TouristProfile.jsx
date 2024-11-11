@@ -47,10 +47,12 @@ const fetchBadge = async () => {
     }
 };
 
-const handleRedirect = () => {
-  navigate('/touristitinerarycontainer');
+const handleRedirect1 = () => {
+  navigate('/touristviewitineraries');
 };
-
+const handleRedirect2 = () => {
+  navigate('/touristviewactivities');
+};
  // Initialize preferences state from tourist data
  useEffect(() => {
   if (tourist && tourist.myPreferences && tourist.myPreferences.length > 0) {
@@ -58,28 +60,9 @@ const handleRedirect = () => {
     setPreferences(tourist.myPreferences); // Set initial checked preferences
   }
 }, [tourist]);
-
-
- 
-  // 28
-
-  // const [filter, setFilter] = useState({
-  //   productName: '',
-  //   priceRange: 1000,
-  //   rating: 0,
-  //   category: '',
-  //   budget: '',
-  //   date: '',
-  //   language: '',
-  //   preferences: '',
-  //   tags: '',
-  // });
-
   useEffect(() => {
     getTourist({ userName: user.userName }, {});
   }, []);
-  
-  
 const handleButtonClick = () => {
   setIsRequired(false);
 };
@@ -190,12 +173,17 @@ const handleDeleteAccountRequest = async () => {
            
 
           <button
-                onClick={handleRedirect}
+                onClick={handleRedirect1}
                 className='bg-black text-white m-6 p-2 rounded'
             >
             Tourist Itinerary
             </button>
-
+            <button
+                onClick={handleRedirect2}
+                className='bg-black text-white m-6 p-2 rounded'
+            >
+            Tourist Activities
+            </button>
 
            </div>
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>

@@ -41,7 +41,8 @@ import ViewTransportationActivity from "./transportationActivity";
 import TransportationActivityDetail from "./TransportationActivityDetail";
 import TourGuideReviews from '../pages/TourGuideReviews';
 import TouristItineraryContainer from '../components/TouristItineraryContainer';
-
+import TouristViewItineraries from "../pages/TouristViewItineraries";
+import TouristViewActivities from "./TouristViewActivities";
 
 
 
@@ -126,7 +127,8 @@ function App() {
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
-        <Route path="/touristitinerarycontainer" element={<TouristItineraryContainer/>} />
+        <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
+        <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">
