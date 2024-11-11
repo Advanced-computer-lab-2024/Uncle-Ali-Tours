@@ -35,6 +35,14 @@ import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
 import ViewReviews from '../pages/ViewReviews';
+import ItineraryDetail from "./ItineraryDetail"
+import ActivityDetail from "./ActivityDetail";
+import TourGuideReviews from '../pages/TourGuideReviews';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
+
+
+
+
 
 function App() {
   const { logout, setUser } = useUserStore();
@@ -107,8 +115,14 @@ function App() {
         <Route path="/createActivity" element={<CreateActivity/>}/>
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
-        <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
+
+        <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
+        <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
+
+        <Route path="/viewReviews" element={<ViewReviews />} />
+        <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
+        <Route path="/touristitinerarycontainer" element={<TouristItineraryContainer/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

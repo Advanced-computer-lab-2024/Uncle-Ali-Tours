@@ -17,8 +17,7 @@ function ActivityCategoryContainer({categoryName, categoryChanger}) {
     showFormDialog()
   categoryChanger(categoryName)
   }
-
- 
+  
   return (
     <div className='flex justify-between mb-6 text-black text-left w-[20vw] bg-white mx-auto rou h-[5vh] rounded'>
         <p className='ml-2'>{categoryName}</p>

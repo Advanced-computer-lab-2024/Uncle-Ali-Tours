@@ -22,8 +22,11 @@ export const useSellerStore = create((set) => ({
         delete body.data[0].password;
         set({ sell: body.data[0] });
         console.log(body.data[0])
+        console.log("Updated seller in state:", body.data[0]); // Confirm profilePicture is included
+
         return { success: true, message: "Fetched seller data" };
     },
+    
     deleteSeller: async (name) => {
         const res = await fetch('/api/seller',{
             method : "DELETE",
@@ -48,6 +51,8 @@ export const useSellerStore = create((set) => ({
             });
             const data = await response.json();
             if (data.success) {
+                await getSeller({ userName: oldSeller });
+
                 return {success: true, message: "Successful"}
             } else {
                 console.error(data.message);

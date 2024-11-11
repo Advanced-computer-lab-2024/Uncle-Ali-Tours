@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const reviewSchema = mongoose.Schema(
+    {
+      rating: { type: Number, required: true },
+      comment: { type: String, required: true },
+      name: { type: String, required: true }, 
+  },
+  {
+      timestamps: true,
+  }
+  )
+
+
+
 const activitySchema = new mongoose.Schema({
     name: {
         type: String,
@@ -47,7 +60,18 @@ const activitySchema = new mongoose.Schema({
     creator: {
         type: String,
         required: true
-    }
+    },
+    reviews: [reviewSchema],
+     rating: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
+     numReviews: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

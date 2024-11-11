@@ -80,3 +80,9 @@ export const changePassword = async (req, res) => {
     }
 }
 
+
+    // controllers/userController.js
+exports.loginUser = (req, res) => {
+    res.status(200).json({ message: 'User logged in successfully' });
+  };
+
