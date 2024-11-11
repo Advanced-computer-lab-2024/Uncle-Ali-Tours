@@ -1,5 +1,5 @@
 import express from 'express';
-import { upload, uploadFile, creatTourGuide, getTourGuide, updateTourGuide, deleteTourGuide, checkTourGuideBookings } from '../controllers/tourGuide.controller.js';
+import { upload, uploadFile, creatTourGuide, getTourGuide, updateTourGuide, deleteTourGuide, checkTourGuideBookings, createTourGuideReview } from '../controllers/tourGuide.controller.js';
 
 const router = express.Router();
 
@@ -14,5 +14,6 @@ router.get("/", getTourGuide);
 router.put("/", updateTourGuide);
 router.delete("/", deleteTourGuide);
 router.get('/checkBookings/:userName', checkTourGuideBookings);
+router.post('/:id/reviews', createTourGuideReview);
 
 export default router;

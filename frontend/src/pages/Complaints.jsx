@@ -2,26 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useComplaintStore } from '../store/complaint';
 import toast, { Toaster } from 'react-hot-toast';
 
-const Complaints= () => {
+const Complaints = () => {
   const { 
     complaints, 
     getComplaints, 
     getComplaintDetails, 
-    updateComplaintStatus 
+    updateComplaintStatus,
+    updateComplaintReply
   } = useComplaintStore();
   
-  const [expandedComplaintId, setExpandedComplaintId] = useState(null); // Track which complaint is expanded
+  const [expandedComplaintId, setExpandedComplaintId] = useState(null);
   const [expandedComplaintDetails, setExpandedComplaintDetails] = useState(null);
+  const [replyText, setReplyText] = useState({}); // Track replies for each complaint
 
-  // Fetch complaints on page load
   useEffect(() => {
     getComplaints();
   }, [getComplaints]);
 
-  // Function to handle viewing complaint details
   const handleViewDetails = async (id) => {
     if (expandedComplaintId === id) {
-      // Collapse if the same complaint is clicked again
       setExpandedComplaintId(null);
       setExpandedComplaintDetails(null);
       return;
@@ -36,13 +35,12 @@ const Complaints= () => {
     }
   };
 
-  // Function to toggle complaint status
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === 'pending' ? 'resolved' : 'pending';
     const { success, message } = await updateComplaintStatus(id, newStatus);
     if (success) {
       toast.success(`Complaint marked as ${newStatus}`, { className: "text-white bg-gray-800" });
-      getComplaints(); // Refresh complaints list
+      getComplaints();
       if (expandedComplaintId === id && expandedComplaintDetails) {
         setExpandedComplaintDetails((prev) => ({ ...prev, status: newStatus }));
       }
@@ -51,6 +49,25 @@ const Complaints= () => {
     }
   };
 
+  const handleReplyChange = (id, text) => {
+    setReplyText((prev) => ({ ...prev, [id]: text }));
+  };
+
+  const handleReplySubmit = async (id) => {
+    const reply = replyText[id];
+    if (reply && reply.trim()) {
+      const { success, message } = await updateComplaintReply(id, reply);
+      if (success) {
+        toast.success("Reply sent successfully!", { className: "text-white bg-gray-800" });
+        setReplyText((prev) => ({ ...prev, [id]: '' })); // Clear reply input after submission
+      } else {
+        toast.error(message, { className: "text-white bg-gray-800" });
+      }
+    } else {
+      toast.error("Reply cannot be empty", { className: "text-white bg-gray-800" });
+    }
+  };
+  
   return (
     <div className="container mx-auto p-4">
       <Toaster />
@@ -76,6 +93,24 @@ const Complaints= () => {
                   className={`px-4 py-2 ${complaint.status === 'pending' ? 'bg-green-500' : 'bg-yellow-500'} text-white rounded-md hover:bg-opacity-75 transition duration-300`}
                 >
                   Mark as {complaint.status === 'pending' ? 'Resolved' : 'Pending'}
+                </button>
+              </div>
+
+              {/* Reply Input Section */}
+              <div className="flex items-center mt-4">
+                <label htmlFor={`reply-${complaint._id}`} className="mr-2 font-medium">Reply:</label>
+                <input
+                  type="text"
+                  id={`reply-${complaint._id}`}
+                  value={replyText[complaint._id] || ''}
+                  onChange={(e) => handleReplyChange(complaint._id, e.target.value)}
+                  className="border text-black border-gray-400 p-2 rounded-md flex-grow"
+                />
+                <button
+                  onClick={() => handleReplySubmit(complaint._id)}
+                  className="ml-2 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300"
+                >
+                  Send
                 </button>
               </div>
 

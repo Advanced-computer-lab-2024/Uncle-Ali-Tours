@@ -26,6 +26,8 @@ import ChangePassword from "./ChangePassword";
 import FileComplaint from "./FileComplaint";
 import ChangeCurrency from "./ChangeCurrency";
 import Complaints from "./Complaints";
+import UpdateActivity from "./UpdateActivity";
+import ViewDeleteRequests from "./ViewDeleteRequests";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
@@ -34,6 +36,17 @@ import { useSellerStore } from "../store/seller";
 import { useTouristStore } from "../store/tourist";
 import { useAdvertiserstore } from "../store/advertiser";
 import ViewReviews from '../pages/ViewReviews';
+import ItineraryDetail from "./ItineraryDetail"
+import ActivityDetail from "./ActivityDetail";
+import ViewTransportationActivity from "./transportationActivity";
+import TransportationActivityDetail from "./TransportationActivityDetail";
+import TourGuideReviews from '../pages/TourGuideReviews';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
+import TouristViewItineraries from "../pages/TouristViewItineraries";
+import TouristViewActivities from "./TouristViewActivities";
+
+
+
 
 function App() {
   const { logout, setUser } = useUserStore();
@@ -106,9 +119,18 @@ function App() {
         <Route path="/createActivity" element={<CreateActivity/>}/>
         <Route path="/changeCurrency" element={<ChangeCurrency/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
+        <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
 
-    
+        <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
+        <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
+        <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
+
         <Route path="/viewReviews" element={<ViewReviews />} />
+        <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
+        <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
+        <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
+        <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
+        <Route path="/updateActivity" element={<UpdateActivity/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

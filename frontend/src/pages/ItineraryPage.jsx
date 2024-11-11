@@ -8,6 +8,8 @@ import ItineraryContainer from '../components/ItineraryContainer.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useUserStore } from '../store/user.js';
 import AdjustableDialog , {adjustableDialog} from '../components/AdjustableDialog.jsx';
+
+
 function ItineraryPage(itinerary ,itineraryChanger) {
   const {user} = useUserStore();
   const {itineraries, addItineraries, getItineraries,deleteItinerary,activateItinerary,deactivateItinerary} = useItineraryStore();  
@@ -35,6 +37,16 @@ function ItineraryPage(itinerary ,itineraryChanger) {
   const handleActivateClick = (it) => {
     itineraryChanger(it); // Pass the selected itinerary
     showAdjustableDialog(); // Open the dialog
+  };
+  const ItineraryPage = ({ itineraries }) => {
+    return (
+      <div>
+        <h1>Available Itineraries</h1>
+        {itineraries.map(itinerary => (
+          <ItineraryContainer key={itinerary.id} itinerary={itinerary} />
+        ))}
+      </div>
+    );
   };
 
 
@@ -88,6 +100,13 @@ function ItineraryPage(itinerary ,itineraryChanger) {
 
     </div>
   )
+  
+
+
+
+
+
+
 }
 
 export default ItineraryPage

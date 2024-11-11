@@ -4,26 +4,28 @@ export const useAdvertiserstore = create((set) => ({
     advertiser:{},
     setAdvertiser: (advertiser) => set({advertiser}),
     getAdvertiser: async (filter = {}, sort = {}) => {
-      console.log(filter)
-      const queryString = new URLSearchParams({
-        filter: JSON.stringify(filter),
-        sort: JSON.stringify(sort),
-      }).toString();
+        console.log(filter)
+        const queryString = new URLSearchParams({
+            filter: JSON.stringify(filter),
+            sort: JSON.stringify(sort),
+        }).toString();
         const res = await fetch(`/api/advertiser?${queryString}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            query: JSON.stringify({})
         });
         const body = await res.json();
-        if (!body.success){
-            return (body)
+        if (!body.success) {
+            return body;
         }
-        set({advertiser: body.data[0]})
+        delete body.data[0].password;
+        set({ advertiser: body.data[0] });
         console.log(body.data[0])
-        return {success: true, message: "fetched attractions"};
-        },
+        console.log("Updated advertiser in state:", body.data[0]); // Confirm profilePicture is included
+
+        return { success: true, message: "Fetched advertiser data" };
+    },
 
         deleteAdvertiser: async (name) => {
           const res = await fetch('/api/advertiser',{

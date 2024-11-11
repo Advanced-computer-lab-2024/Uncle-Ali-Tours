@@ -1,5 +1,23 @@
 import Seller from "../models/seller.model.js";
 import User from "../models/user.model.js";
+import Product from '../models/product.model.js'; 
+export const uploadProfilePicture = async (req, res) => {
+    const { userName } = req.body;
+    const profilePicture = req.file.filename; // Save only the filename
+
+    try {
+        const updatedSeller = await Seller.findOneAndUpdate(
+            { userName },
+            { profilePicture },
+            { new: true }
+        );
+
+        res.status(200).json({ success: true, data: updatedSeller });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 export const createSeller = async (req, res) => {
     const sellerData = req.body;
@@ -72,16 +90,16 @@ export const updateSeller = async (req,res) => {
 
 
 
+
 export const deleteSeller = async (req, res) => {
     const { userName } = req.body; 
 
     try {
         const sellerExists = await Seller.exists({ userName: userName });
-
         if (!sellerExists) {
             return res.status(404).json({ success: false, message: "Seller not found" });
         }
-
+        await Product.findAndDelete({creator:userName});
         await Seller.findOneAndDelete({ userName: userName });
         res.json({ success: true, message: "Seller profile deleted successfully" });
     } catch (error) {
