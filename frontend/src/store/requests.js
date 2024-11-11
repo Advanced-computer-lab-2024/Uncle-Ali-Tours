@@ -108,4 +108,25 @@ export const useRequestStore = create((set) => ({
       return { success: false, message: error.message };
     }
   },
+  // Fetch request status by username
+  getRequestStatusByUsername: async (username) => {
+    try {
+      const res = await fetch(`/api/requests/${username}/status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (!data.success) return { success: false, message: data.message };
+
+      // Optionally set data to requests or handle as needed
+      set({ requests: data.data });
+
+      return { success: true, message: 'Fetched request status by username', data: data.data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
 }));

@@ -275,26 +275,6 @@ const handleDeleteAccountRequest = async () => {
         <br/>
         <button className="bg-black text-white m-6 p-2 rounded" onClick={handleSavePreferences}>Save Preferences</button>
         <button className="bg-red-500 text-white m-6 p-2 rounded" onClick={handleClearPreferences}>Clear All Preferences</button>
-        
-        <Link to='/viewProducts'><button className='bg-black text-white m-6 p-2 rounded'>Product</button></Link>
-        <Link to='/viewItineraries'><button className='bg-black text-white m-6 p-2 rounded'>Itinerary</button></Link>
-        <Link to='/viewActivities'><button className='bg-black text-white m-6 p-2 rounded'>Activities</button></Link>
-        <Link to='/viewAttractions'><button className='bg-black text-white m-6 p-2 rounded'>Attraction</button></Link>
-      
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
-      {isWalletVisible && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white p-4 rounded shadow-lg">
-          <p>You have {walletMoney} {user.chosenCurrency} in your wallet.</p>
-          <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsWalletVisible(false)}>Close</button>
-        </div>
-      )}
-      <Dialog
-        msg={`You have ${tourist.myPoints} points. Do you want to redeem these points for ${pointsMoney} ${user.chosenCurrency}?`}
-        accept={redeemPoints}
-        reject={() => console.log("Redemption canceled")}
-        acceptButtonText="Redeem Points"
-        rejectButtonText="Cancel"
-      />
 
       <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
       <br />
@@ -319,6 +299,16 @@ const handleDeleteAccountRequest = async () => {
       )}
       <Link to='/transportationActivity'>
       <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
+        <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}
+
     </div>
   );
 };    

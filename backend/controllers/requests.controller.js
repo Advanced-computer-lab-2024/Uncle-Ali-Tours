@@ -110,3 +110,20 @@ export const getVerifyRequests = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Get request status by username
+export const getRequestStatusByUsername = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const requests = await Request.find({ userName: username }, { status: 1, _id: 0 }); // Only select the `status` field
+
+        if (requests.length === 0) {
+            return res.status(404).json({ success: false, message: 'This user does not have any requests' });
+        }
+
+        return res.status(200).json({ success: true, data: requests });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};

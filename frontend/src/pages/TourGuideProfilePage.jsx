@@ -38,6 +38,35 @@ const TourGuideProfilePage = () =>{
         }
     }, []);
 
+    const handleFileUpload = async () => {
+        if (!idFile || !taxationCardFile) {
+          toast.error("Please upload both ID and Taxation Registry Card.");
+          return;
+        }
+      
+        // Form submission logic for file upload
+        const formData = new FormData();
+        formData.append("idFile", idFile);
+        formData.append("taxationCardFile", taxationCardFile);
+        formData.append("username", user.username);
+      
+        try {
+          const response = await fetch('/api/upload-documents', {  // Replace with your backend endpoint
+            method: 'POST',
+            body: formData,
+          });
+          const result = await response.json();
+          
+          if (result.success) {
+            toast.success("Documents uploaded successfully.");
+          } else {
+            toast.error(result.message || "Failed to upload documents.");
+          }
+        } catch (error) {
+          toast.error("An error occurred during the upload.");
+        }
+      };
+
     const [isDeleteVisible, setIsDeleteVisible] = useState(false);
     const { createRequest } = useRequestStore();
     const handleDeleteClick = () => {
@@ -75,11 +104,15 @@ const TourGuideProfilePage = () =>{
            <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={guide.dateOfBirth ? guide.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, dateOfBirth: e.target.value})}></input></label>           
            </div>
 
+           
+
            <div>
             
             <UploadPicture userType="tourGuide" />
 
         </div>
+
+        
 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>

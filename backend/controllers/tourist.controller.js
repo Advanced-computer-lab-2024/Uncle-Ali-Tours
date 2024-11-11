@@ -230,5 +230,27 @@ export const updateMyPreferences = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during preferences update" });
     }
 };
+export const updateMyPoints = async (req,res) => {
+    const{ userName , amountPaid} =req.bode;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        const value =0;
+        switch(tourist.badge){
+            case "level 1": value = amountPaid*0.5;break;
+            case "level 2": value = amountPaid*1;break;
+            case "level 3": value = amountPaid*1.5;break;
+        }
+        tourist.myPoints += value ; 
+        await tourist.save(); // Save changes to the database
 
+        return res.status(200).json({ success: true, data: tourist.myPoints, message: 'Points updated successfully' });
+    } catch (error) {
+        console.error("Error updating preferences:", error);
+        res.status(500).json({ success: false, message: "Server error during preferences update" });
+    }
+    
+};
 
