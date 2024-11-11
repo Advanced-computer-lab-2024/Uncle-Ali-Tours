@@ -36,6 +36,8 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const [isLoading, setIsLoading] = useState(false);
 
 
+  const { bookItinerary } = useItineraryStore();
+
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
   };
@@ -46,21 +48,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     navigate('/viewReviews');       // Navigate to the view reviews page
   };
 
-const handleBooking = async (itineraryId) => {
-  try {
-    const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-    await axios.post('/api/bookings', 
-      { itineraryId, userName: user.userName }, 
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    alert('Itinerary booked successfully!');
-  } catch (error) {
-    console.error('Booking failed:', error);
-    alert('Failed to book itinerary');
-  }
-};
+
   const keys = Object.keys(itinerary)
   keys.map((key)=> (
     `${key}: ${itinerary[key]}`
@@ -134,6 +122,12 @@ const handleActivateClick = () => {
       console.error('Error: itineraryId is missing');
       return;
     }
+
+    if (!itinerary.isBooked) {
+      alert('You can only review this itinerary once it is booked.');
+      return;
+    }
+
     console.log('User retrieved from states:', user);
     const { success, message } = await createItineraryReview(itineraryID, rating, comment,user);
     if (success) {
@@ -153,6 +147,12 @@ if (!tourGuideName) {
     console.error('Error: tour guide name is missing');
     return;
 }
+
+
+if (!itinerary.isBooked) {
+  alert('You can only review this tour guide once the itinerary is booked.');
+  return;
+}
   const { success, message } = await createTourGuideReview(tourGuideName, tourGuideRating, tourGuideComment,user);
   if (success) {
     alert('Review added successfully!');
@@ -161,6 +161,18 @@ if (!tourGuideName) {
 
   } else {
     alert('Failed to add review: ' + message);
+  }
+};
+
+
+const handleBookClick = async () => {
+  const { success, message } = await bookItinerary(itinerary._id);
+  if (success) {
+    toast.success(message, { className: "text-white bg-gray-800" });
+    alert("Booked Sucess");
+    console.log("Booked Successfully");
+  } else {
+    toast.error(message, { className: "text-white bg-gray-800" });
   }
 };
 
@@ -224,6 +236,13 @@ const deactivate = async () => {
       <p>Number Of Bookings: {itinerary.numberOfBookings}</p>
       <p>Status: {status}</p>
       <p>creator: {itinerary.creator}</p>
+      <div>
+      {itinerary ? (
+        <p>Booked: {itinerary.isBooked ? 'Yes' : 'No'}</p>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
 </div>
 
 <button 
@@ -267,10 +286,16 @@ const deactivate = async () => {
         </button>
       </div>
 
-      <div>
-      <button className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105' 
-      onClick={() => handleBooking(itinerary.id)}>Book</button>
-    </div>
+      
+
+
+      <button
+        onClick={handleBookClick}
+        disabled={itinerary.isBooked} // disable button if already booked
+        className={`p-2 ${itinerary.isBooked ? 'bg-gray-500' : 'bg-blue-500'} text-white rounded`}
+      >
+        {itinerary.isBooked ? 'Booked' : 'Book Now'}
+      </button>
 
 
         <div className='flex justify-between'>

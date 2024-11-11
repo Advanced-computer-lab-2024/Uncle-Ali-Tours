@@ -71,6 +71,10 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: true, 
   },
+  isBooked: {
+    type: Boolean,
+    default: false,
+  },
   reviews: [reviewSchema],
      rating: {
        type: Number,
