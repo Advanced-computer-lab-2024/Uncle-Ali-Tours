@@ -6,6 +6,9 @@ function ProductContainer({ product, productChanger, tourist }) {
     const [dialogType, setDialogType] = useState(null); // "rate" or "review"
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+    let avRating = 0
+    product.rate.map((r) => avRating += r.rating )
+    avRating /= product.rate.length
 
     // Handle opening the dialog
     const openDialog = (type) => {
@@ -85,9 +88,20 @@ function ProductContainer({ product, productChanger, tourist }) {
             <Toaster />
             <div className='grid p-2'>
                 {/* Product Details */}
-                {Object.keys(product).map((key, index) => (
-                    <p key={index}>{`${key}: ${product[key]}`}</p>
-                ))}
+                {Object.keys(product).map((key, index) => {
+                    if(key==="review"){
+                        return    <div key={index}>
+                        <p key={index}>{`${key}: ${product[key].map((review) => review.reviewText)}`}</p></div>
+                    }
+                    else 
+                        if (key==="rate"){
+                            return     <div key={index}>
+                        <p key={index}>{`${key}: ${avRating}`}</p></div>
+                        }
+                    
+                    else{
+                    return <p key={index}>{`${key}: ${product[key]}`}</p>}
+})}
                 <button onClick={() => handleReviewClick('review')}>
                     Review
                 </button>
