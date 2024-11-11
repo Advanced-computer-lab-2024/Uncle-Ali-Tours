@@ -19,8 +19,12 @@ const AdvertiserProfile = () => {
   const { createRequest } = useRequestStore();
 
   useEffect(() => {
-    getAdvertiser({ username: user.username }, {});
+    async function fetchAdvertiser() {
+      await getAdvertiser({ userName: user.userName }, {}); // Fetch data including profile picture
+    }
+    fetchAdvertiser();
   }, []);
+
 
   const handleButtonClick = () => {
     setIsRequired(false); 
@@ -36,7 +40,7 @@ const AdvertiserProfile = () => {
   };
 
   const handleRedirect = () => {
-    navigate('/product');
+    navigate('/activityPage');
   };
 
   const handleDeleteClick = () => {
@@ -224,7 +228,7 @@ const AdvertiserProfile = () => {
         <div className="flex justify-between mt-6">
           <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>Edit</button>
           <button className="bg-black text-white p-2 rounded" onClick={handleSaveClick}>Save</button>
-          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>Product</button>
+          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>Activities</button>
           <button className="bg-black text-white m-6 p-2 rounded" onClick={handleDeleteClick}>Delete Account</button>
         </div>
 
