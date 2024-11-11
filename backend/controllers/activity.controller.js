@@ -39,7 +39,7 @@ export const createActivity = async(req, res) => {
 
 export const getActivity = async(req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
-    
+    console.log(req.query)    
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
 
@@ -48,7 +48,7 @@ export const getActivity = async(req, res) => {
 
         if (minPrice) {
             parsedFilter.price.$gte = parseFloat(minPrice);
-        }
+        }    
 
         if (maxPrice) {
             parsedFilter.price.$lte = parseFloat(maxPrice);

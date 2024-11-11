@@ -26,6 +26,11 @@ function ActivityContainer({ activity, activityChanger }) {
     showDialog()
     tagChanger(tagName)
   }
+  // Handle delete action
+  const handleDeleteClick = () => {
+    showDialog();
+    activityChanger(activity);
+  };
 
   const handleShare = (id) => {
     const link = `${window.location.origin}/activityDetail/${id}`;
@@ -109,6 +114,7 @@ function ActivityContainer({ activity, activityChanger }) {
           {isLoading ? 'Submitting...' : 'Submit'}
         </button>
       </div>
+      
 
       <div>
         <h3>Reviews</h3>
@@ -118,6 +124,15 @@ function ActivityContainer({ activity, activityChanger }) {
           </div>
         ))}
       </div>
+      <button onClick={() => handleUpdateClick()} className='mr-4 transform transition-transform duration-300 hover:scale-125'>
+        <MdOutlineDriveFileRenameOutline size='18' color='black' />
+      </button>
+      <button onClick={() => handleDeleteClick()} className='mr-2 transform transition-transform duration-300 hover:scale-125'>
+        <MdDelete size='18' color='black' />
+      </button>
+
+      
+      
 
 
         <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(activity._id)}>Copy Link</button>

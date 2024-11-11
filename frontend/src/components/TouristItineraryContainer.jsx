@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
-import Dialog, { dialog } from '../components/Dialog.jsx';
+import { dialog } from '../components/Dialog.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useGuideStore } from '../store/tourGuide.js';
 import {useUserStore} from '../store/user.js';
@@ -10,12 +10,10 @@ import Rating from './Rating';
 import { adjustableDialog } from './AdjustableDialog.jsx';
 import { Card } from 'react-bootstrap';
 import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
-import { set } from 'mongoose';
 
-
-function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
+function TouristItineraryContainer({ itinerary, itineraryChanger }) {
   const {currentItinerary, setCurrentItinerary} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
@@ -26,31 +24,33 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
 
-
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
-  const [isActivated, setIsActivated] = useState(itinerary.isActivated);
-  const status = (itinerary.isActivated)? "Activated" : "Deactivated";
-  const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-
-
+  console.log(itinerary);
+  
+  if (!itinerary) {
+    console.error('Itinerary is not available');
+    return null;
+  }
+  
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
   };
 
 
   const handleViewReviewsClick = () => {
-    setCurrentItinerary(itinerary); // Set the itinerary in the store
-    navigate('/viewReviews');       // Navigate to the view reviews page
+    setCurrentItinerary(itinerary); 
+    navigate('/viewReviews');       
   };
 
 const handleBooking = async (itineraryId) => {
   try {
-    const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+    const token = localStorage.getItem('token');
     await axios.post('/api/bookings', 
-      { itineraryId, userName: user.userName }, 
+      { itineraryId }, 
       {
         headers: { Authorization: `Bearer ${token}` }
       }
@@ -86,7 +86,7 @@ const handleActivateClick = () => {
 };
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
 
-
+  
   const handleShare = (id) => {
     const link = `${window.location.origin}/itineraryDetail/${id}`;
     
@@ -100,12 +100,7 @@ const handleActivateClick = () => {
 
   const handleShareViaMail = async(id) => {
     setIsLoading(true)
-    // const userName = user.userName;
     const link = `${window.location.origin}/itineraryDetail/${id}`;
-    // console.log(id);
-    // console.log(user.userName);
-    // console.log(link);
-    // console.log(email); 
     const res = await fetch('/api/share/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -163,19 +158,6 @@ if (!tourGuideName) {
   }
 };
 
-
-
-const activate = async () => {
-  const {success, message} = await activateItinerary(curItinerary._id)
-  success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-}
-const deactivate = async () => {
-  const {success, message} = await deactivateItinerary(curItinerary._id)
-  success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-}
-
-
-
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
@@ -189,7 +171,6 @@ const deactivate = async () => {
         {itinerary.activities.map((activity, index) => (
           <li key={index+1}>
             <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
-            
           </li>
         ))}
       </ul>
@@ -326,4 +307,4 @@ const deactivate = async () => {
   
 }
 
-export default ItineraryContainer
+export default TouristItineraryContainer
