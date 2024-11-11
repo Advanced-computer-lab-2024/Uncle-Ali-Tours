@@ -35,6 +35,7 @@ import TourGuideReviews from "./TourGuideReviews";
 import TouristProfile from './TouristProfile';
 import TouristViewActivities from "./TouristViewActivities";
 import TouristViewItineraries from "./TouristViewItineraries";
+import ViewTransportationActivity from "./TransportationActivity";
 import TransportationActivityDetail from "./TransportationActivityDetail";
 import UpdateActivity from "./UpdateActivity";
 import UpdateItinerary from "./UpdateItinerary";
@@ -44,7 +45,6 @@ import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
-import ViewTransportationActivity from "./ViewTransportationActivity";
 
 
 
