@@ -78,6 +78,7 @@ export const useActivityStore = create((set,get) => ({
         if (!body.success){
             return (body)
         }
+        console.log('activiies',body)
         set({activities: body.data})
         return {success: true, message: "fetched activities"};
     },
