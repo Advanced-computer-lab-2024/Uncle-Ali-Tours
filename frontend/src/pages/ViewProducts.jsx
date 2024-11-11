@@ -1,11 +1,14 @@
 import React from 'react'
 import { useState } from 'react'
 import { useProductStore } from '../store/product';
+import { useTouristStore } from '../store/tourist'
 import ProductContainer
  from '../components/productContainer';
  import Dialog from '../components/Dialog.jsx'
  import FormDialog from '../components/FormDialog.jsx'
 function ViewProducts() {
+    const {tourist} = useTouristStore()
+    console.log(tourist)
     const [filter, setFilter] = useState(
         {}
     );
@@ -39,7 +42,7 @@ function ViewProducts() {
         </div>
         {
             products.map((product, index)=> (
-                !product.archive && <ProductContainer key={index}  product={product}/>   
+                !product.archive && <ProductContainer key={index} tourist={tourist}  product={product}/>   
             ))
         }
         <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>

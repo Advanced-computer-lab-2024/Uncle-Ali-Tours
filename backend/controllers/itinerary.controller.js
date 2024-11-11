@@ -121,40 +121,32 @@ export const updateItinerary = async (req, res) => {
 }
 
 
-export const createProductReview = asyncHandler(async (req, res) => {
-    const { rating, comment, user, name } = req.body;
-
+export const createItineraryReview = async (req, res) => {
+    const { rating, comment,name  } = req.body;
     console.log('Received rating:', rating);
     console.log('Received comment:', comment);
-    console.log('Received itinerary ID:', req.params.id);
-    console.log('Received user ID:', user);
-    console.log('Received user name:', name);
-
+    console.log('Received username:', name);
     const itinerary = await Itinerary.findById(req.params.id);
-
+    console.log('Received itinerary:', itinerary);
     if (itinerary) {
-        const alreadyReviewed = itinerary.reviews.find(
-            (r) => r.user.toString() === user
-        );
-
-        if (alreadyReviewed) {
-            res.status(400);
-            throw new Error('Itinerary already reviewed');
-        }
-
+        // const alreadyReviewed = itinerary.reviews.find(
+        //     (r) => r.user.toString() === name // Use 'name' which is defined
+        // );
+        // if (alreadyReviewed) {
+        //     res.status(400);
+        //     throw new Error('Itinerary already reviewed');
+        // }
         const review = {
-            name,
             rating: Number(rating),
             comment,
-            user,
+            name,  
         };
-
+        console.log('Received review:', review);
         itinerary.reviews.push(review);
         itinerary.numReviews = itinerary.reviews.length;
         itinerary.rating =
             itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) /
             itinerary.reviews.length;
-
         await itinerary.save();
 
         res.status(201).json({
@@ -168,4 +160,83 @@ export const createProductReview = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('Itinerary not found');
     }
-});
+};
+// Add to itinerary.controller.js
+
+export const activateItinerary = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const itinerary = await Itinerary.findById(id);
+        console.log(req.body);
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+
+        if (itinerary.isActivated) {
+            return res.status(400).json({ success: false, message: "Itinerary is already activated" });
+        }
+
+        itinerary.isActivated = true;
+        await itinerary.save();
+
+        res.status(200).json({ success: true, message: "Itinerary activated", data: itinerary });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        console.log(error.message);
+    }
+};
+
+export const deactivateItinerary = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const itinerary = await Itinerary.findById(id);
+        console.log(req.body);
+        if (!itinerary) {
+            console.log("Itinerary not found")
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+            
+        }
+
+        if (!itinerary.isActivated) {
+            console.log("Itinerary is already deactivated")
+            return res.status(400).json({ success: false, message: "Itinerary is already deactivated" });
+        }
+
+        if (itinerary.numberOfBookings === 0) {
+            console.log("Cannot deactiv")
+            return res.status(400).json({ success: false, message: "Cannot deactivate itinerary; itinerary has no bookings" });
+        }
+
+        itinerary.isActivated = false;
+        await itinerary.save();
+
+        res.status(200).json({ success: true, message: "Itinerary deactivated", data: itinerary });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        console.log(error.message);
+    }
+};
+
+
+export const bookItinerary = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const itinerary = await Itinerary.findByIdAndUpdate(id, { isBooked: true }, { new: true });
+  
+      if (!itinerary) {
+        // Send response only once if the itinerary is not found
+        return res.status(404).json({ success: false, message: 'Itinerary not found' });
+      }
+  
+      // Send success response
+      res.json({ success: true, message: 'Itinerary booked successfully', itinerary });
+    } catch (error) {
+      console.error(error); // Log the error for debugging
+      // Send error response only once
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, message: 'Server error' });
+      }
+    }
+  };

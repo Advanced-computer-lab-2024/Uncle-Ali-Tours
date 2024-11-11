@@ -29,8 +29,14 @@ const sellerModel = new mongoose.Schema({
         required: false,
         default: 0
     },
+    profilePicture: { // New field for storing profile picture path
+        type: String,
+        required: false,
+        default: ""
+    }
    
-}, {
+},
+ {
     timestamps: true 
 });
 

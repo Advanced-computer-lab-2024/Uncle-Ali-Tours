@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
@@ -7,6 +7,7 @@ import { useGuideStore } from "../store/tourGuide";
 import { useTouristStore } from "../store/tourist";
 import { useUserStore } from "../store/user";
 import ActivityCategory from "./ActivityCategory";
+import ActivityDetail from "./ActivityDetail";
 import ActivityPage from "./ActivityPage";
 import AdminDashboard from "./AdminDashboardPage";
 import AdvertiserProfile from "./AdvertiserProfilePage";
@@ -14,12 +15,14 @@ import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
 import ChangeCurrency from "./ChangeCurrency";
 import ChangePassword from "./ChangePassword";
+import Complaints from "./Complaints";
 import CreateActivity from "./CreateActivity";
 import CreateItinerary from "./CreateItinerary";
 import FileComplaint from "./FileComplaint";
 import FlightBookingPage from "./FlightBookingPage";
 import HomePage from "./HomePage";
 import HotelBookingPage from "./HotelBookingPage";
+import ItineraryDetail from "./ItineraryDetail";
 import ItineraryPage from "./ItineraryPage";
 import LoginPage from "./LoginPage";
 import MuseumsPage from "./MuseumsPage";
@@ -28,21 +31,31 @@ import Productpage from "./Productpage";
 import RegisterPage from "./RegisterPage";
 import SellerProfilePage from "./SellerProfilePage";
 import TourGuideProfilePage from "./TourGuideProfilePage";
+import TourGuideReviews from "./TourGuideReviews";
 import TouristProfile from './TouristProfile';
+import TouristViewActivities from "./TouristViewActivities";
+import TouristViewItineraries from "./TouristViewItineraries";
+import TransportationActivityDetail from "./TransportationActivityDetail";
+import UpdateActivity from "./UpdateActivity";
 import UpdateItinerary from "./UpdateItinerary";
 import ViewActivities from "./ViewActivities";
 import ViewAttractions from "./ViewAttractions";
+import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
+import ViewReviews from "./ViewReviews";
+import ViewTransportationActivity from "./ViewTransportationActivity";
+
+
+
 
 
 function App() {
-  const { logout, setUser } = useUserStore();
+  const {  setUser } = useUserStore();
   const { getGuide } = useGuideStore();
   const { getSeller } = useSellerStore();
   const { getTourist } = useTouristStore();
   const { getAdvertiser } = useAdvertiserstore();
-  const navigate = useNavigate();
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -60,6 +73,7 @@ function App() {
           getSeller({userName : user.userName},{});
           break;
         case "tourist":
+          console.log("ss")
           getTourist({userName : user.userName},{});
           break;
         case "admin":
@@ -110,6 +124,19 @@ function App() {
         <Route path="/bookedFlights" element={<BookedFlights/>}/>
         <Route path="/bookedHotels" element={<BookedHotels/>}/>
     
+        <Route path="/complaints" element={<Complaints/>}/>
+        <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
+
+        <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
+        <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
+        <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
+
+        <Route path="/viewReviews" element={<ViewReviews />} />
+        <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
+        <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
+        <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
+        <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
+        <Route path="/updateActivity" element={<UpdateActivity/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

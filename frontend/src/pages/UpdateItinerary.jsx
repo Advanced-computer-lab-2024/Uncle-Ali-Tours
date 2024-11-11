@@ -5,7 +5,6 @@ import { useUserStore } from '../store/user';
 import { Link } from 'react-router-dom';
 import { useTagStore } from '../store/tag';
 import { useNavigate } from 'react-router-dom';
-import Rating from 'react-rating';
 
 function UpdateItinerary() {
     const { user } = useUserStore();
@@ -17,8 +16,7 @@ function UpdateItinerary() {
     const {navigate} = useNavigate();
 
     
-    const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
+
 
     useEffect(() => {
         getTags();
@@ -104,29 +102,7 @@ function UpdateItinerary() {
         setNewItinerary({ ...currItinerary, preferenceTag: e.target.value });
     };
 
-    const handleSubmits = async (e) => {
-        e.preventDefault(); // Prevent default form submission
-        
-        console.log('Itinerary ID:', itineraryID);
-        console.log('Rating:', rating);
-        console.log('Comment:', comment);
     
-        if (!itineraryID) {
-          console.error('Error: itineraryId is missing');
-          return;
-        }
-        
-        // Call createProductReview with itineraryID
-        const { success, message } = await createProductReview(itineraryID, rating, comment);
-        if (success) {
-          alert('Review added successfully!');
-          // Clear the form fields
-          setRating(0);
-          setComment('');
-        } else {
-          alert('Failed to add review: ' + message);
-        }
-    };
 
     return (
       <div>
@@ -303,17 +279,10 @@ function UpdateItinerary() {
                       placeholder='Drop Off Location'
                       value={currItinerary.dropoffLocation || ""} // Ensure the value is tied to currItinerary
                       onChange={(e) => setNewItinerary({ ...currItinerary, dropoffLocation: e.target.value })} 
-                  />
-                  
+                  />   
               </div>
-
               <div>
-      <h3>Add a Review</h3>
-      <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
-      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
-      <button onClick={handleSubmits}>Submit</button>
     </div>
-
               <div className='flex flex-col items-center space-y-4'>
               
           </div>

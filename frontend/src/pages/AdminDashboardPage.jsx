@@ -7,7 +7,19 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { deleteUser } = useUserStore();
+  const { 
+    deleteUser, 
+    fetchPendingRegistrations, 
+    approveUser, 
+    rejectUser, 
+    createUser, 
+    user 
+  } = useUserStore();
+  const { getProducts, products } = useProductStore();
+
+  const [pendingRegistrations, setPendingRegistrations] = useState([]);
+  const [showProducts, setShowProducts] = useState(false);
+
   const [accountUsername, setAccountUsername] = useState('');
   const [accountType, setAccountType] = useState('');
   const [adminData, setAdminData] = useState({ userName: '', password: '' }); // Username and password for admin
@@ -22,7 +34,6 @@ const AdminDashboard = () => {
         : toast.error(message, { className: "text-white bg-gray-800" });
 };
 
-    const {createUser, user} = useUserStore();
 
     useEffect(() => {
         if (user.type !== 'admin') {
@@ -46,7 +57,22 @@ const AdminDashboard = () => {
    success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 
   };
-
+  const handleViewAllProducts = async () => {
+    await getProducts(); // Fetch all products
+    setShowProducts(true); // Show the products list
+  };
+  const getSalesData = () => {
+    return {
+      labels: products.map(product => product.name),
+      datasets: [
+        {
+          label: 'Sales',
+          data: products.map(product => product.sales || 0), // Use sales attribute
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        },
+      ],
+    };
+  };
   return (
     <div className="container mx-auto p-4 pt-6">
       <Toaster/>
@@ -160,11 +186,60 @@ const AdminDashboard = () => {
                   Products
                 </button>
               </Link>
+              <Link to="/viewDeleteRequests">
+                <button 
+                  className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  View Delete Requests
+                </button>
+              </Link>
+              <div className="w-full md:w-1/3 xl:w-1/3 p-6">
+              <Link to="/complaints">
+                <button 
+                  className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  Complaints
+                </button>
+              </Link>
+            </div>
             </div>
           </div>
         </div>
       </div>
+      <div className="w-full md:w-1/2 xl:w-1/3 p-6">
+      <div className="flex flex-wrap justify-center mb-4">
+          <h2 className="text-2xl font-bold mb-4">View All Products : </h2>
+          <button 
+            className="px-5 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
+            onClick={handleViewAllProducts}
+          >
+            View Products
+          </button>
+          </div>
+        </div>
+        {showProducts && (
+        <div className="mt-6">
+          <h2 className="text-xl font-bold mb-4">All Products</h2>
+          {products.map((product, index) => (
+            <div key={index} className="mb-4 p-4 border border-gray-600 rounded-md">
+              <p><strong>Name:</strong> {product.name}</p>
+              <p><strong>Price:</strong> ${product.price}</p>
+              <p><strong>Available Quantity:</strong> {product.Available_quantity}</p>
+              <p><strong>Sales:</strong> {product.sales || 0}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Sales Chart */}
+      {showProducts && products.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xl text-center">Sales Data for All Products</h3>
+          <Bar data={getSalesData()} options={{ responsive: true }} />
+        </div>
+      )}
     </div>
+    
   );
 };
 

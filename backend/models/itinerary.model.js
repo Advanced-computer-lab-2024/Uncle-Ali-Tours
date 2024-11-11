@@ -2,18 +2,13 @@ import mongoose from "mongoose";
 
 const reviewSchema = mongoose.Schema(
   {
-    name: { type: String, required: true },
     rating: { type: Number, required: true },
     comment: { type: String, required: true },
-    user: {
-     type: mongoose.Schema.Types.ObjectId,
-     required: true,
-     ref: 'User',
-           },
-   },
-  {
+    name: { type: String, required: true }, 
+},
+{
     timestamps: true,
-  }
+}
 )
 
 
@@ -21,19 +16,19 @@ const itinerarySchema = new mongoose.Schema({
   activities: [],
   name: {
     type: String,
-    required: true
+    required: false
   },
   preferenceTag: {
     type: String,
-    required: true
+    required: false
   },
   pickupLocation: {
     type: String,
-    required: true
+    required: false
   },
   dropoffLocation: {
     type: String,
-    required: true
+    required: false
   },
   tourLocations: {
     type: [String],
@@ -62,7 +57,23 @@ const itinerarySchema = new mongoose.Schema({
   },
   creator: {
     type: String,
-    required: true
+    required: false
+  },
+  isPayed: {
+    type: Boolean,
+    default: true, 
+  },
+  numberOfBookings: {
+    type: Number,
+    default: 0,
+  },
+  isActivated: {
+    type: Boolean,
+    default: true, 
+  },
+  isBooked: {
+    type: Boolean,
+    default: false,
   },
   reviews: [reviewSchema],
      rating: {

@@ -13,7 +13,7 @@ export const createActivity = async(req, res) => {
         name: activity.name,
         date: activity.date,
         time: activity.time,
-        "location.coordinates": activity.location.coordinates,
+        location: activity.location,
         price: activity.price,
         category: activity.category,
         tags: activity.tags || undefined,
@@ -39,7 +39,7 @@ export const createActivity = async(req, res) => {
 
 export const getActivity = async(req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
-    
+    // console.log(req.query)    
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
 
@@ -48,7 +48,7 @@ export const getActivity = async(req, res) => {
 
         if (minPrice) {
             parsedFilter.price.$gte = parseFloat(minPrice);
-        }
+        }    
 
         if (maxPrice) {
             parsedFilter.price.$lte = parseFloat(maxPrice);
@@ -66,11 +66,11 @@ export const getActivity = async(req, res) => {
 export const deleteActivity = async(req, res) => {
     const { id } = req.body;
     try {
-        const activityExists = await Activity.exists({ _id: id });
+        // const activityExists = await Activity.exists({ _id: id });
 
-        if (!activityExists) {
-            return res.status(404).json({ success: false, message: "Activity not found" });
-        }
+        // if (!activityExists) {
+        //     return res.status(404).json({ success: false, message: "Activity not found" });
+        // }
 
         await Activity.findOneAndDelete({ _id: id });
         res.json({success:true, message: 'activity deleted successfully' });
@@ -95,3 +95,44 @@ export const updateActivity = async (req, res) => {
         res.status(500).json({success:false, message: error.message });
     }
 }
+
+export const createActivityReview = async (req, res) => {
+    const { rating, comment,name  } = req.body;
+    console.log('Received rating:', rating);
+    console.log('Received comment:', comment);
+    console.log('Received username:', name);
+    const activity = await Activity.findById(req.params.id);
+    console.log('Received Activity:', activity);
+    if (activity) {
+        // const alreadyReviewed = itinerary.reviews.find(
+        //     (r) => r.user.toString() === name // Use 'name' which is defined
+        // );
+        // if (alreadyReviewed) {
+        //     res.status(400);
+        //     throw new Error('Itinerary already reviewed');
+        // }
+        const review = {
+            rating: Number(rating),
+            comment,
+            name,  
+        };
+        console.log('Received review:', review);
+        activity.reviews.push(review);
+        activity.numReviews = activity.reviews.length;
+        activity.rating =
+            activity.reviews.reduce((acc, item) => item.rating + acc, 0) /
+            activity.reviews.length;
+        await activity.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Review added',
+            review,
+            numReviews: activity.numReviews,
+            rating: activity.rating,
+        });
+    } else {
+        res.status(404);
+        throw new Error('Activity not found');
+    }
+};
