@@ -12,11 +12,9 @@ function ActivityPage(activity, activityChanger) {
   const { user } = useUserStore(); // Fetching user details
   const { activities, getActivities, deleteActivity } = useActivityStore(); // Importing activity store methods
 
-  useEffect(()=> {
-    console.log('user', JSON.parse(localStorage.getItem("user")))
-    getActivities({ creator: user.userName });
+  getActivities({ creator: user.userName });
 
-  }, [])
+  
 
   const [curActivity, setCurActivity] = useState({}); // Holds the current activity for delete/update
 
@@ -26,11 +24,7 @@ function ActivityPage(activity, activityChanger) {
   const { showDialog } = dialog();
   const { showFormDialog } = formdialog();
 
-  // Handle delete action
-  const handleDeleteClick = () => {
-    showDialog();
-    activityChanger(activity);
-  };
+  
 
   // Handle update action
   const handleUpdateClick = () => {
@@ -62,7 +56,6 @@ function ActivityPage(activity, activityChanger) {
       ))}
 
 
-      {/* Delete confirmation dialog */}
       <Dialog
         msg={"Are you sure you want to delete this activity?"}
         accept={del}
@@ -70,9 +63,10 @@ function ActivityPage(activity, activityChanger) {
         acceptButtonText='Delete'
         rejectButtonText='Cancel'
       />
-      
+      <button onClick={() => (handleUpdateClick())} className='mr-4 transform transition-transform duration-300 hover:scale-125' ><MdOutlineDriveFileRenameOutline size='18' color='black' /></button>
 
-      {/* Update and delete buttons */}
+
+      
      
     </div>
   );

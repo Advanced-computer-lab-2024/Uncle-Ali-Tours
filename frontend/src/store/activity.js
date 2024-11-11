@@ -2,6 +2,8 @@ import {create} from 'zustand';
 
 
 export const useActivityStore = create((set,get) => ({
+    currentActivity:{},
+    setCurrentActivity:(activity) => set({currentActivity:activity}),
     activities: [],
     categories: [], 
     tags: [],

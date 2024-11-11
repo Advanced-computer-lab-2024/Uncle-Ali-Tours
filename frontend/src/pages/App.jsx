@@ -26,6 +26,7 @@ import ChangePassword from "./ChangePassword";
 import FileComplaint from "./FileComplaint";
 import ChangeCurrency from "./ChangeCurrency";
 import Complaints from "./Complaints";
+import UpdateActivity from "./UpdateActivity";
 import ViewDeleteRequests from "./ViewDeleteRequests";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -129,6 +130,7 @@ function App() {
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
+        <Route path="/updateActivity" element={<UpdateActivity/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">

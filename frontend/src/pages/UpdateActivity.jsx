@@ -1,113 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router-dom';
-import { useItineraryStore } from '../store/activity';
-import { useTagStore } from '../store/tag';
-import { useUserStore } from '../store/user';
+import React, { useState, useRef,useEffect } from 'react';
+import { useActivityStore } from '../store/activity'; 
+import toast, { Toaster } from 'react-hot-toast';
+import { useUserStore } from '../store/user'; // Assuming user store for activity creator
 
-const UpdateActivity = () => {
-  const { activityId } = useParams(); // Get the activity ID from URL params
-  const history = useHistory();
-
-  // State to hold the updated activity data
-  const [activityData, setActivityData] = useState({
-    name: '',
-    date: '',
-    time: '',
-    price: '',
-    category: '',
-    bookingOpen: false,
-    creator: '',
-    tags: [],
-    specialDiscounts: '',
-  });
+function UpdateActivity() {
+  const { user } = useUserStore(); // Assuming user is logged in and available
+  const { createActivity , deleteActivity,currentActivity,setCurrentActivity} = useActivityStore(); 
+  
 
   const [tagsFields, setTagsFields] = useState([]);
-  const [error, setError] = useState(null);
+  const autocompleteRef = useRef(null);
 
-  // Fetch the existing activity details when component loads
-  useEffect(() => {
-    fetch(`/api/activities/${activityId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setActivityData({
-          ...data,
-          tags: data.tags || [],
-        });
-        setTagsFields(data.tags || []);
-      })
-      .catch((error) => {
-        setError('Failed to load activity data.');
-        console.error(error);
-      });
-  }, [activityId]);
-
-  // Handle form input changes
+  // Handle input changes for general fields
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setActivityData({
-      ...activityData,
+    setNewActivity({
+      ...currActivity,
       [name]: type === 'checkbox' ? checked : value,
     });
   };
 
-  // Handle tags field input
-  const handleTagChange = (index, value) => {
-    const newTags = [...tagsFields];
-    newTags[index] = value;
-    setTagsFields(newTags);
-    setActivityData({ ...activityData, tags: newTags });
+  // Handle location input via Google Maps Autocomplete
+  const handlePlaceChanged = () => {
+    const place = autocompleteRef.current.getPlace();
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    setNewActivity({
+      ...currActivity,
+      location: { type: 'Point', coordinates: [lng, lat] },
+    });
   };
 
-  // Add new tag field
-  const addTagField = () => {
-    setTagsFields([...tagsFields, '']);
-  };
+  // Add or remove tag fields dynamically
+  const addTagField = () => setTagsFields([...tagsFields, '']);
+  const removeTagField = (index) => setTagsFields(tagsFields.filter((_, idx) => idx !== index));
 
-  // Remove a tag field
-  const removeTagField = (index) => {
-    const newTags = tagsFields.filter((_, i) => i !== index);
-    setTagsFields(newTags);
-    setActivityData({ ...activityData, tags: newTags });
-  };
+  // // Handle creating activity
+  // const handleCreateActivity = async (e) => {
+  //   e.preventDefault();
+  //   const finalActivity = { ...currActivity, tags: tagsFields };
+  //   const { success, message } = await createActivity(finalActivity);
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // API call to update the activity
-    fetch(`/api/activities/${activityId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(activityData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to update activity');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Activity updated successfully', data);
-        history.push(`/activities/${activityId}`); // Redirect to the updated activity page
-      })
-      .catch((error) => {
-        setError('Failed to update activity');
-        console.error(error);
-      });
-  };
-
+  //   if (success) {
+  //     toast.success(message, { className: 'text-white bg-gray-800' });
+  //     setNewActivity({
+  //       name: '',
+  //       date: '',
+  //       time: '',
+  //       location: { type: 'Point', coordinates: [0, 0] },
+  //       price: '',
+  //       category: '',
+  //       tags: [],
+  //       specialDiscounts: '',
+  //       bookingOpen: false,
+  //       creator: user?.userName || '',
+  //     });
+  //     setTagsFields([]); // Clear tag fields after creation
+  //   } else {
+  //     toast.error(message, { className: 'text-white bg-gray-800' });
+  //   }
+  // };
+  const [currActivity, setNewActivity] = useState();
+  const originalActivity = currentActivity;
+  useEffect (()=>{
+    setNewActivity(currentActivity);
+  },[]);
+  const handleUpdate = async() => {
+    await deleteActivity(originalActivity._id) 
+   await createActivity(currActivity);
+  }
+  const handleCancel = async() => {
+      setCurrentActivity(originalActivity);
+  }
   return (
-    <div className="update-activity-container">
-      <h1>Update Activity</h1>
-      {error && <p className="error-message">{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="container mx-auto p-6">
+      <Toaster />
+      <h1 className="text-3xl font-bold text-center mb-6">Update Activity</h1>
+
+      {/* Form to create new activity */}
+      <form onSubmit={handleUpdate} className="bg-white p-6 shadow-md rounded-lg mb-8">
+        <h2 className="text-xl font-semibold mb-4">Activity Information</h2>
+
         <input
           type="text"
           name="name"
-          value={activityData.name}
           placeholder="Activity Name"
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
@@ -117,7 +93,6 @@ const UpdateActivity = () => {
         <input
           type="date"
           name="date"
-          value={activityData.date}
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
@@ -126,16 +101,26 @@ const UpdateActivity = () => {
         <input
           type="text"
           name="time"
-          value={activityData.time}
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
         />
 
+
+            
+            <input
+              type="text"
+              name="location"
+              placeholder="Enter location"
+              className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
+              required
+            /> 
+          
+
         <input
           type="text"
           name="price"
-          value={activityData.price}
+          placeholder="Price"
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
@@ -144,32 +129,21 @@ const UpdateActivity = () => {
         <input
           type="text"
           name="category"
-          value={activityData.category}
+          placeholder="Category"
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
         />
-
-        <label className="inline-flex items-center mb-4">
-          <input
-            type="checkbox"
-            name="bookingOpen"
-            checked={activityData.bookingOpen}
-            onChange={handleInputChange}
-            className="form-checkbox h-5 w-5 text-indigo-600"
-          />
-          <span className="ml-2">Is Booking Open?</span>
-        </label>
-
+        
         <input
           type="text"
           name="creator"
-          value={activityData.creator}
           placeholder="Creator"
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
         />
+        
 
         {/* Tags Section */}
         <h3 className="text-lg font-semibold mb-2">Tags</h3>
@@ -180,7 +154,11 @@ const UpdateActivity = () => {
               value={field}
               placeholder={`Tag ${index + 1}`}
               className="block w-full p-2 border border-gray-300 rounded-lg mr-2"
-              onChange={(e) => handleTagChange(index, e.target.value)}
+              onChange={(e) => {
+                const newTags = [...tagsFields];
+                newTags[index] = e.target.value;
+                setTagsFields(newTags);
+              }}
             />
             <button
               type="button"
@@ -202,21 +180,30 @@ const UpdateActivity = () => {
         <input
           type="text"
           name="specialDiscounts"
-          value={activityData.specialDiscounts}
           placeholder="Special Discounts"
           onChange={handleInputChange}
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
         />
 
+        <label className="inline-flex items-center mb-4">
+          <input
+            type="checkbox"
+            name="bookingOpen"
+            onChange={handleInputChange}
+            className="form-checkbox h-5 w-5 text-indigo-600"
+          />
+          <span className="ml-2">Is Booking Open?</span>
+        </label>
+
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
         >
-          Update Activity
+          Update
         </button>
       </form>
     </div>
   );
-};
+}
 
 export default UpdateActivity;

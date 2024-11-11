@@ -39,7 +39,7 @@ export const createActivity = async(req, res) => {
 
 export const getActivity = async(req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
-    console.log(req.query)    
+    // console.log(req.query)    
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
 
@@ -66,11 +66,11 @@ export const getActivity = async(req, res) => {
 export const deleteActivity = async(req, res) => {
     const { id } = req.body;
     try {
-        const activityExists = await Activity.exists({ _id: id });
+        // const activityExists = await Activity.exists({ _id: id });
 
-        if (!activityExists) {
-            return res.status(404).json({ success: false, message: "Activity not found" });
-        }
+        // if (!activityExists) {
+        //     return res.status(404).json({ success: false, message: "Activity not found" });
+        // }
 
         await Activity.findOneAndDelete({ _id: id });
         res.json({success:true, message: 'activity deleted successfully' });

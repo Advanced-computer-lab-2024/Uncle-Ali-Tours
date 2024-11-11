@@ -24,13 +24,14 @@ function ActivityContainer({ activity, activityChanger }) {
 
   const handleClick = () => {
     showDialog()
-    tagChanger(tagName)
+    activityChanger(activity)
   }
-  // Handle delete action
-  const handleDeleteClick = () => {
-    showDialog();
-    activityChanger(activity);
-  };
+  
+
+  const handleUpdateClick = () => {
+    showFormDialog()
+    activityChanger(activity)
+  }
 
   const handleShare = (id) => {
     const link = `${window.location.origin}/activityDetail/${id}`;
@@ -113,6 +114,7 @@ function ActivityContainer({ activity, activityChanger }) {
         <button onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? 'Submitting...' : 'Submit'}
         </button>
+
       </div>
       
 
@@ -124,14 +126,16 @@ function ActivityContainer({ activity, activityChanger }) {
           </div>
         ))}
       </div>
-      <button onClick={() => handleUpdateClick()} className='mr-4 transform transition-transform duration-300 hover:scale-125'>
-        <MdOutlineDriveFileRenameOutline size='18' color='black' />
-      </button>
-      <button onClick={() => handleDeleteClick()} className='mr-2 transform transition-transform duration-300 hover:scale-125'>
-        <MdDelete size='18' color='black' />
-      </button>
+      <Link 
+          to='/updateActivity'
+          className='mr-4 transform transition-transform duration-300 hover:scale-125'
+        >
+          <MdOutlineDriveFileRenameOutline size='18' color='black' />
+        </Link>
+      <button onClick={handleClick} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
 
       
+
       
 
 
