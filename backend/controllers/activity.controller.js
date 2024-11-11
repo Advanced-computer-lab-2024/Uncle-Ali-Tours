@@ -13,7 +13,7 @@ export const createActivity = async(req, res) => {
         name: activity.name,
         date: activity.date,
         time: activity.time,
-        "location.coordinates": activity.location.coordinates,
+        location: activity.location,
         price: activity.price,
         category: activity.category,
         tags: activity.tags || undefined,

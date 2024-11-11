@@ -18,6 +18,8 @@ import userRoutes from './routes/user.route.js';
 import attractionsRoute from './routes/attraction.routes.js';
 import complaintRoutes from './routes/complaint.route.js';
 import optRoutes from './routes/otp.route.js'; 
+import requestsRoute from './routes/requests.route.js'; 
+
 import shareRoutes from './routes/share.route.js'
 import transportaionActivity from './routes/transportationActivity.route.js';
 
@@ -47,6 +49,7 @@ app.use("/api/prefrenceTag",preferencetagRoute);
 app.use("/api/attractions", attractionsRoute)
 app.use("/api/complaint", complaintRoutes);
 app.use("/api/otp", optRoutes);
+app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
 

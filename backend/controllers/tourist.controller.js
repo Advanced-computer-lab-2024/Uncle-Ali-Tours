@@ -41,7 +41,6 @@ export const getTourist = async(req,res) => {
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
         const Tourists = await Tourist.find(parsedFilter).sort(parsedSort);
-        console.log(Tourists[0])
        return res.status(200).json({success:true, data: Tourists});
     } catch (error) {
         res.status(404).json({ message: error.message });

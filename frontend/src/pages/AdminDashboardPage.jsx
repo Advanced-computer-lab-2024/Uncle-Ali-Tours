@@ -160,6 +160,22 @@ const AdminDashboard = () => {
                   Products
                 </button>
               </Link>
+              <Link to="/viewDeleteRequests">
+                <button 
+                  className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  View Delete Requests
+                </button>
+              </Link>
+              <div className="w-full md:w-1/3 xl:w-1/3 p-6">
+              <Link to="/complaints">
+                <button 
+                  className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  Complaints
+                </button>
+              </Link>
+            </div>
             </div>
           </div>
         </div>

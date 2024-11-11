@@ -3,6 +3,8 @@ import User from "../models/user.model.js";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import Itinerary from "../models/itinerary.model.js";
+
 
 // Configure multer storage for file uploads
 const storage = multer.diskStorage({
@@ -146,8 +148,15 @@ export const deleteTourGuide = async(req, res) => {
         if (!tourGuideExists) {
             return res.status(404).json({ success: false, message: "tour Guide is not found" });
         }
-
+        const activeItineraries = await Itinerary.findOne({ creator: userName, numberOfBookings: { $ne: 0 } });
+        if (activeItineraries) {
+            return res.status(400).json({success: false,message: "Cannot delete tour guide with active bookings in itineraries"});
+        }
         await TourGuide.findOneAndDelete({ userName: userName });
+        await Itinerary.updateMany(
+            { creator: userName },
+            { $set: { isActivated: false } }
+        );
         res.json({success:true, message: 'tour Guide deleted successfully' });
     } catch (error) {
         res.status(500).json({success:false, message: error.message });

@@ -26,19 +26,19 @@ export const useTouristStore = create((set) => ({
         return {success: true, message: "fetched attractions"};
         },
 
-    //     deleteTourist: async (name) => {
-    //       const res = await fetch('/api/tourGuide',{
-    //           method : "DELETE",
-    //           headers:{
-    //               "Content-Type":"application/json"
-    //           },
-    //           body: JSON.stringify({name})
-    //       });
-    //       const data = await res.json();
-    //       if(!data.success) return { success : false, message: data.message};
-    //       set({guide: {}})
-    //       return {success: true , message: data.message};
-    //   },
+    deleteTourist: async (name) => {
+          const res = await fetch('/api/tourGuide',{
+              method : "DELETE",
+              headers:{
+                  "Content-Type":"application/json"
+              },
+              body: JSON.stringify({name})
+          });
+          const data = await res.json();
+          if(!data.success) return { success : false, message: data.message};
+          set({guide: {}})
+          return {success: true , message: data.message};
+      },
       updateTourist: async(oldTourist,newTourist)=>{
         const res = await fetch('/api/tourist',{
             method : "PUT",

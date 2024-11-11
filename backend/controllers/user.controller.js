@@ -78,10 +78,6 @@ export const changePassword = async (req, res) => {
     catch (error) {
         return res.status(500).json({success:false, message: error.message });
     }
-
-    // controllers/userController.js
-exports.loginUser = (req, res) => {
-    res.status(200).json({ message: 'User logged in successfully' });
-  };
-  
 }
+
+
