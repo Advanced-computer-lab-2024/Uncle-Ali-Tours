@@ -71,6 +71,10 @@ function ActivityContainer({ activity, activityChanger }) {
       return;
     }
 
+    if(!tourist?.ActivityBookings?.includes(activity._id))
+    {
+      return toast.error('Failed to add review: ');
+    }
     const { success, message } = await createActivityReview(activityId, rating, comment,user);
     if (success) {
       toast.success('Review added successfully!');

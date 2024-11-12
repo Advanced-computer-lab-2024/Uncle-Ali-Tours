@@ -63,6 +63,7 @@ app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
 
 
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB before setting up routes

@@ -197,6 +197,37 @@ export const useTouristStore = create((set) => ({
             // console.log(data)
             set((state) => ({tourist: {...state.tourist,itineraryBookings:state.tourist.itineraryBookings?.filter(item => item !==_id)}}))
             return{success: true, message: "unbooked successfully."};
-    }
+    },
+    updateMyPoints: async (amountPaid) => {
+        const { user } = useUserStore.getState(); // Get user from userStore
+        if (!user || !user.userName) {
+          toast.error("User not found.");
+          return;
+        }
+      
+        try {
+          const response = await fetch('/api/tourist/updatePoints', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userName: user.userName, amountPaid }),
+          });
+      
+          const data = await response.json();
+      
+          if (data.success) {
+            toast.success(data.message);
+            // Update the tourist's points in the local store
+            set((state) => ({
+              tourist: { ...state.tourist, myPoints: state.tourist.myPoints + data.points }, // Adjust the points based on server response
+            }));
+          } else {
+            toast.error(data.message);
+          }
+        } catch (error) {
+          console.error("Error updating points:", error);
+          toast.error("Failed to update points.");
+        }
+      },
+      
 
     }));
