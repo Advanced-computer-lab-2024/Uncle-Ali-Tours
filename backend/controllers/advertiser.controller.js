@@ -1,4 +1,5 @@
 import Advertiser from "../models/advertiser.model.js"; 
+import Activity from "../models/activity.model.js";
 import User from "../models/user.model.js";
 export const createAdvertiser = async (req, res) => {
     const advertiser = req.body;
@@ -79,8 +80,15 @@ export const deleteAdvertiser = async (req, res) => {
         if (!AdvertiserExists) {
             return res.status(404).json({ success: false, message: "Advertiser not found" });
         }
-
+        const activeActivities = await Activity.findOne({ creator: userName, numberOfBookings: { $ne: 0 } });
+        if (activeActivities) {
+            return res.status(400).json({success: false,message: "Cannot delete advertiser with active bookings in activities"});
+        }
         await Advertiser.findOneAndDelete({ userName: userName });
+        await Activity.updateMany(
+            { creator: userName },
+            { $set: { isActivated: false } }
+        );
         res.json({ success: true, message: "Advertiser profile deleted successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });

@@ -1,13 +1,12 @@
-import React, { useState,useEffect } from 'react'; 
+import React, { useEffect, useState } from 'react';
 //import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import {useTouristStore} from '../store/tourist'
-import { useUserStore } from '../store/user';
+import { Link, useNavigate } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
-import { useTagStore } from '../store/tag';
-import { useNavigate } from 'react-router-dom';
 import { useRequestStore } from '../store/requests.js';
+import { useTagStore } from '../store/tag';
+import { useTouristStore } from '../store/tourist';
+import { useUserStore } from '../store/user';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -172,7 +171,7 @@ const handleDeleteAccountRequest = async () => {
            <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={tourist.dateOfBirth ? tourist.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, dateOfBirth: e.target.value})}></input></label>   
            
            <Link to='/viewProducts'>
-          <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link>
+          <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link> <Link to ='/bookedFlights'> <button className='bg-black text-white m-6 p-2 rounded' >flight booking</button></Link> <Link to ='/bookedHotels'> <button className='bg-black text-white m-6 p-2 rounded' >hotel booking</button></Link>
            
 
           <button
@@ -209,24 +208,7 @@ const handleDeleteAccountRequest = async () => {
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button> 
            <br />      
-           {/* Complaints Button */}
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
-
-          {/* Display Complaints */}
-          {showComplaints && (
-            <div className="mt-4 bg-gray-700 p-4 rounded">
-              <h2 className="text-xl mb-2">My Complaints</h2> (
-              { complaints.map((complaint) => (
-                  <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
-                    <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
-                    <p>Body: {complaint.body}</p>
-                    <p>Status: {complaint.status}</p>
-                    <p>Reply: {complaint.reply ? complaint.reply : "No replies yet"}</p>
-                  </div>
-                ))}
-              )
-            </div>
-          )}
+          
           <br />
           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
            {isDeleteVisible && (
@@ -238,23 +220,7 @@ const handleDeleteAccountRequest = async () => {
            )}
 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
-             {/* Complaints Button */}
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
 
-{/* Display Complaints */}
-{showComplaints && (
-  <div className="mt-4 bg-gray-700 p-4 rounded">
-    <h2 className="text-xl mb-2">My Complaints</h2> (
-     { complaints.map((complaint) => (
-        <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
-          <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
-          <p>Body:{complaint.body}</p>
-          <p>Status: {complaint.status}</p>
-        </div>
-      ))}
-    )
-  </div>
-)}
            <br />
 
            <h2>Select Your Vacation Preferences:</h2>
@@ -276,26 +242,6 @@ const handleDeleteAccountRequest = async () => {
         <br/>
         <button className="bg-black text-white m-6 p-2 rounded" onClick={handleSavePreferences}>Save Preferences</button>
         <button className="bg-red-500 text-white m-6 p-2 rounded" onClick={handleClearPreferences}>Clear All Preferences</button>
-        
-        <Link to='/viewProducts'><button className='bg-black text-white m-6 p-2 rounded'>Product</button></Link>
-        <Link to='/viewItineraries'><button className='bg-black text-white m-6 p-2 rounded'>Itinerary</button></Link>
-        <Link to='/viewActivities'><button className='bg-black text-white m-6 p-2 rounded'>Activities</button></Link>
-        <Link to='/viewAttractions'><button className='bg-black text-white m-6 p-2 rounded'>Attraction</button></Link>
-      
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
-      {isWalletVisible && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white p-4 rounded shadow-lg">
-          <p>You have {walletMoney} {user.chosenCurrency} in your wallet.</p>
-          <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsWalletVisible(false)}>Close</button>
-        </div>
-      )}
-      <Dialog
-        msg={`You have ${tourist.myPoints} points. Do you want to redeem these points for ${pointsMoney} ${user.chosenCurrency}?`}
-        accept={redeemPoints}
-        reject={() => console.log("Redemption canceled")}
-        acceptButtonText="Redeem Points"
-        rejectButtonText="Cancel"
-      />
 
       <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
       <br />
@@ -320,6 +266,16 @@ const handleDeleteAccountRequest = async () => {
       )}
       <Link to='/transportationActivity'>
       <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
+        <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}
+
     </div>
   );
 };    

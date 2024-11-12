@@ -19,7 +19,7 @@ function ActivityContainer({ activity, activityChanger }) {
   const user = useUserStore((state) => state.user);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-
+  const displayPrice = (activity.price * user.currencyRate).toFixed(2);
   
 
   const handleClick = () => {
@@ -87,7 +87,7 @@ function ActivityContainer({ activity, activityChanger }) {
         <p>Date: {new Date(activity.date).toLocaleDateString()}</p>
         <p>Time: {activity.time}</p>
         <p>Location: {activity.location?.coordinates ? activity.location.coordinates.join(', ') : "Not available"}</p>
-        <p>Price: ${activity.price}</p>
+        <p>Price: {displayPrice} {user.chosenCurrency}</p>
         <p>Category: {activity.category}</p>
         <p>Tags: {activity.tags?.join(', ') || "No tags"}</p>
         <p>Special Discounts: {activity.specialDiscounts || "None"}</p>

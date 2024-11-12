@@ -1,26 +1,28 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import express from 'express';
 import { connectDB } from './config/db.js';
 
 // Route imports
 import activityRoutes from './routes/activity.route.js';
 import activityCategoryRoutes from './routes/activityCategory.route.js';
+import advertiserRoute from './routes/advertiser.route.js';
 import attractionRoute from './routes/attraction.route.js';
+import attractionsRoute from './routes/attraction.routes.js';
+import complaintRoutes from './routes/complaint.route.js';
+import flightBookingRoutes from './routes/flightBooking.route.js';
+import hotelBookingRoutes from './routes/hotelBooking.route.js';
 import itineraryRoutes from './routes/itinerary.route.js';
+import optRoutes from './routes/otp.route.js';
 import preferencetagRoute from './routes/preferencetag.route.js';
 import productRoutes from './routes/product.routes.js';
+import requestsRoute from './routes/requests.route.js';
 import sellerRoutes from './routes/seller.route.js';
-import advertiserRoute from './routes/advertiser.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
-import attractionsRoute from './routes/attraction.routes.js';
-import complaintRoutes from './routes/complaint.route.js';
-import optRoutes from './routes/otp.route.js'; 
-import requestsRoute from './routes/requests.route.js'; 
 
-import shareRoutes from './routes/share.route.js'
+import shareRoutes from './routes/share.route.js';
 import transportaionActivity from './routes/transportationActivity.route.js';
 
 // Initialize dotenv to load environment variables
@@ -49,6 +51,8 @@ app.use("/api/prefrenceTag",preferencetagRoute);
 app.use("/api/attractions", attractionsRoute)
 app.use("/api/complaint", complaintRoutes);
 app.use("/api/otp", optRoutes);
+app.use("/api/hotel-booking", hotelBookingRoutes);
+app.use("/api/flight-booking",flightBookingRoutes);
 app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
