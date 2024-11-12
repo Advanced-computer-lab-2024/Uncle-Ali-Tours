@@ -45,6 +45,8 @@ import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
+import AdminItineraryPage from './AdminItineraryPage';
+import AdminActivitiesPage from './AdminActivitiesPage';
 
 
 
@@ -137,6 +139,10 @@ function App() {
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
         <Route path="/updateActivity" element={<UpdateActivity/>} />
+        <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
+        <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
+
+
       </Routes>
     </div>
     <div className="mx-auto w-fit">

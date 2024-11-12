@@ -76,7 +76,11 @@ const activitySchema = new mongoose.Schema({
        type: Number,
        required: true,
        default: 0,
-     },
+     },isAppropriate: { // Add this field
+        type: Boolean,
+        required: false,
+        default: true, // Set default as true
+    },
      numReviews: {
        type: Number,
        required: true,
