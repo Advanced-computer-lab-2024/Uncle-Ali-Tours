@@ -231,13 +231,13 @@ export const updateMyPreferences = async (req, res) => {
     }
 };
 export const updateMyPoints = async (req,res) => {
-    const{ userName , amountPaid} =req.bode;
+    const{ userName , amountPaid} =req.body;
     try{
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        const value =0;
+        let value =0;
         switch(tourist.badge){
             case "level 1": value = amountPaid*0.5;break;
             case "level 2": value = amountPaid*1;break;
@@ -245,12 +245,33 @@ export const updateMyPoints = async (req,res) => {
         }
         tourist.myPoints += value ; 
         await tourist.save(); // Save changes to the database
+    }
+    catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error updating points" });
+    }
+};
 
-        return res.status(200).json({ success: true, data: tourist.myPoints, message: 'Points updated successfully' });
-    } catch (error) {
-        console.error("Error updating preferences:", error);
+export const bookActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.myBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
         res.status(500).json({ success: false, message: "Server error during preferences update" });
     }
-    
-};
+}
+
 

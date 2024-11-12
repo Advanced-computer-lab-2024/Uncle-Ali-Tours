@@ -4,6 +4,7 @@ import { useAdvertiserstore } from '../store/advertiser.js';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { useRequestStore } from '../store/requests.js';
+import { Link } from 'react-router-dom';
 
 const AdvertiserProfile = () => {
   const { user } = useUserStore(); 
@@ -231,6 +232,11 @@ const AdvertiserProfile = () => {
           <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>Activities</button>
           <button className="bg-black text-white m-6 p-2 rounded" onClick={handleDeleteClick}>Delete Account</button>
         </div>
+        <div>
+        <Link to='/CreateTransportationActivity'><button className='bg-black text-white m-6 p-2 rounded'>create transportation activity</button></Link>
+        <Link to='/ViewTransportationActivity'>
+      <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
+      </div>
 
         {/* Delete Account Confirmation */}
         {isDeleteVisible && (

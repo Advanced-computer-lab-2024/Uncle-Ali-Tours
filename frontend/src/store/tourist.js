@@ -113,5 +113,19 @@ export const useTouristStore = create((set) => ({
             toast.error("Failed to fetch badge level.");
             return { success: false };
         }
-    },
+    },updateBookings: async(name,_id)=>{
+        console.log(_id)
+        const res = await fetch('/api/tourist/updateMyBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,myBookings:state.tourist.myBookings.push(_id)}}))
+            return{success: true, message: "tourist updated successfully."};
+    }
     }));

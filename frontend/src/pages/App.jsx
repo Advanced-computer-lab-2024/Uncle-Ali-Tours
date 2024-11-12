@@ -45,6 +45,8 @@ import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
+import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
+import TransportationActivity from "./ViewTransportationACtivity.jsx"
 
 
 
@@ -131,12 +133,14 @@ function App() {
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
 
+        <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
         <Route path="/updateActivity" element={<UpdateActivity/>} />
+        <Route path="/ViewTransportationActivity" element={<TransportationActivity/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">
