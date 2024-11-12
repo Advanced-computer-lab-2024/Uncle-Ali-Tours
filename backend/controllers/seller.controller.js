@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import Seller from "../models/seller.model.js";
 import User from "../models/user.model.js";
+import Product from '../models/product.model.js'; 
+
 
 
 dotenv.config();
@@ -160,17 +162,15 @@ export const deleteSeller = async (req, res) => {
     const seller = await Seller.findOne({ userName });
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
-    }
-
-    // Remove profile picture file if it exists
+        }
+        await Product.findAndDelete({creator:userName});
+        await Seller.findOneAndDelete({ userName: userName });
+        // Remove profile picture file if it exists
     if (seller.profilePicture && fs.existsSync(path.join(__dirname, `../${seller.profilePicture}`))) {
       fs.unlinkSync(path.join(__dirname, `../${seller.profilePicture}`));
     }
-
-    await Seller.findOneAndDelete({ userName });
-    res.status(200).json({ message: "Seller profile deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting seller:", error);
-    res.status(500).json({ message: "Server error", error });
-  }
+        res.json({ success: true, message: "Seller profile deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
 };

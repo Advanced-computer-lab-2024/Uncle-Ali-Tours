@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const reviewSchema = mongoose.Schema(
+    {
+      rating: { type: Number, required: true },
+      comment: { type: String, required: true },
+      name: { type: String, required: true }, 
+  },
+  {
+      timestamps: true,
+  }
+  )
+
+
+
 const activitySchema = new mongoose.Schema({
     name: {
         type: String,
@@ -15,12 +28,12 @@ const activitySchema = new mongoose.Schema({
     },
     location: {
         type: {
-            type: String,  // This should be 'Point' to work with GeoJSON data
-            enum: ['Point'],  // Only 'Point' is allowed for GeoJSON
+            type: String, 
+            enum: ['Point'], 
             required: false
         },
         coordinates: {
-            type: [Number],  // An array to store [longitude, latitude] as per GeoJSON
+            type: [Number], 
             required: false
         }
     },
@@ -44,10 +57,31 @@ const activitySchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    numberOfBookings: {
+        type:Number,
+        required:false,
+        deafult:0,
+    },
+    isActivated: {
+        type: Boolean,
+        required:false,
+        default:true,
+    },
     creator: {
         type: String,
         required: true
-    }
+    },
+    reviews: [reviewSchema],
+     rating: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
+     numReviews: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

@@ -34,7 +34,24 @@ const touristModel = new mongoose.Schema({
     myPoints:{
         type: Number,
         default: 14000
-    },},{
+    },myPreferences:{
+        required:true,
+        type:[String],
+        default:[] 
+    },badge:{
+        type:String,
+        default:"Level 1"
+    },myBookings:{
+        type:[String],
+        required:false
+    },ActivityBookings:{
+        type:[String],
+        required:false
+    },itineraryBookings:{
+        type:[String],
+        required:false
+    } 
+    },{
         timestamps: true
     });
 

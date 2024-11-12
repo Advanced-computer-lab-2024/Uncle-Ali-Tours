@@ -161,10 +161,21 @@ export const deleteTourGuide = async (req, res) => {
     if (guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
       fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
     }
-
-    await TourGuide.findOneAndDelete({ userName });
-    res.status(200).json({ message: "Tour guide profile deleted successfully" });
-  } catch (error) {
+        if (!tourGuideExists) {
+            return res.status(404).json({ success: false, message: "tour Guide is not found" });
+        }
+        const activeItineraries = await Itinerary.findOne({ creator: userName, numberOfBookings: { $ne: 0 } });
+        if (activeItineraries) {
+            return res.status(400).json({success: false,message: "Cannot delete tour guide with active bookings in itineraries"});
+        }
+        await TourGuide.findOneAndDelete({ userName: userName });
+        await Itinerary.updateMany(
+            { creator: userName },
+            { $set: { isActivated: false } }
+        );
+        res.json({success:true, message: 'tour Guide deleted successfully' });
+    } 
+   catch (error) {
     console.error("Error deleting tour guide:", error);
     res.status(500).json({ message: "Server error", error });
   }
@@ -196,4 +207,53 @@ export const checkTourGuideBookings = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+
+
+export const createTourGuideReview = async (req, res) => {
+    const { rating, comment,name  } = req.body;
+    console.log('Received rating:', rating);
+    console.log('Received comment:', comment);
+    console.log('Received username:', name);
+    console.log('Received Param:', req.params.id);
+    const tourGuideName = req.params.id.trim(); 
+    const tourGuide = await TourGuide.findOne({ userName: new RegExp('^' + tourGuideName + '$', 'i') });
+    console.log('Received Tour Guide:', tourGuide);
+    
+    if (!tourGuide) {
+        return res.status(404).send('Tour guide not found');
+    }
+    if (tourGuide) {
+        // const alreadyReviewed = itinerary.reviews.find(
+        //     (r) => r.user.toString() === name // Use 'name' which is defined
+        // );
+        // if (alreadyReviewed) {
+        //     res.status(400);
+        //     throw new Error('Itinerary already reviewed');
+        // }
+        const review = {
+            rating: Number(rating),
+            comment,
+            name,  
+        };
+        console.log('Received review:', review);
+        tourGuide.reviews.push(review);
+        tourGuide.numReviews = tourGuide.reviews.length;
+        tourGuide.rating =
+            tourGuide.reviews.reduce((acc, item) => item.rating + acc, 0) /
+            tourGuide.reviews.length;
+        await tourGuide.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Review added',
+            review,
+            numReviews: tourGuide.numReviews,
+            rating: tourGuide.rating,
+        });
+    } else {
+        res.status(404);
+        throw new Error('Tour Guide not found');
+    }
 };

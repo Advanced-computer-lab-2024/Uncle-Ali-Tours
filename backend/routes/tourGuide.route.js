@@ -1,13 +1,5 @@
 import express from 'express';
-import { 
-  createTourGuide, 
-  deleteTourGuide, 
-  getTourGuide, 
-  updateTourGuide, 
-  checkTourGuideBookings, 
-  uploadProfilePicture,
-  upload
-} from '../controllers/tourGuide.controller.js';
+import { upload, uploadProfilePicture,createTourGuide, getTourGuide, updateTourGuide, deleteTourGuide, checkTourGuideBookings, createTourGuideReview } from '../controllers/tourGuide.controller.js';
 
 const router = express.Router();
 
@@ -19,6 +11,7 @@ router.delete('/', deleteTourGuide); // Delete a tour guide
 
 // Route to check bookings for a specific tour guide
 router.get('/checkBookings/:userName', checkTourGuideBookings);
+router.post('/:id/reviews', createTourGuideReview);
 
 // Route for uploading profile picture
 router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePicture);

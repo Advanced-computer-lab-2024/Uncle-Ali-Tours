@@ -4,8 +4,7 @@ const complaintModel = new mongoose.Schema({
     title:{
         required: true,
         type: String
-    }
-    ,
+    },
     body:{
         required: true,
         type: String
@@ -19,6 +18,11 @@ const complaintModel = new mongoose.Schema({
     {
         required: true,
         type: String
+    },
+    reply:
+    {
+        type: String,
+        default: "",
     }
 }, {
     timestamps: true

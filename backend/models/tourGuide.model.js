@@ -1,5 +1,16 @@
 import mongoose, { Schema } from "mongoose";
 
+const reviewSchema = mongoose.Schema(
+    {
+      rating: { type: Number, required: true },
+      comment: { type: String, required: true },
+      name: { type: String, required: true }, 
+  },
+  {
+      timestamps: true,
+  }
+  )
+
 const tourGuideModel = new mongoose.Schema({
     mobileNumber :{
         type : Number,
@@ -21,7 +32,7 @@ const tourGuideModel = new mongoose.Schema({
         required : false
     },
     email : {
-        required:true,
+        required:false,
         type: String
     },
     userName:{
@@ -43,7 +54,18 @@ const tourGuideModel = new mongoose.Schema({
         type: String,
         required: false,
         default: ""
-    }
+    },
+    reviews: [reviewSchema],
+     rating: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
+     numReviews: {
+       type: Number,
+       required: true,
+       default: 0,
+     },
     },{
         timestamps: true
     }

@@ -113,14 +113,14 @@ function CreateActivity() {
         />
 
 
-{/*            
+            
             <input
               type="text"
               name="location"
               placeholder="Enter location"
               className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
               required
-            /> */} 
+            /> 
           
 
         <input
@@ -142,15 +142,7 @@ function CreateActivity() {
           className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
           required
         />
-        <input
-          type="boolean"
-          name="bookingOpen"
-          placeholder="bookingOpen"
-          value={newActivity.bookingOpen}
-          onChange={handleInputChange}
-          className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
-        />
+        
         <input
           type="text"
           name="creator"

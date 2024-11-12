@@ -6,7 +6,8 @@ import {
     deleteProduct,
     archiveProduct,
     uploadProfilePicture ,
-    upload
+    upload,
+    addRatingReview
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
@@ -27,4 +28,6 @@ router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePictu
 
 
 router.put('/archiveProduct/:id', archiveProduct);
+
+router.post('/:productId/rate-review', addRatingReview);
 export default router;

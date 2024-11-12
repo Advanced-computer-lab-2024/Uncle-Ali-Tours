@@ -143,7 +143,7 @@ export const useItineraryStore = create((set,get) => ({
     },
 
 
-    createProductReview: async (itineraryId, rating, comment, user) => {
+    createItineraryReview: async (itineraryId, rating, comment, user) => {
         
         console.log("Request Payload:", { rating, comment, user });
         if (typeof rating !== 'number' || rating < 1 || rating > 5) {
@@ -197,10 +197,25 @@ export const useItineraryStore = create((set,get) => ({
             return { success: false, message: data.message || 'Could not add review' };
         }
     
-}
+},
     
 
-
+bookItinerary: async (itineraryId) => {
+    try {
+      const { data } = await axios.put(`/api/itinerary/${itineraryId}/book`);
+      if (data.success) {
+        set((state) => ({
+          itineraries: state.itineraries.map((itinerary) =>
+            itinerary._id === id ? { ...itinerary, isBooked: true } : itinerary
+          ),
+        }));
+        return { success: true, message: 'Itinerary booked successfully' };
+      }
+      return { success: false, message: data.message };
+    } catch (error) {
+      return { success: false, message: 'Error booking itinerary' };
+    }
+  },
 
 
 }

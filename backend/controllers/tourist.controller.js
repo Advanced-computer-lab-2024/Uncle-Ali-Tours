@@ -41,7 +41,6 @@ export const getTourist = async(req,res) => {
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
         const Tourists = await Tourist.find(parsedFilter).sort(parsedSort);
-        console.log(Tourists[0])
        return res.status(200).json({success:true, data: Tourists});
     } catch (error) {
         res.status(404).json({ message: error.message });
@@ -56,7 +55,7 @@ export const updateTourist = async (req,res) => {
 
     const keys = Object.keys(newTourist)
 
-    for (let i=0;i<keys.length;i++){
+    for (let i=0;i<keys.length-1;i++){
         if(newTourist[keys[i]].length <= 0){
             return res.status(400).json({success:false, message: 'fields are requierd to update'})
         }
@@ -87,9 +86,14 @@ export const updateTourist = async (req,res) => {
             return res.status(404).json({ success: false, message: "tourist not found" });
         }
         const updatedTourist = await Tourist.findOneAndUpdate({ userName: userName }, newTourist, { new: true });
+        if (newTourist.email){
+            const dd = await User.findOneAndUpdate({userName}, {email: newTourist.email}, {new: true});
+            console.log(dd);
+        }
         res.status(200).json({success:true, data:  updatedTourist});
     }
     catch (error) {
+        console.log(error.message);
         res.status(500).json({success:false, message: error.message });
     }
 }
@@ -163,7 +167,222 @@ export const checkPurchaseStatusByUsername = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Error checking purchase status.', error });
+};
+}
+
+export const badgeLevel = async (req, res) => {
+    const { userName } = req.query;
+    console.log(userName);
+    try {
+        const tourist = await Tourist.findOne({ userName });
+        console.log(tourist)
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        let level = "level 1";
+        if(tourist.myPoints>500000){
+            level="level 3";
+        }
+        else if(tourist.myPoints>100000){
+            level="level 2";
+        }
+        else{
+            level="level 1";
+        }
+
+        console.log(level)
+        
+        const updatedTourist = await Tourist.findOneAndUpdate(
+            { userName },
+            { badge: level},
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `Badge ${tourist.badge} .`,
+            data: updatedTourist.badge,
+        });
+    } catch (error) {
+        console.error("Error badging:", error);
+        res.status(500).json({ success: false, message: "Server error during badging" });
     }
 };
+
+
+export const updateMyPreferences = async (req, res) => {
+    const { userName, myPreferences } = req.body; // myPreferences can be an empty array
+    try {
+        // Fetch the tourist using the correct model
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Replace `myPreferences` with the provided array (even if it's empty)
+        tourist.myPreferences = myPreferences;
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'Preferences updated successfully' });
+    } catch (error) {
+        console.error("Error updating preferences:", error);
+        res.status(500).json({ success: false, message: "Server error during preferences update" });
+    }
+};
+export const updateMyPoints = async (req,res) => {
+    const{ userName , amountPaid} =req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        let value =0;
+        switch(tourist.badge){
+            case "level 1": value = amountPaid*0.5;break;
+            case "level 2": value = amountPaid*1;break;
+            case "level 3": value = amountPaid*1.5;break;
+        }
+        tourist.myPoints += value ; 
+        await tourist.save(); // Save changes to the database
+    }
+    catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error updating points" });
+    }
+};
+
+export const bookActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.myBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const bookRealActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.ActivityBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.ActivityBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const bookitineraryActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.itineraryBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.itineraryBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const unBook = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        tourist.myBookings = tourist.myBookings.filter(item => item !==_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
+export const unBookRealActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.ActivityBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        tourist.ActivityBookings = tourist.ActivityBookings.filter(item => item !==_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
+export const unItiniraryBook = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.itineraryBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        tourist.itineraryBookings = tourist.itineraryBookings.filter(item => item !==_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
 
 

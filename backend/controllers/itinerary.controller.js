@@ -121,7 +121,7 @@ export const updateItinerary = async (req, res) => {
 }
 
 
-export const createProductReview = async (req, res) => {
+export const createItineraryReview = async (req, res) => {
     const { rating, comment,name  } = req.body;
     console.log('Received rating:', rating);
     console.log('Received comment:', comment);
@@ -218,3 +218,25 @@ export const deactivateItinerary = async (req, res) => {
         console.log(error.message);
     }
 };
+
+
+export const bookItinerary = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const itinerary = await Itinerary.findByIdAndUpdate(id, { isBooked: true }, { new: true });
+  
+      if (!itinerary) {
+        // Send response only once if the itinerary is not found
+        return res.status(404).json({ success: false, message: 'Itinerary not found' });
+      }
+  
+      // Send success response
+      res.json({ success: true, message: 'Itinerary booked successfully', itinerary });
+    } catch (error) {
+      console.error(error); // Log the error for debugging
+      // Send error response only once
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, message: 'Server error' });
+      }
+    }
+  };

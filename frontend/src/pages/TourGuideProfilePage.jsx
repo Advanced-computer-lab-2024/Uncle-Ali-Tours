@@ -8,6 +8,7 @@ import AvatarEditor from 'react-avatar-editor';
 import { FaEye, FaEdit } from 'react-icons/fa';
 import { Modal } from 'react-bootstrap';
 import axios from 'axios';
+import { useRequestStore } from '../store/requests.js';
 
 
 const TourGuideProfilePage = () =>{
@@ -147,9 +148,57 @@ const TourGuideProfilePage = () =>{
     
     
 
+    const handleFileUpload = async () => {
+        if (!idFile || !taxationCardFile) {
+          toast.error("Please upload both ID and Taxation Registry Card.");
+          return;
+        }
+      
+        // Form submission logic for file upload
+        const formData = new FormData();
+        formData.append("idFile", idFile);
+        formData.append("taxationCardFile", taxationCardFile);
+        formData.append("username", user.username);
+      
+        try {
+          const response = await fetch('/api/upload-documents', {  // Replace with your backend endpoint
+            method: 'POST',
+            body: formData,
+          });
+          const result = await response.json();
+          
+          if (result.success) {
+            toast.success("Documents uploaded successfully.");
+          } else {
+            toast.error(result.message || "Failed to upload documents.");
+          }
+        } catch (error) {
+          toast.error("An error occurred during the upload.");
+        }
+      };
+
+    const [isDeleteVisible, setIsDeleteVisible] = useState(false);
+    const { createRequest } = useRequestStore();
     const handleDeleteClick = () => {
-        showDialog()
-    }
+        setIsDeleteVisible(!isDeleteVisible);
+    };
+    const handleDeleteAccountRequest = async () => {
+        const deleteRequest = {
+          userName: user.userName,
+          userType: user.type,
+          userID: user._id,
+          type: 'delete',
+        };
+        const { success, message } = await createRequest(deleteRequest);
+        console.log(deleteRequest);
+        if (success) {
+          toast.success('Account deletion request submitted successfully.');
+          setIsDeleteVisible(false); // Close the delete dialog
+        } else {
+          toast.error(message);
+        }
+      };
+      
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
@@ -200,6 +249,8 @@ const TourGuideProfilePage = () =>{
            </div>
 
            
+
+        
 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>
@@ -253,7 +304,16 @@ const TourGuideProfilePage = () =>{
           )}
         
        
-        </div>
+           <br />
+          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )}           </div>
+        
     );
 };
 

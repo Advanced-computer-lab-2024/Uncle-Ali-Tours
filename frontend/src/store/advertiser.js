@@ -2,8 +2,31 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 export const useAdvertiserstore = create((set) => ({
-    advertiser: {},
-    setAdvertiser: (advertiser) => set({ advertiser }),
+    advertiser:{},
+    setAdvertiser: (advertiser) => set({advertiser}),
+    getAdvertiser: async (filter = {}, sort = {}) => {
+        console.log(filter)
+        const queryString = new URLSearchParams({
+            filter: JSON.stringify(filter),
+            sort: JSON.stringify(sort),
+        }).toString();
+        const res = await fetch(`/api/advertiser?${queryString}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const body = await res.json();
+        if (!body.success) {
+            return body;
+        }
+        delete body.data[0].password;
+        set({ advertiser: body.data[0] });
+        console.log(body.data[0])
+        console.log("Updated advertiser in state:", body.data[0]); // Confirm profilePicture is included
+
+        return { success: true, message: "Fetched advertiser data" };
+    },
 
     // Fetch an advertiser's data by userName
     getAdvertiser: async ({ userName }) => {

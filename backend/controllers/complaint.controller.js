@@ -48,6 +48,27 @@ export const updateComplaintStatus = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+export const updateComplaintReply = async (req, res) => {
+    const { id } = req.params;
+    const { reply } = req.body;
+
+    try {
+        const complaint = await Complaint.findByIdAndUpdate(
+            id,
+            { reply },
+            { new: true }
+        );
+
+        if (!complaint) {
+            return res.status(404).json({ success: false, message: 'Complaint not found' });
+        }
+
+        return res.status(200).json({ success: true, data: complaint });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 export const getTouristComplaints = async (req, res) => {
     const { creator } = req.params;
@@ -80,4 +101,3 @@ export const getAllComplaints = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
-

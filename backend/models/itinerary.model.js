@@ -23,27 +23,13 @@ const itinerarySchema = new mongoose.Schema({
     required: false
   },
   pickupLocation: {
-    type: {
-        type: String, 
-        enum: ['Point'], 
-        required: false
-    },
-    coordinates: {
-        type: [Number], 
-        required: false
-    }
-},
-dropoffLocation: {
-    type: {
-        type: String, 
-        enum: ['Point'], 
-        required: false
-    },
-    coordinates: {
-        type: [Number], 
-        required: false
-    }
-},
+    type: String,
+    required: false
+  },
+  dropoffLocation: {
+    type: String,
+    required: false
+  },
   tourLocations: {
     type: [String],
     required: true,
@@ -73,15 +59,31 @@ dropoffLocation: {
     type: String,
     required: false
   },
+  isPayed: {
+    type: Boolean,
+    default: true, 
+  },
+  numberOfBookings: {
+    type: Number,
+    default: 0,
+  },
+  isActivated: {
+    type: Boolean,
+    default: true, 
+  },
+  isBooked: {
+    type: Boolean,
+    default: false,
+  },
   reviews: [reviewSchema],
      rating: {
        type: Number,
-       required: true,
+       required: false,
        default: 0,
      },
      numReviews: {
        type: Number,
-       required: true,
+       required: false,
        default: 0,
      },
 });

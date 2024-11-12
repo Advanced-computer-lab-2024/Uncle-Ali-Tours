@@ -113,4 +113,28 @@ export const useComplaintStore = create((set) => ({
       return { success: false, message: error.message };
     }
   },
+  updateComplaintReply: async (id, reply) => {
+    try {
+      const res = await fetch(`/api/complaint/${id}/reply`, {  // Updated endpoint
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reply }),
+      });
+      const data = await res.json();
+      if (!data.success) return { success: false, message: data.message };
+
+      set((state) => ({
+        complaints: state.complaints.map((complaint) =>
+          complaint._id === id ? { ...complaint, reply: data.data.reply } : complaint
+        ),
+      }));
+      return { success: true, message: 'Reply updated successfully' };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+
 }));
