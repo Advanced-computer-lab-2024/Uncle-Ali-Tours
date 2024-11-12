@@ -226,4 +226,26 @@ export const updateMyPreferences = async (req, res) => {
     }
 };
 
+export const bookActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.myBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during preferences update" });
+    }
+}
+
 

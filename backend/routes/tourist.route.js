@@ -1,5 +1,5 @@
 import express from "express";
-import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel} from "../controllers/tourist.controller.js";
+import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel,bookActivity} from "../controllers/tourist.controller.js";
 import { redeemPoints } from '../controllers/tourist.controller.js';  // Import the redeemPoints controller function
 import { checkPurchaseStatusByUsername } from "../controllers/tourist.controller.js";
 const router = express.Router();
@@ -11,5 +11,6 @@ router.delete("/",deleteTourist);
 router.put('/redeemPoints', redeemPoints);
 router.get('/check-purchase/:username/:productId', checkPurchaseStatusByUsername);
 router.get('/badge', badgeLevel);
+router.put("/updateMyBookings",bookActivity);
 
 export default router;
