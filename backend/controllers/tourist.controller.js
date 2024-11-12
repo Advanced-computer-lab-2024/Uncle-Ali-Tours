@@ -233,27 +233,52 @@ export const updateMyPreferences = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during preferences update" });
     }
 };
-export const updateMyPoints = async (req,res) => {
-    const{ userName , amountPaid} =req.body;
-    try{
+export const updateMyPoints = async (req, res) => {
+    const { userName, amountPaid } = req.body;
+    console.log(amountPaid)
+    if (isNaN(amountPaid) || amountPaid <= 0) {
+        return res.status(400).json({ success: false, message: "Invalid amount paid" });
+    }
+
+    try {
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        let value =0;
-        switch(tourist.badge){
-            case "level 1": value = amountPaid*0.5;break;
-            case "level 2": value = amountPaid*1;break;
-            case "level 3": value = amountPaid*1.5;break;
+
+        let value = 0;
+
+        // Validate the badge before proceeding
+        switch (tourist.badge) {
+            case 'level 1':
+                value = amountPaid * 0.5;
+                break;
+            case 'level 2':
+                value = amountPaid * 1;
+                break;
+            case 'level 3':
+                value = amountPaid * 1.5;
+                break;
+            default:
+                return res.status(400).json({ success: false, message: "Invalid badge level" });
         }
-        tourist.myPoints += value ; 
+
+        // Ensure value is a valid number before adding to points
+        if (isNaN(value)) {
+            return res.status(400).json({ success: false, message: "Calculated value is invalid" });
+        }
+
+        tourist.myPoints += value;
+
         await tourist.save(); // Save changes to the database
-    }
-    catch (error) {
+        res.status(200).json({ success: true, message: "Points updated successfully" });
+
+    } catch (error) {
         console.error("Error booking:", error);
         res.status(500).json({ success: false, message: "Server error updating points" });
     }
 };
+
 
 export const bookActivity = async(req,res) => {
     const {userName , _id} = req.body;
@@ -427,6 +452,7 @@ export const unItiniraryBook = async(req,res) => {
             return res.status(404).json({ success: false, message: "not booked" });
         }
         const itinerarry = await Itinerary.findById(_id);
+        console.log(itinerarry)
         if (!itinerarry) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
@@ -435,12 +461,12 @@ export const unItiniraryBook = async(req,res) => {
         const now = new Date();
 
         // Check if the activity's start time is at least 48 hours away
-        const activityStartTime = new Date(itinerarry.date); // Assuming startTime is a field in the Activity model
-        const timeDiff = activityStartTime - now;
+        const itinerarryStartTime = new Date(itinerarry.availableDates[0]); // Assuming startTime is a field in the Activity model
+        const timeDiff = itinerarryStartTime - now;
 
         // 48 hours in milliseconds
         const fortyEightHours = 48 * 60 * 60 * 1000;
-
+        // console.log(timeDiff)
         if (timeDiff <= fortyEightHours) {
             return res.status(400).json({
                 success: false,
