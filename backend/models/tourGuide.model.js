@@ -50,6 +50,11 @@ const tourGuideModel = new mongoose.Schema({
         required:true,
         type:String
     },
+    profilePicture: { // New field for storing profile picture path
+        type: String,
+        required: false,
+        default: ""
+    },
     reviews: [reviewSchema],
      rating: {
        type: Number,

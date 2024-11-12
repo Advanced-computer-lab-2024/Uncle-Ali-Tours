@@ -1,5 +1,8 @@
 import Tourist from "../models/tourist.model.js";
 import User from "../models/user.model.js";
+import Itinerary from "../models/itinerary.model.js";
+import Activity from "../models/activity.model.js";
+import transportationActivity from "../models/transportationActivity.model.js";
 
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
@@ -231,13 +234,13 @@ export const updateMyPreferences = async (req, res) => {
     }
 };
 export const updateMyPoints = async (req,res) => {
-    const{ userName , amountPaid} =req.bode;
+    const{ userName , amountPaid} =req.body;
     try{
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        const value =0;
+        let value =0;
         switch(tourist.badge){
             case "level 1": value = amountPaid*0.5;break;
             case "level 2": value = amountPaid*1;break;
@@ -245,12 +248,222 @@ export const updateMyPoints = async (req,res) => {
         }
         tourist.myPoints += value ; 
         await tourist.save(); // Save changes to the database
-
-        return res.status(200).json({ success: true, data: tourist.myPoints, message: 'Points updated successfully' });
-    } catch (error) {
-        console.error("Error updating preferences:", error);
-        res.status(500).json({ success: false, message: "Server error during preferences update" });
     }
-    
+    catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error updating points" });
+    }
 };
+
+export const bookActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.myBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const bookRealActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.ActivityBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.ActivityBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+        
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const bookitineraryActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        // console.log(_id)
+        if(tourist.itineraryBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "already booked" });
+        }
+        tourist.itineraryBookings.push(_id);
+        await tourist.save(); // Save changes to the database
+        const itinerary = await Itinerary.findById(_id);
+        // Increment the number of bookings
+        itinerary.numberOfBookings += 1;
+        await itinerary.save();
+
+        await tourist.save(); // Save changes to the database
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'booked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during booking" });
+    }
+}
+
+export const unBook = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.myBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        const activity = await transportationActivity.findById(_id);
+        if (!activity) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        // Get the current date and time
+        const now = new Date();
+
+        // Check if the activity's start time is at least 48 hours away
+        const activityStartTime = new Date(activity.date); // Assuming startTime is a field in the Activity model
+        const timeDiff = activityStartTime - now;
+
+        // 48 hours in milliseconds
+        const fortyEightHours = 48 * 60 * 60 * 1000;
+
+        if (timeDiff <= fortyEightHours) {
+            return res.status(400).json({
+                success: false,
+                message: "You cannot unbook this activity less than 48 hours before its start time."
+            });
+        }
+        tourist.myBookings = tourist.myBookings.filter(item => item !==_id);
+        await tourist.save(); // Save changes to the database
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
+export const unBookRealActivity = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.ActivityBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        const realActivity = await Activity.findById(_id);
+        if (!realActivity) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        // Get the current date and time
+        const now = new Date();
+
+        // Check if the activity's start time is at least 48 hours away
+        const activityStartTime = new Date(realActivity.date); // Assuming startTime is a field in the Activity model
+        const timeDiff = activityStartTime - now;
+
+        // 48 hours in milliseconds
+        const fortyEightHours = 48 * 60 * 60 * 1000;
+
+        if (timeDiff <= fortyEightHours) {
+            return res.status(400).json({
+                success: false,
+                message: "You cannot unbook this activity less than 48 hours before its start time."
+            });
+        }
+        tourist.ActivityBookings = tourist.ActivityBookings.filter(item => item !==_id);
+        await tourist.save(); // Save changes to the database
+       
+
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
+export const unItiniraryBook = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.itineraryBookings.includes(_id)){
+            return res.status(404).json({ success: false, message: "not booked" });
+        }
+        const itinerarry = await Itinerary.findById(_id);
+        if (!itinerarry) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        // Get the current date and time
+        const now = new Date();
+
+        // Check if the activity's start time is at least 48 hours away
+        const activityStartTime = new Date(itinerarry.date); // Assuming startTime is a field in the Activity model
+        const timeDiff = activityStartTime - now;
+
+        // 48 hours in milliseconds
+        const fortyEightHours = 48 * 60 * 60 * 1000;
+
+        if (timeDiff <= fortyEightHours) {
+            return res.status(400).json({
+                success: false,
+                message: "You cannot unbook this activity less than 48 hours before its start time."
+            });
+        }
+        tourist.itineraryBookings = tourist.itineraryBookings.filter(item => item !==_id);
+        const itinerary = await Itinerary.findById(_id);
+        
+    
+        // Increment the number of bookings
+        itinerary.numberOfBookings -= 1;
+        await itinerary.save();
+
+        await tourist.save(); // Save changes to the database
+        
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'unbooked successfully' });
+        
+    }catch (error) {
+        console.error("Error booking:", error);
+        res.status(500).json({ success: false, message: "Server error during unbooking" });
+    }
+}
+
+
 

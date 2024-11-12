@@ -113,5 +113,121 @@ export const useTouristStore = create((set) => ({
             toast.error("Failed to fetch badge level.");
             return { success: false };
         }
+    },updateBookings: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/updateMyBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,myBookings:[...state.tourist.myBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },updateRealActivityBookings: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/updateRealBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,ActivityBookings:[...state.tourist.ActivityBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },updateItineraryBookings: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/updateItineraryBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,itineraryBookings:[...state.tourist.itineraryBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },unBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,myBookings:state.tourist.myBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
+    },unRealActivityBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unRealActivityBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,ActivityBookings:state.tourist.ActivityBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
+    },unItiniraryBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unItiniraryBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,itineraryBookings:state.tourist.itineraryBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
     },
+    updateMyPoints: async (amountPaid) => {
+        const { user } = useUserStore.getState(); // Get user from userStore
+        if (!user || !user.userName) {
+          toast.error("User not found.");
+          return;
+        }
+      
+        try {
+          const response = await fetch('/api/tourist/updatePoints', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userName: user.userName, amountPaid }),
+          });
+      
+          const data = await response.json();
+      
+          if (data.success) {
+            toast.success(data.message);
+            // Update the tourist's points in the local store
+            set((state) => ({
+              tourist: { ...state.tourist, myPoints: state.tourist.myPoints + data.points }, // Adjust the points based on server response
+            }));
+          } else {
+            toast.error(data.message);
+          }
+        } catch (error) {
+          console.error("Error updating points:", error);
+          toast.error("Failed to update points.");
+        }
+      },
+      
+
     }));

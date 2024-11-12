@@ -1,5 +1,35 @@
 import mongoose, { Mongoose } from 'mongoose';
 import Product from '../models/product.model.js'; 
+import dotenv from "dotenv";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDirectory = path.join(__dirname, "../uploads");
+
+// Ensure the uploads directory exists
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDirectory);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  },
+});
+
+export const upload = multer({ storage: storage });
+export const uploadMiddleware = upload.single("profilePicture");
 
 
 export const getProducts = async (req, res) => {
@@ -9,6 +39,9 @@ export const getProducts = async (req, res) => {
     try {
         const products = await Product.find(parsedFilter).sort(parsedSort);
         res.status(200).json({ success: true, data: products });
+
+       
+
     } catch (error) {
         console.log("Error", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -17,7 +50,41 @@ export const getProducts = async (req, res) => {
 
 
 
+export const uploadProfilePicture = async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided." });
+    }
+  
+    const { name } = req.body;
+    const filePath = `/uploads/${req.file.filename}`;
+  
+    try {
+      const product = await Product.findOne({ name });
+      if (!product) {
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: " not found." });
+      }
+  
+      // Remove old profile picture file if it exists
+      if (product.profilePicture && fs.existsSync(path.join(__dirname, `../${product.profilePicture}`))) {
+        fs.unlinkSync(path.join(__dirname, `../${product.profilePicture}`));
+      }
+  
+      // Update seller's profile picture path in the database
+      product.profilePicture = filePath;
+      await product.save();
+  
+      return res.status(200).json({
+        success: true,
 
+        success: "Product picture uploaded successfully",
+        profilePicture: `http://localhost:5000${filePath}`,
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      return res.status(500).json({ message: "Profile picture upload failed", error });
+    }
+  };
 
 export const createProduct = async (req, res) => {
     console.log('Received product data:', req.body);
@@ -54,6 +121,10 @@ export const deleteProduct = async (req, res) => {
         } else {
             res.status(404).json({ success: false, message: 'Product not found' });
         }
+
+        if (deletedProduct.profilePicture && fs.existsSync(path.join(__dirname, `../${deletedProduct.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${deletedProduct.profilePicture}`));
+          }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -63,13 +134,20 @@ export const deleteProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     const { newProduct } = req.body;
     const {id} = req.params;
-   console.log(id)
-   if(!id) {
+    const updates = { ...req.body };
+    if(!id) {
     return res.status(400).json({success:false, message: 'Name is required' });}
-
+    if (req.file) {
+        updates.profilePicture = `/uploads/${req.file.filename}`;
+      }
+    
     try {
         const updatedProduct = await Product.findByIdAndUpdate( id, newProduct, { new: true });
         res.json({ success: true, data: updatedProduct });
+
+        if (req.file && updatedProduct.profilePicture && fs.existsSync(path.join(__dirname, `../${updatedProduct.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${updatedProduct.profilePicture}`));
+          }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

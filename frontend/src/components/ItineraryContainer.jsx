@@ -13,6 +13,7 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 import { set } from 'mongoose';
+import { useTouristStore } from '../store/tourist.js';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -34,6 +35,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const {tourist, updateItineraryBookings,unItiniraryBook,updateMyPoints} = useTouristStore();
 
 
   const { bookItinerary } = useItineraryStore();
@@ -123,11 +125,10 @@ const handleActivateClick = () => {
       return;
     }
 
-    if (!itinerary.isBooked) {
-      alert('You can only review this itinerary once it is booked.');
-      return;
+    if( !tourist?.itineraryBookings?.includes(itinerary._id))
+    {
+      return toast.error('Failed to add review: ');
     }
-
     console.log('User retrieved from states:', user);
     const { success, message } = await createItineraryReview(itineraryID, rating, comment,user);
     if (success) {
@@ -149,10 +150,10 @@ if (!tourGuideName) {
 }
 
 
-if (!itinerary.isBooked) {
-  alert('You can only review this tour guide once the itinerary is booked.');
-  return;
-}
+if( !tourist?.itineraryBookings?.includes(itinerary._id))
+  {
+    return toast.error('Failed to add review: ');
+  }
   const { success, message } = await createTourGuideReview(tourGuideName, tourGuideRating, tourGuideComment,user);
   if (success) {
     alert('Review added successfully!');
@@ -163,6 +164,23 @@ if (!itinerary.isBooked) {
     alert('Failed to add review: ' + message);
   }
 };
+
+const handleBook = async (id) =>{
+  if(user.type !== "tourist"){
+        return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
+      }
+      const { success, message } = await updateItineraryBookings(user.userName,id);
+      if(success) {await updateMyPoints(user.userName,itinerary.price)}
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+}
+
+const handleUnBook = async (id) =>{
+  if(user.type !== "tourist"){
+        return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
+      }
+      const { success, message } = await unItiniraryBook(user.userName,id);
+      success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+}
 
 
 const handleBookClick = async () => {
@@ -191,6 +209,7 @@ const deactivate = async () => {
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
+      <Toaster/>
         <div className='grid p-2'>
        
       <h2>{itinerary.name}</h2>
@@ -317,6 +336,10 @@ const deactivate = async () => {
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail
         </button>
+        {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
+         <button onClick={() => (handleBook(itinerary._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
+         <button onClick={() => (handleUnBook(itinerary._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
+         }
         {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
           <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">

@@ -63,15 +63,15 @@ export const getActivity = async(req, res) => {
 }
 
 export const deleteActivity = async(req, res) => {
-    const { id } = req.body;
+    const { _id } = req.body;
     try {
-        const activityExists = await transportationActivity.exists({ _id: id });
+        const activityExists = await transportationActivity.exists({ _id });
 
         if (!activityExists) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
 
-        await transportationActivity.findOneAndDelete({ _id: id });
+        await transportationActivity.findOneAndDelete({ _id });
         res.json({success:true, message: 'activity deleted successfully' });
     } catch (error) {
         res.status(500).json({success:false, message: error.message });

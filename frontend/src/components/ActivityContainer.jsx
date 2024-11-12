@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useActivityStore } from '../store/activity.js';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
+import { useTouristStore } from '../store/tourist.js';
 
 function ActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
@@ -20,6 +21,7 @@ function ActivityContainer({ activity, activityChanger }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const displayPrice = (activity.price * user.currencyRate).toFixed(2);
+  const {tourist, updateRealActivityBookings,unRealActivityBook} = useTouristStore();
   
 
   const handleClick = () => {
@@ -69,6 +71,10 @@ function ActivityContainer({ activity, activityChanger }) {
       return;
     }
 
+    if(!tourist?.ActivityBookings?.includes(activity._id))
+    {
+      return toast.error('Failed to add review: ');
+    }
     const { success, message } = await createActivityReview(activityId, rating, comment,user);
     if (success) {
       toast.success('Review added successfully!');
@@ -78,6 +84,22 @@ function ActivityContainer({ activity, activityChanger }) {
       toast.error('Failed to add review: ' + message);
     }
   };
+
+  const handleBook = async (id) =>{
+    if(user.type !== "tourist"){
+          return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
+        }
+        const { success, message } = await updateRealActivityBookings(user.userName,id);
+        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+  }
+
+  const handleUnBook = async (id) =>{
+    if(user.type !== "tourist"){
+          return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
+        }
+        const { success, message } = await unRealActivityBook(user.userName,id);
+        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+  }
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
@@ -144,6 +166,10 @@ function ActivityContainer({ activity, activityChanger }) {
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail
         </button>
+        {   !tourist?.ActivityBookings?.includes(activity._id) ?
+         <button onClick={() => (handleBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
+         <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
+         }
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
