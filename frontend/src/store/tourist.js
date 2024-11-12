@@ -198,9 +198,9 @@ export const useTouristStore = create((set) => ({
             set((state) => ({tourist: {...state.tourist,itineraryBookings:state.tourist.itineraryBookings?.filter(item => item !==_id)}}))
             return{success: true, message: "unbooked successfully."};
     },
-    updateMyPoints: async (amountPaid) => {
-        const { user } = useUserStore.getState(); // Get user from userStore
-        if (!user || !user.userName) {
+    updateMyPoints: async (userName,amountPaid) => {
+        // const { user } = useUserStore.getState(); // Get user from userStore
+        if (!userName) {
           toast.error("User not found.");
           return;
         }
@@ -209,7 +209,7 @@ export const useTouristStore = create((set) => ({
           const response = await fetch('/api/tourist/updatePoints', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userName: user.userName, amountPaid }),
+            body: JSON.stringify({ userName: userName, amountPaid }),
           });
       
           const data = await response.json();

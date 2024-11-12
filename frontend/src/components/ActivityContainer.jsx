@@ -90,6 +90,7 @@ function ActivityContainer({ activity, activityChanger }) {
           return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
         }
         const { success, message } = await updateRealActivityBookings(user.userName,id);
+        if(success) {await updateMyPoints(user.userName,activity.price)}
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
 
