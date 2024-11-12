@@ -58,7 +58,9 @@ Available_quantity: {
     type: Number,
 },
 profilePicture: {
-    type: String,  // This will store the path to the uploaded picture
+    type: String, 
+    required: false,
+        default: "" // This will store the path to the uploaded picture
 },
 });
 
