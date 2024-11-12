@@ -26,7 +26,6 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import bookingRoute from './routes/booking.route.js';
 
 import shareRoutes from './routes/share.route.js';
 import transportaionActivity from './routes/transportationActivity.route.js';
@@ -62,7 +61,6 @@ app.use("/api/flight-booking",flightBookingRoutes);
 app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
-app.use("/api/booking",bookingRoute);
 
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
