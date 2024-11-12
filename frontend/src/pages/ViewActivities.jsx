@@ -43,7 +43,7 @@ useEffect(() => {
     const {activities, getActivities, categories, getCategories} = useActivityStore();
    const handlePress = async () => {
     
-    await getActivities({ ...filter, isActivated: true }, sort);
+   getActivities({ ...filter, isActivated: true }, sort);
     console.log(filter);
     setFilter({});
     

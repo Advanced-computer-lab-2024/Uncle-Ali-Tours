@@ -452,6 +452,7 @@ export const unItiniraryBook = async(req,res) => {
             return res.status(404).json({ success: false, message: "not booked" });
         }
         const itinerarry = await Itinerary.findById(_id);
+        console.log(itinerarry)
         if (!itinerarry) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
@@ -460,12 +461,12 @@ export const unItiniraryBook = async(req,res) => {
         const now = new Date();
 
         // Check if the activity's start time is at least 48 hours away
-        const activityStartTime = new Date(itinerarry.date); // Assuming startTime is a field in the Activity model
-        const timeDiff = activityStartTime - now;
+        const itinerarryStartTime = new Date(itinerarry.availableDates[0]); // Assuming startTime is a field in the Activity model
+        const timeDiff = itinerarryStartTime - now;
 
         // 48 hours in milliseconds
         const fortyEightHours = 48 * 60 * 60 * 1000;
-
+        // console.log(timeDiff)
         if (timeDiff <= fortyEightHours) {
             return res.status(400).json({
                 success: false,
