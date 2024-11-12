@@ -1,13 +1,10 @@
-// routes/bookings.js
-const express = require('express');
+import express from 'express';
+import { bookItineraries, getUserBookings } from '../controllers/bookingController.js';
+
 const router = express.Router();
-const bookingController = require('../controllers/bookingController');
-const auth = require('../middlewares/auth'); // Import the auth middleware
 
-// Route to book an itinerary (POST)
-router.post('/', auth, bookingController.bookItinerary);
+router.post("/book-it", bookItineraries); // Route to book an itinerary
 
-// Route to get all bookings for a specific user (GET)
-router.get('/', auth, bookingController.getUserBookings);
+router.get("/get-bookings", getUserBookings); // Route to get bookings for a specific user
 
-module.exports = router;
+export default router;
