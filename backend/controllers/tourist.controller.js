@@ -237,7 +237,7 @@ export const updateMyPoints = async (req,res) => {
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        const value =0;
+        let value =0;
         switch(tourist.badge){
             case "level 1": value = amountPaid*0.5;break;
             case "level 2": value = amountPaid*1;break;
