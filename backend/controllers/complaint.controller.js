@@ -16,7 +16,6 @@ export const createComplaint = async (req, res) => {
 
 export const getComplaint = async (req, res) => {
     const { id } = req.params;
-
     try {
         const complaint = await Complaint.findById(id);
 
@@ -87,12 +86,18 @@ export const getTouristComplaints = async (req, res) => {
 };
 
 export const getAllComplaints = async (req, res) => {
+    const { filter = "{}", sort = "{}" } = req.query;
+
     try {
-        const complaints = await Complaint.find(); 
+        // Parse filter and sort parameters
+        const filterOption = JSON.parse(filter); // e.g., { status: "pending" }
+        const sortOption = JSON.parse(sort); // e.g., { createdAt: -1 } for descending order
+
+        // Fetch complaints with the parsed filter and sort options
+        const complaints = await Complaint.find(filterOption).sort(sortOption);
+
         return res.status(200).json({ success: true, data: complaints });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
-
-

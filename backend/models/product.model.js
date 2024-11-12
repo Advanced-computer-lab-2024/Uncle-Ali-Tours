@@ -56,7 +56,10 @@ archive:{
 },
 Available_quantity: {
     type: Number,
-}
+},
+profilePicture: {
+    type: String,  // This will store the path to the uploaded picture
+},
 });
 
 // Create and export the Product model using ES Modules syntax

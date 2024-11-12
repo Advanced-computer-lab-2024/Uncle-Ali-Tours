@@ -66,7 +66,7 @@ function LoginPage() {
       handleSubmit();
     }
   };
-
+  
   useEffect(() => {
     localStorage.removeItem('email')
     document.addEventListener("keydown", handleKeyPress, false);

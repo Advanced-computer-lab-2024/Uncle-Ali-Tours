@@ -21,6 +21,11 @@ import sellerRoutes from './routes/seller.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import shareRoutes from './routes/share.route.js';
 import transportaionActivity from './routes/transportationActivity.route.js';
@@ -59,7 +64,7 @@ app.use("/api/transportaionActivity",transportaionActivity);
 
 
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB before setting up routes
 connectDB().then(() => {
