@@ -21,7 +21,6 @@ import sellerRoutes from './routes/seller.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
-import bookingRoute from './routes/booking.route.js';
 
 import shareRoutes from './routes/share.route.js';
 import transportaionActivity from './routes/transportationActivity.route.js';
@@ -57,7 +56,7 @@ app.use("/api/flight-booking",flightBookingRoutes);
 app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
-app.use("/api/booking",bookingRoute);
+
 
 
 app.use('/uploads', express.static('uploads'));

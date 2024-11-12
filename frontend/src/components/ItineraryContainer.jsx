@@ -35,7 +35,7 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const buttonStatus = (itinerary.isActivated)? "deactivate" : "activate";
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const {tourist, updateItineraryBookings,unItiniraryBook} = useTouristStore();
+  const {tourist, updateItineraryBookings,unItiniraryBook,updateMyPoints} = useTouristStore();
 
 
   const { bookItinerary } = useItineraryStore();
@@ -125,11 +125,10 @@ const handleActivateClick = () => {
       return;
     }
 
-    if (!itinerary.isBooked) {
-      alert('You can only review this itinerary once it is booked.');
-      return;
+    if( !tourist?.itineraryBookings?.includes(itinerary._id))
+    {
+      return toast.error('Failed to add review: ');
     }
-
     console.log('User retrieved from states:', user);
     const { success, message } = await createItineraryReview(itineraryID, rating, comment,user);
     if (success) {
@@ -151,10 +150,10 @@ if (!tourGuideName) {
 }
 
 
-if (!itinerary.isBooked) {
-  alert('You can only review this tour guide once the itinerary is booked.');
-  return;
-}
+if( !tourist?.itineraryBookings?.includes(itinerary._id))
+  {
+    return toast.error('Failed to add review: ');
+  }
   const { success, message } = await createTourGuideReview(tourGuideName, tourGuideRating, tourGuideComment,user);
   if (success) {
     alert('Review added successfully!');
@@ -171,6 +170,7 @@ const handleBook = async (id) =>{
         return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
       }
       const { success, message } = await updateItineraryBookings(user.userName,id);
+      if(success) {await updateMyPoints(user.userName,itinerary.price)}
       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
 

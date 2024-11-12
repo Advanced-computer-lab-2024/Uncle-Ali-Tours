@@ -48,6 +48,7 @@ function ItineraryPage(itinerary ,itineraryChanger) {
       </div>
     );
   };
+  
 
 
   const del = async () => {
