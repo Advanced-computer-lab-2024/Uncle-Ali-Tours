@@ -45,6 +45,8 @@ import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
+import AdminItineraryPage from './AdminItineraryPage';
+import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import TransportationActivity from "./ViewTransportationACtivity.jsx"
 
@@ -140,6 +142,10 @@ function App() {
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
         <Route path="/updateActivity" element={<UpdateActivity/>} />
+        <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
+        <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
+
+
         <Route path="/ViewTransportationActivity" element={<TransportationActivity/>} />
       </Routes>
     </div>

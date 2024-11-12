@@ -8,13 +8,9 @@ import ActivityContainer from '../components/ActivityContainer.jsx';
 import { useActivityStore } from '../store/activity.js';
 import { useUserStore } from '../store/user.js';
 
-function ActivityPage(activity, activityChanger) {
+function ActivityPage() {
   const { user } = useUserStore(); // Fetching user details
   const { activities, getActivities, deleteActivity } = useActivityStore(); // Importing activity store methods
-
-  getActivities({ creator: user.userName });
-
-  
 
   const [curActivity, setCurActivity] = useState({}); // Holds the current activity for delete/update
 
@@ -24,12 +20,25 @@ function ActivityPage(activity, activityChanger) {
   const { showDialog } = dialog();
   const { showFormDialog } = formdialog();
 
-  
+  useEffect(() => {
+    // Fetch activities when the component mounts or when user changes
+    const fetchActivities = async () => {
+      if (user && user.userName) {
+        const response = await getActivities({ creator: user.userName });
+        console.log(response);  // Add logging here to debug
+        if (!response.success) {
+          toast.error('Failed to load activities', { className: "text-white bg-gray-800" });
+        }
+      }
+    };
+
+    fetchActivities();
+  }, [user.userName, getActivities]); // Dependency on user.userName and getActivities to refetch when needed
 
   // Handle update action
   const handleUpdateClick = () => {
     showFormDialog();
-    activityChanger(activity);
+    activityChanger(curActivity); // Pass the current activity for update
   };
 
   // Delete activity
@@ -51,10 +60,13 @@ function ActivityPage(activity, activityChanger) {
       <div className='mb-4 text-xl'>Available Activities</div>
 
       {/* Render activities */}
-      {activities.map((act, index) => (
-        <ActivityContainer key={index} activityChanger={changeActivity} activity={act} />
-      ))}
-
+      {activities.length > 0 ? (
+        activities.map((act, index) => (
+          <ActivityContainer key={index} activityChanger={changeActivity} activity={act} />
+        ))
+      ) : (
+        <div>No activities available.</div> // Fallback message if no activities exist
+      )}
 
       <Dialog
         msg={"Are you sure you want to delete this activity?"}
@@ -63,11 +75,9 @@ function ActivityPage(activity, activityChanger) {
         acceptButtonText='Delete'
         rejectButtonText='Cancel'
       />
-      <button onClick={() => (handleUpdateClick())} className='mr-4 transform transition-transform duration-300 hover:scale-125' ><MdOutlineDriveFileRenameOutline size='18' color='black' /></button>
-
-
-      
-     
+      <button onClick={handleUpdateClick} className='mr-4 transform transition-transform duration-300 hover:scale-125'>
+        <MdOutlineDriveFileRenameOutline size='18' color='black' />
+      </button>
     </div>
   );
 }

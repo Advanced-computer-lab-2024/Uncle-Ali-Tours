@@ -4,16 +4,13 @@ import { formdialog } from './FormDialog.jsx';
 import { BiSolidArchiveIn, BiSolidArchiveOut } from "react-icons/bi";
 import { useProductStore } from '../store/product.js';
 import React, { useEffect, useState, useRef } from 'react';
-import { useUserStore } from '../store/user';
 import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import AvatarEditor from 'react-avatar-editor';
 import { Modal } from 'react-bootstrap';
 import { FaEye, FaEdit } from 'react-icons/fa';
-import AvatarEditor from 'react-avatar-editor';
 
 function ProductCard({ product, productChanger }) {
-  const { archiveProduct, getProducts, updateProduct, uploadProfilePicture } = useProductStore();
-  const { user } = useUserStore();
+  const { archiveProduct } = useProductStore();
   const [isEditing, setIsEditing] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
@@ -33,17 +30,11 @@ function ProductCard({ product, productChanger }) {
   };
 
   useEffect(() => {
-    const fetchProductData = async () => {
-     
-        const result =  product
-        if (result.success && product.profilePicture) {
-          setPreviewFile(product.profilePicture);
-          localStorage.setItem("profilePicture", product.profilePicture);
-        }
-      
-    };
-    fetchProductData();
-  }, []);
+    if (product && product.profilePicture) {
+      setPreviewFile(product.profilePicture);
+      localStorage.setItem("profilePicture", product.profilePicture);
+    }
+  }, [product]);
 
   const toggleEdit = () => {
     setIsEditing((prev) => !prev);
@@ -55,8 +46,6 @@ function ProductCard({ product, productChanger }) {
     if (file) {
       setProfilePic(file);
       localStorage.removeItem("profilePicture");
-    } else {
-      console.error("No file selected");
     }
   };
 
@@ -66,7 +55,6 @@ function ProductCard({ product, productChanger }) {
       const dataUrl = canvas.toDataURL();
 
       try {
-        // Update `localStorage` with the new image data URL
         localStorage.setItem("profilePicture", dataUrl);
         setPreviewFile(dataUrl);
         setIsEditing(false);
@@ -76,7 +64,6 @@ function ProductCard({ product, productChanger }) {
         toast.error("Error saving profile photo locally", { className: "text-white bg-gray-800" });
       }
     } else {
-      console.error("No file selected for upload");
       toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
     }
   };
@@ -92,7 +79,7 @@ function ProductCard({ product, productChanger }) {
         {previewFile ? (
           <img
             style={{ width: "160px", height: "160px", borderRadius: "50%", objectFit: "cover" }}
-            src={`http://localhost:3000${previewFile}`}
+            src={previewFile}
             alt="Profile Picture"
           />
         ) : (
@@ -161,7 +148,7 @@ function ProductCard({ product, productChanger }) {
         </Modal.Header>
         <Modal.Body className="text-center">
           <img
-            src={`http://localhost:3000${previewFile}`}
+            src={previewFile}
             alt="Profile Preview"
             className="img-fluid"
             style={{ maxWidth: "100%", borderRadius: "50%" }}

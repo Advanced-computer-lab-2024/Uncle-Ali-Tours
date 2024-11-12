@@ -71,6 +71,12 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: true, 
   },
+  isAppropriate: {
+    type: Boolean,
+    default: true,
+    required: false,
+ 
+  },
   isBooked: {
     type: Boolean,
     default: false,

@@ -10,8 +10,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { 
@@ -32,42 +30,38 @@ const AdminDashboard = () => {
   const [adminData, setAdminData] = useState({ userName: '', password: '' }); // Username and password for admin
   const [tourismData, setTourismData] = useState({ userName: '', password: '' }); // Username and password for tourism
 
-
-
   const handleDeleteAccount = async () => {
     const { success, message } = await deleteUser(accountUsername, accountType);
     success
         ? toast.success(message, { className: "text-white bg-gray-800" })
         : toast.error(message, { className: "text-white bg-gray-800" });
-};
+  };
 
-
-    useEffect(() => {
-        if (user.type !== 'admin') {
-            navigate('/');
-        }
-    }, []);
-
-
-    const handleAddAdmin =  async function(type) {
-        const passedUser = adminData
-        passedUser.type = 'admin'
-       const {success, message} =  await createUser(passedUser);
-       success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-   
+  useEffect(() => {
+    if (user.type !== 'admin') {
+      navigate('/');
     }
+  }, []);
+
+  const handleAddAdmin = async function(type) {
+    const passedUser = adminData;
+    passedUser.type = 'admin';
+    const { success, message } = await createUser(passedUser);
+    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
+  };
 
   const handleAddTourismGovernor = async function(type)  {
-    const passedUser = tourismData
-    passedUser.type = 'governor'
-   const {success, message} =  await createUser(passedUser);
-   success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-
+    const passedUser = tourismData;
+    passedUser.type = 'governor';
+    const { success, message } = await createUser(passedUser);
+    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
   };
+
   const handleViewAllProducts = async () => {
     await getProducts(); // Fetch all products
     setShowProducts(true); // Show the products list
   };
+
   const getSalesData = () => {
     return {
       labels: products.map(product => product.name),
@@ -80,9 +74,10 @@ const AdminDashboard = () => {
       ],
     };
   };
+
   return (
     <div className="container mx-auto p-4 pt-6">
-      <Toaster/>
+      <Toaster />
       <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
 
       <div className="flex flex-wrap justify-center mb-4">
@@ -93,14 +88,14 @@ const AdminDashboard = () => {
             type="text" 
             value={accountUsername} 
             onChange={(e) => setAccountUsername(e.target.value)} 
-            placeholder="Enter Username" // Updated to reflect username
+            placeholder="Enter Username"
             className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
           />
           <input 
             type="text" 
             value={accountType} 
             onChange={(e) => setAccountType(e.target.value)} 
-            placeholder="Enter Type" // Updated to reflect username
+            placeholder="Enter Type"
             className="w-full rounded-md p-2 border border-gray-600 bg-gray-900 text-white"
           />
           <button 
@@ -200,7 +195,6 @@ const AdminDashboard = () => {
                   View Delete Requests
                 </button>
               </Link>
-              <div className="w-full md:w-1/3 xl:w-1/3 p-6">
               <Link to="/complaints">
                 <button 
                   className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
@@ -209,12 +203,35 @@ const AdminDashboard = () => {
                 </button>
               </Link>
             </div>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* New Buttons for Itinerary and Activity */}
       <div className="w-full md:w-1/2 xl:w-1/3 p-6">
-      <div className="flex flex-wrap justify-center mb-4">
+        <div className="flex flex-wrap justify-center mb-4">
+          <h2 className="text-2xl font-bold mb-4">Manage Itineraries and Activities</h2>
+          <div className="flex space-x-4">
+            <Link to="/AdminItineraryPage">
+              <button 
+                className="px-5 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-300"
+              >
+                Itinerary
+              </button>
+            </Link>
+            <Link to="/AdminActivitiesPage">
+              <button 
+                className="px-5 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-300"
+              >
+                Activity
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full md:w-1/2 xl:w-1/3 p-6">
+        <div className="flex flex-wrap justify-center mb-4">
           <h2 className="text-2xl font-bold mb-4">View All Products : </h2>
           <button 
             className="px-5 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
@@ -222,9 +239,10 @@ const AdminDashboard = () => {
           >
             View Products
           </button>
-          </div>
         </div>
-        {showProducts && (
+      </div>
+
+      {showProducts && (
         <div className="mt-6">
           <h2 className="text-xl font-bold mb-4">All Products</h2>
           {products.map((product, index) => (
@@ -246,7 +264,6 @@ const AdminDashboard = () => {
         </div>
       )}
     </div>
-    
   );
 };
 

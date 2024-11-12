@@ -1,12 +1,15 @@
 import Activity from "../models/activity.model.js";
 
-export const createActivity = async(req, res) => {
+// Create Activity
+export const createActivity = async (req, res) => {
     const activity = req.body;
-    const newActivity= new Activity(activity);
+    const newActivity = new Activity({
+        ...activity,
+        isAppropriate: activity.isAppropriate !== undefined ? activity.isAppropriate : true // Default to true
+    });
 
-    if(!activity.name || !activity.date || !activity.time || !activity.location || !activity.price || !activity.category || activity.bookingOpen==undefined || !activity.creator ){
-        res.status(400).json({success: false, message: "please fill all fields"});
-    return;
+    if (!activity.name || !activity.date || !activity.time || !activity.location || !activity.price || !activity.category || activity.bookingOpen === undefined || !activity.creator) {
+        return res.status(400).json({ success: false, message: "Please fill all fields" });
     }
 
     const activityExists = await Activity.exists({
@@ -23,32 +26,59 @@ export const createActivity = async(req, res) => {
     });
 
     if (activityExists) {
-        res.status(409).json({ success: false, message: "Activity already exists" });
-        return;
+        return res.status(409).json({ success: false, message: "Activity already exists" });
     }
 
-
-    try{
+    try {
         await newActivity.save();
-        res.status(201).json({success:true ,data:newActivity});
+        return res.status(201).json({ success: true, data: newActivity });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
     }
-    catch(error){
-        res.status(500).json({success:false , message:error.message});
+};
+export const toggleActivityAppropriateness = async (req, res) => {
+    const { id } = req.params;
+    const { isAppropriate } = req.body;
+  
+    try {
+      // Find the activity by ID
+      const activity = await Activity.findById(id);
+      if (!activity) {
+        return res.status(404).json({ success: false, message: "Activity not found" });
+      }
+  
+      // Update the appropriateness status
+      activity.isAppropriate = isAppropriate;
+  
+      // Save the updated activity
+      await activity.save();
+  
+      res.json({
+        success: true,
+        message: `Activity marked as ${isAppropriate ? "appropriate" : "inappropriate"}`,
+        data: activity,
+      });
+    } catch (error) {
+      console.error("Error toggling appropriateness:", error);
+      res.status(500).json({ success: false, message: "Error updating activity appropriateness" });
     }
-}
-
-export const getActivity = async(req, res) => {
+  };
+// Get Activities
+export const getActivity = async (req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
-    // console.log(req.query)    
+
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
+
+    // Ensure the filter doesn't include inappropriate activities
+    parsedFilter.isAppropriate = true;
 
     if (minPrice || maxPrice) {
         parsedFilter.price = {};
 
         if (minPrice) {
             parsedFilter.price.$gte = parseFloat(minPrice);
-        }    
+        }
 
         if (maxPrice) {
             parsedFilter.price.$lte = parseFloat(maxPrice);
@@ -57,28 +87,13 @@ export const getActivity = async(req, res) => {
 
     try {
         const activities = await Activity.find(parsedFilter).sort(parsedSort);
-        res.status(200).json({success:true, data: activities});
+        return res.status(200).json({ success: true, data: activities });
     } catch (error) {
-        res.status(404).json({ message: error.message });
+        return res.status(404).json({ message: error.message });
     }
-}
+};
 
-export const deleteActivity = async(req, res) => {
-    const { id } = req.body;
-    try {
-        // const activityExists = await Activity.exists({ _id: id });
-
-        // if (!activityExists) {
-        //     return res.status(404).json({ success: false, message: "Activity not found" });
-        // }
-
-        await Activity.findOneAndDelete({ _id: id });
-        res.json({success:true, message: 'activity deleted successfully' });
-    } catch (error) {
-        res.status(500).json({success:false, message: error.message });
-    }
-}
-
+// Update Activity (including isAppropriate flag)
 export const updateActivity = async (req, res) => {
     const { id, newActivity } = req.body;
     try {
@@ -88,43 +103,42 @@ export const updateActivity = async (req, res) => {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
 
-        const updatedActivity = await Activity.findByIdAndUpdate({ _id: id }, newActivity, { new: true , runValidators: true });
-        res.status(200).json({success:true, data:  updatedActivity});
-    }
-    catch (error) {
-        res.status(500).json({success:false, message: error.message });
-    }
-}
+        const updatedActivity = await Activity.findByIdAndUpdate(
+            { _id: id },
+            { ...newActivity, isAppropriate: newActivity.isAppropriate }, // Allow admin to update isAppropriate
+            { new: true, runValidators: true }
+        );
 
+        return res.status(200).json({ success: true, data: updatedActivity });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Delete Activity
+export const deleteActivity = async (req, res) => {
+    const { id } = req.body;
+    try {
+        await Activity.findOneAndDelete({ _id: id });
+        return res.json({ success: true, message: 'Activity deleted successfully' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Create Activity Review
 export const createActivityReview = async (req, res) => {
-    const { rating, comment,name  } = req.body;
-    console.log('Received rating:', rating);
-    console.log('Received comment:', comment);
-    console.log('Received username:', name);
+    const { rating, comment, name } = req.body;
     const activity = await Activity.findById(req.params.id);
-    console.log('Received Activity:', activity);
+
     if (activity) {
-        // const alreadyReviewed = itinerary.reviews.find(
-        //     (r) => r.user.toString() === name // Use 'name' which is defined
-        // );
-        // if (alreadyReviewed) {
-        //     res.status(400);
-        //     throw new Error('Itinerary already reviewed');
-        // }
-        const review = {
-            rating: Number(rating),
-            comment,
-            name,  
-        };
-        console.log('Received review:', review);
+        const review = { rating: Number(rating), comment, name };
         activity.reviews.push(review);
         activity.numReviews = activity.reviews.length;
-        activity.rating =
-            activity.reviews.reduce((acc, item) => item.rating + acc, 0) /
-            activity.reviews.length;
+        activity.rating = activity.reviews.reduce((acc, item) => item.rating + acc, 0) / activity.reviews.length;
         await activity.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: 'Review added',
             review,
@@ -132,7 +146,20 @@ export const createActivityReview = async (req, res) => {
             rating: activity.rating,
         });
     } else {
-        res.status(404);
-        throw new Error('Activity not found');
+        return res.status(404).json({ message: 'Activity not found' });
     }
 };
+export const getAllActivities = async (req, res) => {
+    try {
+      // Fetch all activities from the database
+      const activities = await Activity.find({});
+      
+      res.json({
+        success: true,
+        data: activities,
+      });
+    } catch (error) {
+      console.error("Error fetching all activities:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch all activities" });
+    }
+  };
