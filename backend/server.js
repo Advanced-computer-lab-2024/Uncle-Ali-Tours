@@ -15,7 +15,11 @@ import attractionsRoute from './routes/attraction.routes.js';
 import complaintRoutes from './routes/complaint.route.js';
 import optRoutes from './routes/otp.route.js'; 
 import cors from 'cors';
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const app = express();
@@ -40,7 +44,7 @@ app.use("/api/attractions", attractionsRoute)
 app.use("/api/complaint", complaintRoutes);
 app.use("/api/otp", optRoutes);
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 

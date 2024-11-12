@@ -34,7 +34,7 @@ function ViewProducts() {
       }
     };
     fetchProducts();
-  }, [filter, sort, user, getProducts]);
+  }, [filter, sort, user]);
 
   const handlePress = async () => {
     if (user.type === 'seller') {
@@ -51,6 +51,8 @@ function ViewProducts() {
   const handleFilter = () => {
     setFilterVisibility((prev) => !prev);
   };
+
+  
 
   const del = async () => {
     const { success, message } = await deleteProduct(currentProduct._id);

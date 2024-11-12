@@ -5,6 +5,8 @@ import {
     updateProduct,
     deleteProduct,
     archiveProduct,
+    uploadProfilePicture ,
+    upload
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
@@ -21,6 +23,8 @@ router.put('/:id', updateProduct);
 
 // Delete product by ID
 router.delete('/:id', deleteProduct);
+router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePicture);
+
 
 router.put('/archiveProduct/:id', archiveProduct);
 export default router;

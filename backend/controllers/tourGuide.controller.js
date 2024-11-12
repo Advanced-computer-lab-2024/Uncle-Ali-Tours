@@ -1,184 +1,199 @@
 import TourGuide from "../models/tourGuide.model.js";
 import User from "../models/user.model.js";
+import Itinerary from "../models/itinerary.model.js"; // Assuming itineraries are stored here
 import multer from 'multer';
+import dotenv from "dotenv";
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDirectory = path.join(__dirname, "../uploads");
+
+// Ensure the uploads directory exists
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+}
 
 // Configure multer storage for file uploads
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(process.cwd(), 'uploads/tourGuides');
-        fs.mkdirSync(uploadPath, { recursive: true });
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
+  destination: (req, file, cb) => {
+    cb(null, uploadDirectory);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  },
 });
 
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Set a file size limit of 5MB
-});
+export const upload = multer({ storage: storage });
+export const uploadMiddleware = upload.single("profilePicture");
 
-// Upload file handler function
-export const uploadFile = (req, res) => {
-    const userType = req.body.userType;
+// Upload Profile Picture for Tour Guide
+export const uploadProfilePicture = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file provided." });
+  }
 
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: 'No file uploaded' });
+  const { userName } = req.body;
+  const filePath = `/uploads/${req.file.filename}`;
+
+  try {
+    const guide = await TourGuide.findOne({ userName });
+    if (!guide) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: "Tour guide not found." });
     }
 
-    res.json({
-        success: true,
-        message: `File uploaded successfully as ${userType === "tourGuide" ? "photo" : "logo"}`,
-        filePath: `/uploads/tourGuides/${req.file.filename}`,
+    // Remove old profile picture file if it exists
+    if (guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
+      fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
+    }
+
+    // Update guide's profile picture path in the database
+    guide.profilePicture = filePath;
+    await guide.save();
+
+    return res.status(200).json({
+      message: "Profile picture uploaded successfully",
+      profilePicture: `http://localhost:5000${filePath}`,
     });
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    return res.status(500).json({ message: "Profile picture upload failed", error });
+  }
 };
 
-// Export upload middleware for use in the route
-export { upload };
+// Create Tour Guide
+export const createTourGuide = async (req, res) => {
+  const tourGuideData = req.body;
 
+  if (!tourGuideData.userName || !tourGuideData.password || !tourGuideData.email) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
 
-export const creatTourGuide = async(req,res) =>{
-    const tourGuide = req.body;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    today.setFullYear(today.getFullYear() - 10);
-    if( !tourGuide.email | !tourGuide.userName | !tourGuide.password ){
-            return res.status(400).json({success:false, message: 'All fields are required' });
+  const duplicate = [
+    ...await User.find({ userName: tourGuideData.userName }),
+    ...await User.find({ email: tourGuideData.email })
+  ];
+  if (duplicate.length > 0) {
+    return res.status(400).json({ success: false, message: "User already exists" });
+  }
+
+  const newTourGuide = new TourGuide(tourGuideData);
+
+  try {
+    await newTourGuide.save();
+    res.status(201).json({ success: true, message: "Tour guide account created successfully", data: newTourGuide });
+  } catch (error) {
+    console.error("Error creating tour guide:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Get Tour Guide
+export const getTourGuide = async (req, res) => {
+  const { userName } = req.query;
+
+  try {
+    const guide = await TourGuide.findOne({ userName }).select("-password");
+    if (!guide) {
+      return res.status(404).json({ message: "Tour guide not found" });
     }
 
-    const duplicat = [...await User.find({userName: tourGuide.userName}),...await User.find({email: tourGuide.email})];
-    console.log(duplicat);
-    if(duplicat.length > 0) {
-        return res.status(400).json({success: false, message: 'User already exists' });
+    const profilePicturePath = guide.profilePicture
+      ? `http://localhost:5000${guide.profilePicture}`
+      : null;
+
+    res.status(200).json({
+      success: true,
+      guide: { ...guide.toObject(), profilePicturePath },
+    });
+  } catch (error) {
+    console.error("Error fetching tour guide:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Update Tour Guide
+export const updateTourGuide = async (req, res) => {
+  const { userName } = req.body;
+  const updates = { ...req.body };
+
+  // If a file is uploaded, set the profilePicture path
+  if (req.file) {
+    updates.profilePicture = `/uploads/${req.file.filename}`;
+  }
+
+  try {
+    const guide = await TourGuide.findOne({ userName });
+    if (!guide) {
+      return res.status(404).json({ message: "Tour guide not found" });
     }
 
-    if( !tourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
-        return res.status(400).json({success:false, message: 'email format is wrong' });
+    if (req.file && guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
+      fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
     }
-    // if((!tourGuide.mobileNumber.toString().match(/^10\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^11\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^12\d{8}$/) & !tourGuide.mobileNumber.toString().match(/^15\d{8}$/)) | !Number.isInteger(tourGuide.mobileNumber)){
-    //     return res.status(400).json({success:false, message: 'mobile number format is wrong'});
-    // }
-    
-    // if(new Date(tourGuide.dateOfBirth) > today){
-    //     return res.status(400).json({success:false, message: 'your age is less than 10 years'});
-    // }
-    const newTourGuide= new TourGuide(tourGuide);
-    try{
-        await newTourGuide.save();
-        res.status(201).json({success:true ,message:"account created sucssfully"});
-    }
-    catch(error){
-        res.status(500).json({success:false , message: error.message});
-    }
-}
 
-export const getTourGuide = async(req,res) => {
-    const { filter, sort } = req.query;
-    let parsedFilter = filter ? JSON.parse(filter) : {};
-    let parsedSort = sort ? JSON.parse(sort) : {};
-    try {
-        const TourGuides = await TourGuide.find(parsedFilter).sort(parsedSort);
-        res.status(200).json({success:true, data: TourGuides});
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-}
+    Object.assign(guide, updates);
+    await guide.save();
 
-export const updateTourGuide = async (req,res) => {
-    const {userName,newTourGuide} = req.body;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    today.setFullYear(today.getFullYear() - 10);
+    res.status(200).json({ message: "Tour guide updated successfully", guide });
+  } catch (error) {
+    console.error("Error updating tour guide:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
-    const keys = Object.keys(newTourGuide)
+// Delete Tour Guide
+export const deleteTourGuide = async (req, res) => {
+  const { userName } = req.body;
 
-    for (let i=0;i<keys.length;i++){
-        if(newTourGuide[keys[i]].length <= 0){
-            return res.status(400).json({success:false, message: 'fields are requierd to update'})
-        }
+  try {
+    const guide = await TourGuide.findOne({ userName });
+    if (!guide) {
+      return res.status(404).json({ success: false, message: "Tour guide not found" });
     }
-    if(newTourGuide.userName){
-        return res.status(400).json({success:false, message: 'user name is not editable'});
-    }
-    if(newTourGuide.email){
-        if( !newTourGuide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
-            return res.status(400).json({success:false, message: 'email format is wrong' });
-        }
-    }
-    if(newTourGuide.mobileNumber){
-        if((!new RegExp(/^010\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^011\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^012\d{8}$/).test(newTourGuide.mobileNumber.toString()) & !new RegExp(/^015\d{8}$/).test(newTourGuide.mobileNumber.toString()))){
-            return res.status(400).json({success:false, message: 'mobile number format is wrong'});
-        }
-    }
-    if(newTourGuide.dateOfBirth){
-        newTourGuide.dateOfBirth = Date.parse(newTourGuide.dateOfBirth);
-        if(newTourGuide.dateOfBirth > today){
-            return res.status(400).json({success:false, message: 'your age is less than 10 years'});
-        }
-    }
-    try {
-        const tourGuideExists = await TourGuide.find({userName : userName});
-        if(!tourGuideExists){
-            return res.status(404).json({ success: false, message: "tour guide not found" });
-        }
-        if(!tourGuideExists[0].verified){
-            return res.status(400).json({success:false, message: "your are not verified yet" });
-        }
-        const updatedTourGuide = await TourGuide.findOneAndUpdate({ userName: userName }, newTourGuide, { new: true });
-        res.status(200).json({success:true, data:  updatedTourGuide});
-    }
-    catch (error) {
-        res.status(500).json({success:false, message: error.message });
-    }
-}
-export const deleteTourGuide = async(req, res) => {
-    const { userName } = req.body;
-    console.log(userName);
-    if(!userName){
-        return res.status(404).json({ success: false, message: "user name is requierd" });
-    }
-    try {
-        const tourGuideExists = await TourGuide.exists({ userName: userName });
 
-        if (!tourGuideExists) {
-            return res.status(404).json({ success: false, message: "tour Guide is not found" });
-        }
-
-        await TourGuide.findOneAndDelete({ userName: userName });
-        res.json({success:true, message: 'tour Guide deleted successfully' });
-    } catch (error) {
-        res.status(500).json({success:false, message: error.message });
+    if (guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
+      fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
     }
-}
+
+    await TourGuide.findOneAndDelete({ userName });
+    res.status(200).json({ message: "Tour guide profile deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting tour guide:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Check Tour Guide Bookings
 export const checkTourGuideBookings = async (req, res) => {
-    const { userName } = req.params;  // Get tour guide's userName from request params
+  const { userName } = req.params;
 
-    try {
-        // Fetch itineraries created by this tour guide
-        const itineraries = await Itinerary.find({ creator: userName });
+  try {
+    const itineraries = await Itinerary.find({ creator: userName });
+    const hasBookings = itineraries.some(itinerary => itinerary.numberOfBookings > 0);
 
-        // Check if any itinerary has bookings (numberOfBookings > 0)
-        const hasBookings = itineraries.some(itinerary => itinerary.numberOfBookings > 0);
-
-        if (hasBookings) {
-            return res.status(200).json({
-                success: true,
-                message: "At least one itinerary has bookings.",
-            });
-        } else {
-            return res.status(200).json({
-                success: true,
-                message: "No itineraries with bookings found.",
-            });
-        }
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error checking bookings",
-            error: error.message,
-        });
+    if (hasBookings) {
+      return res.status(200).json({
+        success: true,
+        message: "At least one itinerary has bookings.",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "No itineraries with bookings found.",
+      });
     }
-}
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error checking bookings",
+      error: error.message,
+    });
+  }
+};

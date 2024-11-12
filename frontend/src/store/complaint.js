@@ -6,6 +6,8 @@ export const useComplaintStore = create((set) => ({
 
   // Fetch complaints with optional filters and sorting
   getComplaints: async (filter = {}, sort = {}) => {
+    console.log(filter)
+
     const queryString = new URLSearchParams({
       filter: JSON.stringify(filter),
       sort: JSON.stringify(sort),

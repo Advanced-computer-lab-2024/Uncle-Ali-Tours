@@ -38,6 +38,11 @@ const tourGuideModel = new mongoose.Schema({
     },password:{
         required:true,
         type:String
+    },
+    profilePicture: { // New field for storing profile picture path
+        type: String,
+        required: false,
+        default: ""
     }
     },{
         timestamps: true

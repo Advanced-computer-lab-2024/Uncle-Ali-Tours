@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useComplaintStore } from '../store/complaint';
 import toast, { Toaster } from 'react-hot-toast';
 
-const Complaints= () => {
+const Complaints = () => {
   const { 
     complaints, 
     getComplaints, 
@@ -10,18 +10,40 @@ const Complaints= () => {
     updateComplaintStatus 
   } = useComplaintStore();
   
-  const [expandedComplaintId, setExpandedComplaintId] = useState(null); // Track which complaint is expanded
+  const [expandedComplaintId, setExpandedComplaintId] = useState(null);
   const [expandedComplaintDetails, setExpandedComplaintDetails] = useState(null);
+  const [filter, setFilter] = useState({});
+  const [sort, setSort] = useState({});
+  const [sortVisibility, setSortVisibility] = useState(false);
+  const [filterVisibility, setFilterVisibility] = useState(false);
 
-  // Fetch complaints on page load
+  // Fetch complaints whenever filter or sort changes
   useEffect(() => {
-    getComplaints();
-  }, [getComplaints]);
+    const fetchComplaints = async () => {
+      await getComplaints(filter, sort);
+    };
+    fetchComplaints();
+  }, [filter, sort, getComplaints]);
+
+  const handleSort = () => {
+    setSortVisibility((prev) => !prev);
+  };
+
+  const handleFilter = () => {
+    setFilterVisibility((prev) => !prev);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
 
   // Function to handle viewing complaint details
   const handleViewDetails = async (id) => {
     if (expandedComplaintId === id) {
-      // Collapse if the same complaint is clicked again
       setExpandedComplaintId(null);
       setExpandedComplaintDetails(null);
       return;
@@ -42,7 +64,7 @@ const Complaints= () => {
     const { success, message } = await updateComplaintStatus(id, newStatus);
     if (success) {
       toast.success(`Complaint marked as ${newStatus}`, { className: "text-white bg-gray-800" });
-      getComplaints(); // Refresh complaints list
+      await getComplaints(filter, sort); // Refresh complaints list
       if (expandedComplaintId === id && expandedComplaintDetails) {
         setExpandedComplaintDetails((prev) => ({ ...prev, status: newStatus }));
       }
@@ -55,6 +77,26 @@ const Complaints= () => {
     <div className="container mx-auto p-4">
       <Toaster />
       <h1 className="text-3xl font-bold mb-4">Complaints Management</h1>
+
+      {/* Sorting and Filtering Controls */}
+      <button onClick={handleSort}>{Object.keys(sort)[0] ? `Sorted by ${Object.keys(sort)[0]}` : 'Sort'}</button>
+      <br />
+      <button onClick={handleFilter}>Filter by Status</button>
+      <br />
+
+      <div className="flex space-x-4 my-4">
+  {/* Sorting Options */}
+  <div className={`${sortVisibility ? '' : 'hidden'} flex space-x-2`}>
+    <div><button onClick={() => handleSortChange({ createdAt: -1 })}>Date New to Old</button></div>
+    <div><button onClick={() => handleSortChange({ createdAt: 1 })}>Date Old to New</button></div>
+  </div>
+
+  {/* Filtering Options */}
+  <div className={`${filterVisibility ? '' : 'hidden'} flex space-x-2`}>
+    <div><button onClick={() => handleFilterChange({ status: 'pending' })}>Status: Pending</button></div>
+    <div><button onClick={() => handleFilterChange({ status: 'resolved' })}>Status: Resolved</button></div>
+  </div>
+</div>
 
       {/* Complaints List */}
       <div className="mb-8">
