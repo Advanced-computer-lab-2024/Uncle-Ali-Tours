@@ -114,7 +114,7 @@ export const useTouristStore = create((set) => ({
             return { success: false };
         }
     },updateBookings: async(name,_id)=>{
-        console.log(_id)
+        // console.log(_id)
         const res = await fetch('/api/tourist/updateMyBookings',{
             method : "PUT",
             headers:{
@@ -125,7 +125,78 @@ export const useTouristStore = create((set) => ({
             const data = await res.json();
             if (!data.success) return {success: false, message: data.message};
             console.log(data)
-            set((state) => ({tourist: {...state.tourist,myBookings:state.tourist.myBookings.push(_id)}}))
-            return{success: true, message: "tourist updated successfully."};
+            set((state) => ({tourist: {...state.tourist,myBookings:[...state.tourist.myBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },updateRealActivityBookings: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/updateRealBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,ActivityBookings:[...state.tourist.ActivityBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },updateItineraryBookings: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/updateItineraryBookings',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            console.log(data)
+            set((state) => ({tourist: {...state.tourist,itineraryBookings:[...state.tourist.itineraryBookings, _id]}}))
+            return{success: true, message: "booked successfully."};
+    },unBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,myBookings:state.tourist.myBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
+    },unRealActivityBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unRealActivityBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,ActivityBookings:state.tourist.ActivityBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
+    },unItiniraryBook: async(name,_id)=>{
+        // console.log(_id)
+        const res = await fetch('/api/tourist/unItiniraryBook',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            if (!data.success) return {success: false, message: data.message};
+            // console.log(data)
+            set((state) => ({tourist: {...state.tourist,itineraryBookings:state.tourist.itineraryBookings?.filter(item => item !==_id)}}))
+            return{success: true, message: "unbooked successfully."};
     }
+
     }));

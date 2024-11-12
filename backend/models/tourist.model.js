@@ -44,6 +44,12 @@ const touristModel = new mongoose.Schema({
     },myBookings:{
         type:[String],
         required:false
+    },ActivityBookings:{
+        type:[String],
+        required:false
+    },itineraryBookings:{
+        type:[String],
+        required:false
     } 
     },{
         timestamps: true
