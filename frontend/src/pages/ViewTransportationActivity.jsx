@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { useTransportationActivityStore } from '../store/transportationActivity.js';
-import { useTouristStore } from '../store/tourist';
+import { useTouristStore } from '../store/tourist.js';
 import Dialog, { dialog } from '../components/Dialog.jsx';
 import TransportationActivityContainer from '../components/transportationActivityContainer.jsx';
 import { FiLoader } from "react-icons/fi";

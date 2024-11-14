@@ -80,4 +80,22 @@ export const changePassword = async (req, res) => {
     }
 }
 
+export const getUsersNumber = async (req, res) => {
+    try {
+        const users = await User.find({type: {$ne: 'admin'}});
+        res.json({success:true, data: users.length });
+    } catch (error) {
+        res.status(500).json({success:false, message: error.message });
+    }
+}
+
+export const getNewUsersLastMonth = async (req, res) => {
+    try {
+        const users = await User.find({type:{$ne: "admin"},createdAt: {$gte: new Date(new Date().setMonth(new Date().getMonth() - 1))}});
+        res.json({success:true, data: users.length });
+    } catch (error) {
+        res.status(500).json({success:false, message: error.message });
+    }
+}
+
 

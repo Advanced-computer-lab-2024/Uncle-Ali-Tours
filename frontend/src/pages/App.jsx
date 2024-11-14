@@ -35,7 +35,6 @@ import TourGuideReviews from "./TourGuideReviews";
 import TouristProfile from './TouristProfile';
 import TouristViewActivities from "./TouristViewActivities";
 import TouristViewItineraries from "./TouristViewItineraries";
-import ViewTransportationActivity from "./TransportationActivity";
 import TransportationActivityDetail from "./TransportationActivityDetail";
 import UpdateActivity from "./UpdateActivity";
 import UpdateItinerary from "./UpdateItinerary";
@@ -48,8 +47,7 @@ import ViewReviews from "./ViewReviews";
 import AdminItineraryPage from './AdminItineraryPage';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
-import TransportationActivity from "./ViewTransportationACtivity.jsx"
-
+import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 
 
 
@@ -146,7 +144,6 @@ function App() {
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
 
 
-        <Route path="/ViewTransportationActivity" element={<TransportationActivity/>} />
       </Routes>
     </div>
     <div className="mx-auto w-fit">
