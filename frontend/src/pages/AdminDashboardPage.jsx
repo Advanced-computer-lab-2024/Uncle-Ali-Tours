@@ -18,10 +18,13 @@ const AdminDashboard = () => {
     approveUser, 
     rejectUser, 
     createUser, 
-    user 
+    user,
+    getUsersNumber,
+    getNewUsersLastMonth 
   } = useUserStore();
   const { getProducts, products } = useProductStore();
-
+  const [users, setUsers] = useState(0);
+  const [newUsers, setNewUsers] = useState(0);
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [showProducts, setShowProducts] = useState(false);
 
@@ -41,6 +44,12 @@ const AdminDashboard = () => {
     if (user.type !== 'admin') {
       navigate('/');
     }
+    const fetchData = async () => {
+    setUsers(await getUsersNumber());
+    console.log(users);
+    setNewUsers(await getNewUsersLastMonth());
+    };
+    fetchData();
   }, []);
 
   const handleAddAdmin = async function(type) {
@@ -79,6 +88,8 @@ const AdminDashboard = () => {
     <div className="container mx-auto p-4 pt-6">
       <Toaster />
       <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+          <p>users: {users}</p>
+          <p>new users this month: {newUsers}</p>
 
       <div className="flex flex-wrap justify-center mb-4">
         {/* Delete Account Section */}

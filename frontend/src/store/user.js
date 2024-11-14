@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import { deleteUser } from '../../../backend/controllers/user.controller';
+import { deleteUser, getUsersNumber } from '../../../backend/controllers/user.controller';
 import ChangePassword from '../pages/ChangePassword';
 
 
@@ -306,6 +306,26 @@ export const useUserStore = create((set) => ({
             });
             const body = await res.json();
             return body;
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
+
+    getUsersNumber: async () => {
+        try {
+            const res = await fetch("/api/user/analitic/number");
+            const body = await res.json();
+            return body.data;
+        } catch (error) {
+            return {success: false, message: error.message};
+        }
+    },
+
+    getNewUsersLastMonth: async () => {
+        try {
+            const res = await fetch("/api/user/analitic/new");
+            const body = await res.json();
+            return body.data;
         } catch (error) {
             return {success: false, message: error.message};
         }
