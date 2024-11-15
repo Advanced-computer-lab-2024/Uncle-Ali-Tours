@@ -2,6 +2,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { connectDB } from './config/db.js';
+import nodeCrone from 'node-cron';
+import { checkBD } from './util/promo.js';
 
 // Route imports
 import activityRoutes from './routes/activity.route.js';
@@ -21,6 +23,7 @@ import sellerRoutes from './routes/seller.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
+import promoRoutes from './routes/promo.route.js';
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -61,6 +64,7 @@ app.use("/api/flight-booking",flightBookingRoutes);
 app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
+app.use("/api/promo", promoRoutes);
 
 
 
@@ -86,6 +90,9 @@ connectDB().then(() => {
     app.use("/api/complaint", complaintRoutes);
     app.use("/api/otp", optRoutes);
 
+
+
+
     // Start the server after routes are set up
     app.listen(PORT, () => {
         
@@ -94,3 +101,9 @@ connectDB().then(() => {
 }).catch((error) => {
     console.error("Failed to connect to the database", error);
 });
+
+
+//  nodeCrone.schedule('* * * * *', async () => {
+//      await checkBD();
+//   }
+//     );

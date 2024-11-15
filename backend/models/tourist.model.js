@@ -50,7 +50,11 @@ const touristModel = new mongoose.Schema({
     },itineraryBookings:{
         type:[String],
         required:false
-    } 
+    },
+    promoCodes:{
+        type:[String],
+        required:false
+    }, 
     },{
         timestamps: true
     });
