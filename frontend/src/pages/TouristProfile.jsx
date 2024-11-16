@@ -7,6 +7,7 @@ import { useRequestStore } from '../store/requests.js';
 import { useTagStore } from '../store/tag';
 import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
+import TouristPromos from '../components/TouristPromos.jsx';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -275,6 +276,8 @@ const handleDeleteAccountRequest = async () => {
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
             </div>
            )}
+
+           <TouristPromos userName={user.userName} />
 
     </div>
   );

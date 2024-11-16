@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import Itinerary from "../models/itinerary.model.js";
 import Activity from "../models/activity.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
+import Promo from "../models/promo.model.js"
 
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
@@ -492,4 +493,16 @@ export const unItiniraryBook = async(req,res) => {
 }
 
 
+export const getMyPromos = async (req, res) => {
+    const { userName } = req.body;
+    try {
+
+        const promos = await Tourist.findOne({ userName }).select('promoCodes -_id').populate('promoCodes');
+        res.status(200).json({ success: true, data: promos.promoCodes });
+    } catch (error) {
+        console.log("Error getting promos:", error);
+        res.status(500).json({ success: false, message: "Server error getting promos" });
+
+    }
+}
 
