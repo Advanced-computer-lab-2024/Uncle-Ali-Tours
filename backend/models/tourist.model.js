@@ -52,7 +52,8 @@ const touristModel = new mongoose.Schema({
         required:false
     },
     promoCodes:{
-        type:[String],
+        type:[mongoose.Schema.Types.ObjectId],
+        ref: 'Promo',
         required:false
     }, 
     },{
