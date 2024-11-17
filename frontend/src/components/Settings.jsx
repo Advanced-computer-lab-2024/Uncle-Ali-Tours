@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useUserStore } from "../store/user";
 import { FaGear } from "react-icons/fa6";
 import Currency from "./Currency";
 
-
 const Settings = () => {
   return (
     <div className="flex h-fit my-auto justify-center z-50">
-       <FlyoutLink FlyoutContent={SettingsContent}>
-         <FaGear size={22} className="my-auto hover:animate-spin" />
-       </FlyoutLink>
+      <FlyoutLink FlyoutContent={SettingsContent}>
+        <FaGear size={22} className="my-auto hover:animate-spin" />
+      </FlyoutLink>
     </div>
   );
 };
@@ -62,28 +61,35 @@ const SettingsContent = () => {
   const navigate = useNavigate();
 
   const handelLog = () => {
-    if(!!user){
-      logout()
-      navigate('/')
-
-    }
-      else
-        navigate('/login')
-  }
+    if (!!user) {
+      logout();
+      navigate("/");
+    } else navigate("/login");
+  };
 
   return (
     <div className="w-fit bg-white p-6 shadow-xl">
       <div className=" space-y-3">
-          {!!user &&
+        {!!user && (
           <a className="block hover:cursor-pointer text-sm hover:underline">
-              <Currency />
+            <Currency />
           </a>
-          }
-        <a onClick={handelLog} className={`block hover:cursor-pointer text-sm hover:underline ${!!user ? "text-red-500" : "text-green-500"}`}>
-          { !!user ?
-          "LogOut"
-          :
-          "LogIn"}
+        )}
+        {!!user && (
+          <Link
+            to={"/security"}
+            className={`block hover:cursor-pointer text-sm hover:underline `}
+          >
+            Account
+          </Link>
+        )}
+        <a
+          onClick={handelLog}
+          className={`block hover:cursor-pointer text-sm hover:underline ${
+            !!user ? "text-red-500" : "text-green-500"
+          }`}
+        >
+          {!!user ? "LogOut" : "LogIn"}
         </a>
       </div>
     </div>

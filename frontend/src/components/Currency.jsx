@@ -38,7 +38,7 @@ function Currency() {
                 id="currency-select"
                 value={user.chosenCurrency}
                 onChange={handleCurrencyChange}
-                className="p-2 w-[7.6ch] rounded-full text-black bg-transparent hover:underline hover:cursor-pointer focus:outline-none"
+                className="p-2 w-[8ch] rounded-full text-black bg-transparent hover:underline hover:cursor-pointer focus:outline-none"
                 
             >
                 {currencyOptions.map((currency) => (

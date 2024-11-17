@@ -25,7 +25,7 @@ function ProductContainerForSeller({ product, productChanger, tourist }) {
       <div className="grid p-2">
         {/* Product Details */}
         {keys.map((key, index) => (
-            <div key={index} className="flex my-1 backdrop-blur-sm  p-2 rounded-sm justify-between">
+            <div key={index} className="flex my-1  bg-[#00000012]  p-2 rounded-sm justify-between">
             <p>{key === "Available_quantity" ? "quantity" : key}: </p>
           <p className="text-left min-w-[10ch]">{"" + product[key]}</p>
             </div>

@@ -49,6 +49,7 @@ import AdminItineraryPage from './AdminItineraryPage';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import Security from './Security.jsx';
 
 
 
@@ -102,6 +103,7 @@ function App() {
       <Navbar />
       {!loading ? 
       <Routes>
+        <Route path="/security" element={<Security />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -153,11 +155,7 @@ function App() {
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />
       }
     </div>
-    <div className="mx-auto w-fit">
-        <Link to='/changePassword' className="mx-auto">
-          changePassword
-        </Link>
-      </div>
+   
     </div>
   );
 }

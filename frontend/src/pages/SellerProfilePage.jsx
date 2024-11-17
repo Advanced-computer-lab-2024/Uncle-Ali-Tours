@@ -56,6 +56,7 @@ const SellerProfile = () => {
  
   useEffect(() => {
     handlePress();
+    setPreviewFile(sell.profilePicture);
   }, [sell, user]);
 
   

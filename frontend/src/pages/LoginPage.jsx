@@ -79,6 +79,7 @@ function LoginPage() {
   const handleSubmit = async () => {
     const {success, message, type} =  await login(credentials)
     if (success) {
+      
       redirect(type);
     }
     else{
