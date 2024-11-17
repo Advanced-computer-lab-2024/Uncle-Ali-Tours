@@ -10,7 +10,7 @@ const currencyOptions = [
     { label: 'Pond Sterling', value: 'GBP', rate: 0.016 }
 ];
 
-function ChangeCurrency() {
+function Currency() {
     const { user, setUser } = useUserStore();
 
     const handleCurrencyChange = (e) => {
@@ -34,23 +34,20 @@ function ChangeCurrency() {
     };
 
     return (
-        <div>
-            <label >Choose Currency:</label>
             <select
                 id="currency-select"
                 value={user.chosenCurrency}
                 onChange={handleCurrencyChange}
-                className="p-2 border rounded text-black"
+                className="p-2 w-[7.6ch] rounded-full text-black bg-transparent hover:cursor-pointer focus:outline-none"
                 
             >
                 {currencyOptions.map((currency) => (
-                    <option key={currency.value} value={currency.value} >
-                        {currency.label}
+                    <option key={currency.value} value={currency.value} className='bg-black text-white'>
+                        {currency.value}
                     </option>
                 ))}
             </select>
-        </div>
     );
 }
 
-export default ChangeCurrency;
+export default Currency;

@@ -243,11 +243,11 @@ const SellerProfile = () => {
     <div className="flex w-full mt-12 justify-around">
       <div className="flex flex-col gap-[6vh] justify-start">
         <div className="flex gap-[6vw] justify-around">
-          <div className="relative p-6 w-[30vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+          <div className="relative p-6 w-[33vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
             <Toaster />
 
             <div
-              className="flex mb-6 relative w-fit mx-auto hover:cursor-pointer"
+              className="flex mb-6 relative w-fit mx-auto"
               >
               { isEditing ?
               <>
@@ -267,7 +267,7 @@ const SellerProfile = () => {
               <>
               <img
               onClick={() => setShowPreview(true)}
-                className="w-[6.5vh] rounded-full mx-auto"
+                className="w-[6.5vh] rounded-full mx-auto hover:cursor-pointer"
                 src={
                   previewFile ? `http://localhost:3000${previewFile}` : avatar
                 }
@@ -318,12 +318,12 @@ const SellerProfile = () => {
 
             <div className="space-y-4 flex flex-col justify-around h-[22vh] justify-items-start ">
               <div className="flex justify-between">
-                <p className="text-center my-auto">NAME: </p>
+                <p className="text-center my-auto">Name: </p>
                 <input
                   type="text"
                   name="name"
                   defaultValue={sell.userName || ""}
-                  className={`bg-transparent h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
+                  className={`bg-transparent h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
                   readOnly={true}
                   onChange={(e) =>
                     updateSeller(sell.userName, { userName: e.target.value })
@@ -338,7 +338,7 @@ const SellerProfile = () => {
                   defaultValue={sell.email || ""}
                   className={`${
                     isEditing ? "bg-gray-800" : "bg-transparent"
-                  } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
                   readOnly={!isEditing}
                   onChange={(e) =>
                     updateSeller(sell.userName, { email: e.target.value })
@@ -354,7 +354,7 @@ const SellerProfile = () => {
                   defaultValue={sell.mobileNumber || ""}
                   className={`${
                     isEditing ? "bg-gray-800" : "bg-transparent"
-                  } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
                   readOnly={!isEditing}
                   onChange={(e) =>
                     setUpdatedSeller({

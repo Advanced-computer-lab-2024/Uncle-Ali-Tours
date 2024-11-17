@@ -66,7 +66,7 @@ function UnVerified() {
               onClick={handleFileUpload}
               className="bg-green-600 p-2 mt-4 rounded"
             >
-              Upload Documents
+              Submit Documents
             </button>
       </div>
     </div>
