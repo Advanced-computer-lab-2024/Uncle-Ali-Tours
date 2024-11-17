@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, Route, Routes } from "react-router-dom";
+import { FiLoader } from 'react-icons/fi';
 import Navbar from "../components/Navbar";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
@@ -53,17 +54,18 @@ import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 
 
 function App() {
-  const {  setUser } = useUserStore();
+  const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
   const { getSeller } = useSellerStore();
-  const { getTourist } = useTouristStore();
+  const { tourist, getTourist } = useTouristStore();
   const { getAdvertiser } = useAdvertiserstore();
+  const [loading, setLoading] = React.useState(false);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-
     if (user) {
+      setLoading(true);
       setUser(user);
-      console.log(user);
+      // console.log(user);
       switch (user.type) {
         case "tour guide":
           getGuide({userName : user.userName},{});
@@ -80,7 +82,6 @@ function App() {
           break;
         case "admin":
           break;
-
         case "governor":
           break;
       
@@ -88,14 +89,18 @@ function App() {
           break;
       }
     }
+    setLoading(false);
   },[]);
 
 
 
+
+
   return (
-    <div>
-    <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-2vh)] mt-[1vh] w-[calc(100vw-2vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
+    <div >
+    <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
       <Navbar />
+      {!loading ? 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -143,8 +148,10 @@ function App() {
         <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
 
-
       </Routes>
+      :
+      <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />
+      }
     </div>
     <div className="mx-auto w-fit">
         <Link to='/changePassword' className="mx-auto">

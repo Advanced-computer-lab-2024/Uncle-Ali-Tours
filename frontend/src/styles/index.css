@@ -6,7 +6,7 @@ body {
 	background: linear-gradient(-60deg, #3D80D9, #73564C, #D93425, #8C0303);
 	background-size: 400% 400%;
 	animation: gradient 15s ease infinite;
-	height: 100vh;
+	height: fit-content;
 }
 
 @keyframes gradient {
@@ -21,4 +21,11 @@ body {
 	}
 }
 
+@layer base {
+	input[type="number"]::-webkit-inner-spin-button,
+	input[type="number"]::-webkit-outer-spin-button {
+	  -webkit-appearance: none;
+	  margin: 0;
+	}
+  }
 

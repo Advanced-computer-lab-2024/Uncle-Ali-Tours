@@ -8,6 +8,7 @@ import { useTagStore } from '../store/tag';
 import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
 import TouristPromos from '../components/TouristPromos.jsx';
+import { FiLoader } from 'react-icons/fi';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -29,12 +30,10 @@ const TouristProfile = () => {
   const navigate = useNavigate();
 
 
-
-
-
+  
+  
   useEffect(() => {
     getTags();
-    getTourist({ userName: user.userName }, {});
 }, []);
 
 useEffect(() => {
@@ -156,6 +155,8 @@ const handleDeleteAccountRequest = async () => {
   }
 };
 
+
+// if(!tourist.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
  
   return (
     <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">

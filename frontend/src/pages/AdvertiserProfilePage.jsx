@@ -10,6 +10,7 @@ import { FaEye, FaEdit } from 'react-icons/fa';
 import AvatarEditor from 'react-avatar-editor';
 import { useRequestStore } from '../store/requests.js';
 import { Link } from 'react-router-dom';
+import { FiLoader } from 'react-icons/fi';
 const AdvertiserProfile = () => {
   const { user } = useUserStore(); 
   const { advertiser, getAdvertiser, updateAdvertiser, uploadProfilePicture } = useAdvertiserstore(); 
@@ -219,8 +220,13 @@ const handleUploadClick = async () => {
     }
   };
 
+  if(!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
+
   return (
-    <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+  
+      
+
+      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
       <Toaster />
 
       <div className="flex items-center justify-center mb-6">
@@ -256,10 +262,6 @@ const handleUploadClick = async () => {
           />
         </Modal.Body>
       </Modal>
-  
-      
-
-      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
         <h1 className="text-lg mb-4">Profile</h1>
         <div spacing={4} align="stretch">
           {/* Editable Profile Fields */}
@@ -447,7 +449,6 @@ const handleUploadClick = async () => {
           </div>
         )}
       </div>
-    </div>
        
   );
 };

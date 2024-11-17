@@ -73,8 +73,7 @@ export const uploadProfilePicture = async (req, res) => {
 
 // Update Seller function to handle profile photo
 export const updateSeller = async (req, res) => {
-  const { sellerId } = req.params; // Assuming seller ID is passed in params
-  const updates = { ...req.body };
+  const {userName, newSeller} = req.body;
 
   // If a file is uploaded, set the profilePicture path
   if (req.file) {
@@ -82,9 +81,9 @@ export const updateSeller = async (req, res) => {
   }
 
   try {
-    const seller = await Seller.findById(sellerId);
+    const seller = await Seller.findOne({userName});
     if (!seller) {
-      return res.status(404).json({ message: "Seller not found" });
+      return res.status(400).json({ message: "Seller not found" });
     }
 
     // Remove old profile picture if a new one is being uploaded
@@ -92,11 +91,11 @@ export const updateSeller = async (req, res) => {
       fs.unlinkSync(path.join(__dirname, `../${seller.profilePicture}`));
     }
 
-    const updatedSeller = await Seller.findByIdAndUpdate(sellerId, updates, {
+    const updatedSeller = await Seller.findOneAndUpdate({userName}, newSeller, {
       new: true,
     }).select("-password");
 
-    res.status(200).json({ message: "Seller updated successfully", seller: updatedSeller });
+    res.status(200).json({success:true, message: "Seller updated successfully", seller: updatedSeller });
   } catch (error) {
     console.error("Error updating seller:", error);
     res.status(500).json({ error: error.message });

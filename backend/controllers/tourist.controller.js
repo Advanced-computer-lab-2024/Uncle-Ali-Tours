@@ -25,8 +25,6 @@ export const createTourist = async(req,res)=>{
         return res.status(400).json({success:false, message: 'mobile number format is wrong'});
     }
     tourist.dateOfBirth = Date.parse(tourist.dateOfBirth);
-    console.log(tourist.dateOfBirth);
-    console.log(new Date(tourist.dateOfBirth));
     if(tourist.dateOfBirth > today){
         return res.status(400).json({success:false, message: 'your age is less than 10 years'});
     }
@@ -92,7 +90,6 @@ export const updateTourist = async (req,res) => {
         const updatedTourist = await Tourist.findOneAndUpdate({ userName: userName }, newTourist, { new: true });
         if (newTourist.email){
             const dd = await User.findOneAndUpdate({userName}, {email: newTourist.email}, {new: true});
-            console.log(dd);
         }
         res.status(200).json({success:true, data:  updatedTourist});
     }
@@ -176,10 +173,8 @@ export const checkPurchaseStatusByUsername = async (req, res) => {
 
 export const badgeLevel = async (req, res) => {
     const { userName } = req.query;
-    console.log(userName);
     try {
         const tourist = await Tourist.findOne({ userName });
-        console.log(tourist)
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
@@ -195,7 +190,6 @@ export const badgeLevel = async (req, res) => {
             level="level 1";
         }
 
-        console.log(level)
         
         const updatedTourist = await Tourist.findOneAndUpdate(
             { userName },

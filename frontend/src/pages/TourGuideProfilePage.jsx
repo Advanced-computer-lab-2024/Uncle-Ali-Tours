@@ -9,6 +9,7 @@ import { FaEye, FaEdit } from 'react-icons/fa';
 import { Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useRequestStore } from '../store/requests.js';
+import { FiLoader } from "react-icons/fi";
 
 
 const TourGuideProfilePage = () =>{
@@ -198,7 +199,8 @@ const TourGuideProfilePage = () =>{
           toast.error(message);
         }
       };
-      
+
+      if(!guide.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;      
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">

@@ -1,42 +1,37 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useUserStore } from '../store/user'
 import { useEffect } from 'react'
 function HomePage() {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
     localStorage.removeItem('email')
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
+    if (!!user) {
+      console.log(user)
       switch (user.type) {
         case "tour guide":
-          navigate("/TourGuideProfilePage");
-          break;
+          return <Navigate to="/TourGuideProfilePage"/>;
         case "advertiser":
-          navigate("/advertiserProfile");
-          break;
+          return <Navigate to="/advertiserProfile"/>;
         case "seller":
-          navigate("/sellerProfile");
-          break;
+          return <Navigate to="/sellerProfile"/>;
         case "tourist":
-          navigate("/touristProfile");
-          break;
+          return <Navigate to="/touristProfile"/>;
         case "admin":
-          navigate("/admin");
-          break;
+          return <Navigate to="/admin"/>;
 
         case "governor":
-          navigate("/attraction");
-          break;
+          return <Navigate to="/attraction"/>;
       
         default:
           break;
       }
     }
-  },[]);
+    else{
+
 
   return (
     <div>
@@ -51,6 +46,7 @@ function HomePage() {
         </div>
     </div>
   )
+}
 }
 
 export default HomePage

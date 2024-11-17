@@ -49,15 +49,16 @@ export const useSellerStore = create((set) => ({
     },
 
     // Update seller's information
-    updateSeller: async (oldSeller, newSeller) => {
+    updateSeller: async (oldSeller = "", newSeller = {}) => {
         try {
             const res = await axios.put(`http://localhost:3000/api/seller`, {
                 userName: oldSeller,
                 newSeller,
             });
             const data = res.data;
+            console.log(data.seller);
             if (data.success) {
-                set({ sell: data.data });
+                set({ sell: data.seller });
                 return { success: true, message: "Seller profile updated successfully" };
             } else {
                 console.error(data.message);
@@ -65,7 +66,7 @@ export const useSellerStore = create((set) => ({
             }
         } catch (error) {
             console.error("Error updating seller profile:", error);
-            return { success: false, message: "Error updating seller profile" };
+            return { success: false, message: error.response.data.message || "Error updating seller profile" };
         }
     },
 
