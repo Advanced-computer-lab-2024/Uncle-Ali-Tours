@@ -46,7 +46,7 @@ const SellerProfile = () => {
   const { getProducts, products } = useProductStore();
   const [filter, setFilter] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [showChart, setShowChart] = useState(false); // Toggle for chart visibility
+  const [showChart, setShowChart] = useState(true); // Toggle for chart visibility
 
   const handleFileUpload = async () => {
     if (!idFile || !taxationCardFile) {
@@ -78,6 +78,10 @@ const SellerProfile = () => {
     }
   };
 
+  useEffect(() => {
+    handlePress();
+  }, [sell, user]);
+
   const handleButtonClickk = async () => {
     if (!isEditing) {
       const { success, message } = await updateSeller(
@@ -105,8 +109,6 @@ const SellerProfile = () => {
   //         setPreviewFile(sell.profilePicture);
   //         localStorage.setItem("profilePicture", sell.profilePicture);
   // }, [user.userName, sell.profilePicture]);
-
-  
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -204,16 +206,15 @@ const SellerProfile = () => {
   };
   const handleSaveClick = async () => {
     setIsEditing(false);
-      if(!Object.keys(updatedSeller).length) return;
-      console.log(updatedSeller);
-      const { success, message } = await updateSeller(
-        user.userName,
-        updatedSeller
-      );
-      success
-        ? toast.success(message, { className: "text-white bg-gray-800" })
-        : toast.error(message, { className: "text-white bg-gray-800" });
-
+    if (!Object.keys(updatedSeller).length) return;
+    console.log(updatedSeller);
+    const { success, message } = await updateSeller(
+      user.userName,
+      updatedSeller
+    );
+    success
+      ? toast.success(message, { className: "text-white bg-gray-800" })
+      : toast.error(message, { className: "text-white bg-gray-800" });
   };
 
   const handleRedirect = () => {
@@ -260,7 +261,7 @@ const SellerProfile = () => {
         {
           label: "Sales",
           data: products.map((product) => product.sales || 0),
-          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          backgroundColor: "rgba(255, 255, 255, 1)",
         },
       ],
     };
@@ -270,8 +271,13 @@ const SellerProfile = () => {
     return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
   return (
-    <div>
-      <div className="relative p-6 w-[30vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl m-12 rounded-lg shadow-lg text-white">
+    <div className="flex w-full mt-12 justify-around">
+
+      <div className="flex flex-col gap-[6vh] justify-start">
+
+      <div className="flex gap-[6vw] justify-around">
+
+      <div className="relative p-6 w-[30vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
         <Toaster />
 
         <div
@@ -283,9 +289,19 @@ const SellerProfile = () => {
             src={previewFile ? `http://localhost:3000${previewFile}` : avatar}
             alt="Profile Picture"
           />
-          { sell?.verified ? <FaCheckCircle title="Verified" size={16} className="absolute bg-white rounded-full right-0 bottom-0 text-green-500" />:
-          <MdCancel title="Not Verified" size={16} className="absolute bg-white rounded-full right-0 bottom-0 text-red-500" />}
-
+          {sell?.verified ? (
+            <FaCheckCircle
+              title="Verified"
+              size={16}
+              className="absolute bg-white rounded-full right-0 bottom-0 text-green-500"
+            />
+          ) : (
+            <MdCancel
+              title="Not Verified"
+              size={16}
+              className="absolute bg-white rounded-full right-0 bottom-0 text-red-500"
+            />
+          )}
         </div>
         <Modal
           show={showPreview}
@@ -294,7 +310,7 @@ const SellerProfile = () => {
           centered
         >
           <button className="mt-4 ml-4" onClick={() => setShowPreview(false)}>
-            <IoClose size={40} />
+            <IoClose size={40} className="text-red-500" />
           </button>
           <Modal.Body className="text-center">
             {
@@ -313,45 +329,49 @@ const SellerProfile = () => {
           <div className="flex justify-between">
             <p className="text-center my-auto">NAME: </p>
             <input
-            type="text"
-            name="name"
-            defaultValue={sell.userName || ""}
-            className={`bg-transparent h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
-            readOnly={true}
-            onChange={(e) =>
-              updateSeller(sell.userName, { userName: e.target.value })
-            }
-          />
+              type="text"
+              name="name"
+              defaultValue={sell.userName || ""}
+              className={`bg-transparent h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
+              readOnly={true}
+              onChange={(e) =>
+                updateSeller(sell.userName, { userName: e.target.value })
+              }
+            />
           </div>
           <div className="flex justify-between">
             <p className="text-center my-auto">Email:</p>
             <input
-            type="text"
-            name="email"
-            defaultValue={sell.email || ""}
-            className={`${isEditing ? "bg-gray-800" : "bg-transparent"} transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
-            readOnly={!isEditing}
-            onChange={(e) =>
-              updateSeller(sell.userName, { email: e.target.value })
-            }
-          />
+              type="text"
+              name="email"
+              defaultValue={sell.email || ""}
+              className={`${
+                isEditing ? "bg-gray-800" : "bg-transparent"
+              } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+              readOnly={!isEditing}
+              onChange={(e) =>
+                updateSeller(sell.userName, { email: e.target.value })
+              }
+            />
           </div>
 
           <div className="flex justify-between">
             <p className="text-center my-auto">Mobile:</p>
             <input
-            type="number"
-            name="mobileNumber"
-            defaultValue={sell.mobileNumber || ""}
-            className={`${isEditing ? "bg-gray-800" : "bg-transparent"} transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
-            readOnly={!isEditing}
-            onChange={(e) =>
-              setUpdatedSeller({
-                ...updatedSeller,
-                mobileNumber: e.target.value,
-              })
-            }
-          />
+              type="number"
+              name="mobileNumber"
+              defaultValue={sell.mobileNumber || ""}
+              className={`${
+                isEditing ? "bg-gray-800" : "bg-transparent"
+              } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+              readOnly={!isEditing}
+              onChange={(e) =>
+                setUpdatedSeller({
+                  ...updatedSeller,
+                  mobileNumber: e.target.value,
+                })
+              }
+            />
             {/* Document Upload Section */}
             {/* <div className="mt-6">
             <h2 className="text-xl mb-2">Upload Required Documents</h2>
@@ -379,15 +399,21 @@ const SellerProfile = () => {
             </button>
           </div> */}
           </div>
-          { !isEditing ?
-          <button className="mb-4 w-fit focus:outline-none" onClick={() => setIsEditing(true)}>
-            <FaEdit />
-          </button>
-          :
-          <button className="mb-4 w-fit focus:outline-none" onClick={handleSaveClick}>
-            <IoSaveOutline/>
-          </button>
-}
+          {!isEditing ? (
+            <button
+              className="mb-4 w-fit focus:outline-none"
+              onClick={() => setIsEditing(true)}
+            >
+              <FaEdit />
+            </button>
+          ) : (
+            <button
+              className="mb-4 w-fit focus:outline-none"
+              onClick={handleSaveClick}
+            >
+              <IoSaveOutline />
+            </button>
+          )}
         </div>
         {/* <div className="flex justify-between mt-6">
           <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>Edit</button>
@@ -456,22 +482,47 @@ const SellerProfile = () => {
         {/* <button className='p-2 bg-black text-white mt-4' onClick={handlePress}>View My Products</button> */}
 
         {/* Product List */}
-        {/* <div className="grid w-fit mx-auto">
-          <h2 className="text-xl mb-4">Available Products</h2>
-          {products.map((product, index) => (
-            !product.archive && (<ProductContainerForSeller key={index} product={product} />)
-          ))}
-        </div> */}
 
         {/* Sales Chart */}
-        {/* {showChart && products.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-xl text-center">Sales Data</h3>
-            <Bar data={getSalesData()} options={{ responsive: true }} />
-          </div>
-        )} */}
-        
       </div>
+      
+
+      <div className="relative p-6 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+        <h3 className="text-xl text-center">Sales Data</h3>
+        {showChart && products.length > 0 && (
+          <Bar data={getSalesData()} options={{ responsive: true }} />
+        )}
+      </div>
+      </div>
+
+      <div className="relative py-6 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
+        <h2 className="text-xl mb-4">Visabale Products</h2>
+        <div className=" grid grid-cols-3 gap-3">
+          {products.map(
+            (product, index) =>
+              !product.archive && (
+                <ProductContainerForSeller key={index} product={product} />
+              )
+          )}
+        </div>
+      </div>
+      </div>
+
+
+      <div className="relative py-6 px-10 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-full rounded-lg shadow-lg text-white">
+        <h2 className="text-xl mb-4">Archived Products</h2>
+        <div className=" grid grid-cols-2 gap-3">
+          {products.map(
+            (product, index) =>
+              product.archive && (
+                <ProductContainerForSeller key={index} product={product} />
+              )
+          )}
+        </div>
+      </div>
+
+
+      
     </div>
   );
 };

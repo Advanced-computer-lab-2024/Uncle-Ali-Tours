@@ -5,6 +5,7 @@ import { useUserStore } from '../store/user';
 function Navbar() {
   const navigate = useNavigate();
   const { logout } = useUserStore();
+  const user = localStorage.getItem("user");
   const handleLogout = () => {
     localStorage.removeItem("profilePicture");
     localStorage.removeItem("userToken");
@@ -26,7 +27,11 @@ function Navbar() {
             <Link to='/' className='p-4'>About</Link>
             <Link to='/' className='p-4'>Contact</Link>
             <Link to='/changeCurrency' className='p-4'>Currency</Link>
-            <button onClick={() => handleLogout()} className='bg-[#dc5809] m-2 py-1 px-4 rounded-full'>Logout</button>
+            {  !!user ?
+            <button onClick={() => handleLogout()} className='bg-red-500 w-[9ch] m-2 py-1 px-4 rounded-full'>Logout</button>
+            :
+            <button onClick={() => navigate("/login")} className='bg-green-500 w-[9ch] m-2 py-1 px-4 rounded-full'>Login</button>
+            }
             </div>
         </nav>
     </div>
