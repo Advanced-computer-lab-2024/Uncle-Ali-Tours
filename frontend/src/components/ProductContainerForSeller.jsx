@@ -22,11 +22,10 @@ function ProductContainerForSeller({ product, productChanger, tourist }) {
   return (
     <div className="relative p-1 w-fit backdrop-blur-lg bg-[#0e0e2281] mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
       {" "}
-      <Toaster />
       <div className="grid p-2">
         {/* Product Details */}
         {keys.map((key, index) => (
-            <div key={index} className="flex my-1 backdrop-blur-lg bg-[#0f111825] p-2 rounded-sm justify-between">
+            <div key={index} className="flex my-1 backdrop-blur-sm  p-2 rounded-sm justify-between">
             <p>{key === "Available_quantity" ? "quantity" : key}: </p>
           <p className="text-left min-w-[10ch]">{"" + product[key]}</p>
             </div>

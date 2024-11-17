@@ -62,8 +62,9 @@ export const uploadProfilePicture = async (req, res) => {
     await seller.save();
 
     return res.status(200).json({
+      success: true,
       message: "Profile picture uploaded successfully",
-      profilePicture: `http://localhost:5000${filePath}`,
+      profilePicture: filePath,
     });
   } catch (error) {
     console.error("Error uploading profile picture:", error);

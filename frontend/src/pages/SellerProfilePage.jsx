@@ -10,6 +10,10 @@ import { Bar } from "react-chartjs-2";
 import { IoSaveOutline } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
+import { IoIosAddCircle } from "react-icons/io";
+import { FaArrowRotateRight } from "react-icons/fa6";
+
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +41,7 @@ import { Modal } from "react-bootstrap";
 import { FaEye, FaEdit } from "react-icons/fa";
 import AvatarEditor from "react-avatar-editor";
 import { set } from "mongoose";
+import UnVerified from "../components/UnVerified.jsx";
 
 const SellerProfile = () => {
   const navigate = useNavigate();
@@ -48,51 +53,12 @@ const SellerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showChart, setShowChart] = useState(true); // Toggle for chart visibility
 
-  const handleFileUpload = async () => {
-    if (!idFile || !taxationCardFile) {
-      toast.error("Please upload both ID and Taxation Registry Card.");
-      return;
-    }
-
-    // Form submission logic for file upload
-    const formData = new FormData();
-    formData.append("idFile", idFile);
-    formData.append("taxationCardFile", taxationCardFile);
-    formData.append("username", user.username);
-
-    try {
-      const response = await fetch("/api/upload-documents", {
-        // Replace with your backend endpoint
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success("Documents uploaded successfully.");
-      } else {
-        toast.error(result.message || "Failed to upload documents.");
-      }
-    } catch (error) {
-      toast.error("An error occurred during the upload.");
-    }
-  };
-
+ 
   useEffect(() => {
     handlePress();
   }, [sell, user]);
 
-  const handleButtonClickk = async () => {
-    if (!isEditing) {
-      const { success, message } = await updateSeller(
-        user.userName,
-        updatedSeller
-      );
-      success
-        ? toast.success(message, { className: "text-white bg-gray-800" })
-        : toast.error(message, { className: "text-white bg-gray-800" });
-    }
-  };
+  
   const [updatedSeller, setUpdatedSeller] = useState({});
   const [profilePic, setProfilePic] = useState(null);
   const [previewFile, setPreviewFile] = useState(
@@ -135,6 +101,8 @@ const SellerProfile = () => {
           `http://localhost:3000/api/seller/uploadPicture`,
           formData
         );
+        console.log(response);
+        
         if (response.data.success) {
           const profileImagePath = response.data.profilePicture;
 
@@ -204,6 +172,7 @@ const SellerProfile = () => {
       });
     }
   };
+
   const handleSaveClick = async () => {
     setIsEditing(false);
     if (!Object.keys(updatedSeller).length) return;
@@ -217,9 +186,7 @@ const SellerProfile = () => {
       : toast.error(message, { className: "text-white bg-gray-800" });
   };
 
-  const handleRedirect = () => {
-    navigate("/product");
-  };
+  
 
   const handlePress = async () => {
     // Fetch products filtered by the seller's userName
@@ -253,7 +220,6 @@ const SellerProfile = () => {
     }
   };
 
-  // Prepare data for Bar chart
   const getSalesData = () => {
     return {
       labels: products.map((product) => product.name),
@@ -270,244 +236,172 @@ const SellerProfile = () => {
   if (!sell?.userName)
     return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
+  if (!sell.verified)
+    return <UnVerified/>;
+
   return (
     <div className="flex w-full mt-12 justify-around">
-
       <div className="flex flex-col gap-[6vh] justify-start">
+        <div className="flex gap-[6vw] justify-around">
+          <div className="relative p-6 w-[30vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+            <Toaster />
 
-      <div className="flex gap-[6vw] justify-around">
-
-      <div className="relative p-6 w-[30vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
-        <Toaster />
-
-        <div
-          className="flex mb-6 relative w-fit mx-auto hover:cursor-pointer"
-          onClick={() => setShowPreview(true)}
-        >
-          <img
-            className="w-[6.5vh] rounded-full mx-auto"
-            src={previewFile ? `http://localhost:3000${previewFile}` : avatar}
-            alt="Profile Picture"
-          />
-          {sell?.verified ? (
-            <FaCheckCircle
-              title="Verified"
-              size={16}
-              className="absolute bg-white rounded-full right-0 bottom-0 text-green-500"
-            />
-          ) : (
-            <MdCancel
-              title="Not Verified"
-              size={16}
-              className="absolute bg-white rounded-full right-0 bottom-0 text-red-500"
-            />
-          )}
-        </div>
-        <Modal
-          show={showPreview}
-          className="absolute focus:outline-none rounded-xl top-1/2 left-1/2 h-[90vh] w-[90vw] -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg"
-          onHide={() => setShowPreview(false)}
-          centered
-        >
-          <button className="mt-4 ml-4" onClick={() => setShowPreview(false)}>
-            <IoClose size={40} className="text-red-500" />
-          </button>
-          <Modal.Body className="text-center">
-            {
+            <div
+              className="flex mb-6 relative w-fit mx-auto hover:cursor-pointer"
+              >
+              { isEditing ?
+              <>
+              <label for="pic-upload">
+                <IoIosAddCircle className=" text-[calc(6.5vh-15px)] text-[#00000088] hover:cursor-pointer rounded-full mx-auto"/>
+                <p className="text-[10px]">Add Logo</p>
+                </label>
+                <input
+                id="pic-upload"
+                type="file"
+                name="profilePicture"
+                className="hidden bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
+                onChange={handleFileChange}
+              />
+              </>
+              :
+              <>
               <img
+              onClick={() => setShowPreview(true)}
+                className="w-[6.5vh] rounded-full mx-auto"
                 src={
                   previewFile ? `http://localhost:3000${previewFile}` : avatar
                 }
-                alt="Profile Preview"
-                className="img-fluid m-auto h-[60vh]"
+                alt="Profile Picture"
               />
-            }
-          </Modal.Body>
-        </Modal>
-
-        <div className="space-y-4 flex flex-col justify-around h-[22vh] justify-items-start ">
-          <div className="flex justify-between">
-            <p className="text-center my-auto">NAME: </p>
-            <input
-              type="text"
-              name="name"
-              defaultValue={sell.userName || ""}
-              className={`bg-transparent h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
-              readOnly={true}
-              onChange={(e) =>
-                updateSeller(sell.userName, { userName: e.target.value })
-              }
-            />
-          </div>
-          <div className="flex justify-between">
-            <p className="text-center my-auto">Email:</p>
-            <input
-              type="text"
-              name="email"
-              defaultValue={sell.email || ""}
-              className={`${
-                isEditing ? "bg-gray-800" : "bg-transparent"
-              } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
-              readOnly={!isEditing}
-              onChange={(e) =>
-                updateSeller(sell.userName, { email: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="flex justify-between">
-            <p className="text-center my-auto">Mobile:</p>
-            <input
-              type="number"
-              name="mobileNumber"
-              defaultValue={sell.mobileNumber || ""}
-              className={`${
-                isEditing ? "bg-gray-800" : "bg-transparent"
-              } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
-              readOnly={!isEditing}
-              onChange={(e) =>
-                setUpdatedSeller({
-                  ...updatedSeller,
-                  mobileNumber: e.target.value,
-                })
-              }
-            />
-            {/* Document Upload Section */}
-            {/* <div className="mt-6">
-            <h2 className="text-xl mb-2">Upload Required Documents</h2>
-            <label className="block mb-2">
-              ID:
-              <input
-                type="file"
-                onChange={(e) => setIdFile(e.target.files[0])}
-                className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
-              />
-            </label>
-            <label className="block mb-2">
-              Taxation Registry Card:
-              <input
-                type="file"
-                onChange={(e) => setTaxationCardFile(e.target.files[0])}
-                className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
-              />
-            </label>
-            <button
-              onClick={handleFileUpload}
-              className="bg-green-600 p-2 mt-4 rounded"
-            >
-              Upload Documents
-            </button>
-          </div> */}
-          </div>
-          {!isEditing ? (
-            <button
-              className="mb-4 w-fit focus:outline-none"
-              onClick={() => setIsEditing(true)}
-            >
-              <FaEdit />
-            </button>
-          ) : (
-            <button
-              className="mb-4 w-fit focus:outline-none"
-              onClick={handleSaveClick}
-            >
-              <IoSaveOutline />
-            </button>
-          )}
-        </div>
-        {/* <div className="flex justify-between mt-6">
-          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>Edit</button>
-          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClickk}>Save</button>
-          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>Product</button>
-         
-
-          {isEditing && (
-            <>
-              <label>
-                Upload logo:
-                <input
-                  type="file"
-                  name="profilePicture"
-                  className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-                  onChange={handleFileChange}
+              {sell?.verified ? (
+                <FaCheckCircle
+                title="Verified"
+                  size={16}
+                  className="absolute bg-white rounded-full right-0 bottom-0 text-green-500"
                 />
-              </label>
-              {profilePic && (
-                <div className="avatar-editor">
-                  <AvatarEditor
-                    ref={editorRef}
-                    image={profilePic}
-                    width={150}
-                    height={150}
-                    border={30}
-                    borderRadius={75}
-                    color={[255, 255, 255, 0.6]}
-                    scale={scale}
-                    rotate={rotate}
-                    style={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}
-                  />
-                  <div className="controls mt-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="3"
-                      step="0.1"
-                      value={scale}
-                      onChange={(e) => setScale(parseFloat(e.target.value))}
-                      className="slider bg-gray-700"
-                    />
-                    <button className="bg-gray-600 text-white p-2 rounded" onClick={() => setRotate((prev) => prev + 90)}>
-                      Rotate
-                    </button>
-                    <button className="bg-black text-white p-2 rounded mt-4" onClick={handleSave}>
-                      Save Profile Picture
-                    </button>
-                    
-                  </div>
-                </div>
+              ) : (
+                <MdCancel
+                title="Not Verified"
+                size={16}
+                className="absolute bg-white rounded-full right-0 bottom-0 text-red-500"
+                />
               )}
-            </>
-          )}
-          <br />
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
-           {isDeleteVisible && (
-            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>Are you sure you want to request to delete your account?</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+              </>
+            }
             </div>
-           )}
-        </div> */}
+            <Modal
+              show={showPreview}
+              className="absolute focus:outline-none rounded-xl top-1/2 left-1/2 h-[90vh] w-[90vw] -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg"
+              onHide={() => setShowPreview(false)}
+              centered
+            >
+              <button
+                className="mt-4 ml-4"
+                onClick={() => setShowPreview(false)}
+              >
+                <IoClose size={40} className="text-red-500" />
+              </button>
+              <Modal.Body className="text-center">
+                {
+                  <img
+                    src={
+                      previewFile
+                        ? `http://localhost:3000${previewFile}`
+                        : avatar
+                    }
+                    alt="Profile Preview"
+                    className="img-fluid m-auto h-[60vh]"
+                  />
+                }
+              </Modal.Body>
+            </Modal>
 
-        {/* <button className='p-2 bg-black text-white mt-4' onClick={handlePress}>View My Products</button> */}
+            <div className="space-y-4 flex flex-col justify-around h-[22vh] justify-items-start ">
+              <div className="flex justify-between">
+                <p className="text-center my-auto">NAME: </p>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={sell.userName || ""}
+                  className={`bg-transparent h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
+                  readOnly={true}
+                  onChange={(e) =>
+                    updateSeller(sell.userName, { userName: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Email:</p>
+                <input
+                  type="text"
+                  name="email"
+                  defaultValue={sell.email || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    updateSeller(sell.userName, { email: e.target.value })
+                  }
+                />
+              </div>
 
-        {/* Product List */}
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Mobile:</p>
+                <input
+                  type="number"
+                  name="mobileNumber"
+                  defaultValue={sell.mobileNumber || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[17ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    setUpdatedSeller({
+                      ...updatedSeller,
+                      mobileNumber: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              {!isEditing ? (
+                <button
+                  className="mb-4 w-fit focus:outline-none"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <FaEdit />
+                </button>
+              ) : (
+                <button
+                  className="mb-4 w-fit focus:outline-none"
+                  onClick={handleSaveClick}
+                >
+                  <IoSaveOutline />
+                </button>
+              )}
+            </div>
+          </div>
 
-        {/* Sales Chart */}
-      </div>
-      
+          <div className="relative p-6 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+            <h3 className="text-xl text-center">Sales Data</h3>
+            {showChart && products.length > 0 && (
+              <Bar data={getSalesData()} options={{ responsive: true }} />
+            )}
+          </div>
+        </div>
 
-      <div className="relative p-6 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
-        <h3 className="text-xl text-center">Sales Data</h3>
-        {showChart && products.length > 0 && (
-          <Bar data={getSalesData()} options={{ responsive: true }} />
-        )}
-      </div>
-      </div>
-
-      <div className="relative py-6 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
-        <h2 className="text-xl mb-4">Visabale Products</h2>
-        <div className=" grid grid-cols-3 gap-3">
-          {products.map(
-            (product, index) =>
-              !product.archive && (
-                <ProductContainerForSeller key={index} product={product} />
-              )
-          )}
+        <div className="relative py-6 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
+          <h2 className="text-xl mb-4">Visabale Products</h2>
+          <div className=" grid grid-cols-3 gap-3">
+            {products.map(
+              (product, index) =>
+                !product.archive && (
+                  <ProductContainerForSeller key={index} product={product} />
+                )
+            )}
+          </div>
         </div>
       </div>
-      </div>
-
 
       <div className="relative py-6 px-10 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-full rounded-lg shadow-lg text-white">
         <h2 className="text-xl mb-4">Archived Products</h2>
@@ -521,8 +415,74 @@ const SellerProfile = () => {
         </div>
       </div>
 
+      <div className="flex justify-between mt-6">
+         
 
-      
+          {isEditing && (
+            
+<>
+            {profilePic && (
+                <div className="avatar-editor absolute focus:outline-none rounded-xl top-1/2 left-1/2 h-[90vh] w-[90vw] -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg">
+                <div className="w-full grid">
+                  <button
+                className="mt-4 ml-4"
+                onClick={() => setProfilePic(null)}
+                >
+                <IoClose size={40} className="text-red-500" />
+              </button>
+                </div>
+                  <AvatarEditor
+                    ref={editorRef}
+                    image={profilePic}
+                    border={30}
+                    height={350}
+                    width={350}
+                    borderRadius={75}
+                    color={[50, 50, 50, 0.8]}
+                    scale={scale}
+                    rotate={rotate}
+                    style={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}
+                    className="mx-auto rounded-lg"
+                  />
+                  <div className="controls  mt-3 grid">
+                    <div className="flex content-center mx-auto">
+                      <p className="text-center h-fit my-auto mr-2 ">- </p>
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      step="0.1"
+                      value={scale}
+                      onChange={(e) => setScale(parseFloat(e.target.value))}
+                      className="slider bg-gray-700 w-[10vw] accent-black focus:outline-none border-none"
+                    />
+                      <p className="text-center h-fit my-auto ml-2 ">+ </p>
+
+                    <button className="bg-white text-black ml-6 focus:outline-none p-2 rounded-full" onClick={() => setRotate((prev) => prev + 90)}>
+                      <FaArrowRotateRight size={25}/>
+                    </button>
+                    </div>
+                    <div>
+                    <button className="bg-black text-white p-2 rounded mt-4" onClick={handleSave}>
+                      Save Profile Picture
+                    </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          <br />
+          {/* <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
+           {isDeleteVisible && (
+            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
+            <p>Are you sure you want to request to delete your account?</p>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
+            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+            </div>
+           )} */}
+        </div>
+
     </div>
   );
 };

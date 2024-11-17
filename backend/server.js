@@ -102,10 +102,9 @@ connectDB().then(() => {
     console.error("Failed to connect to the database", error);
 });
 
-checkBD(); 
 
 
-//  nodeCrone.schedule('* * * * *', async () => {
-//      await checkBD();
-//   }
-//     );
+ nodeCrone.schedule('0 0 * * *', async () => {
+     await checkBD();
+  }
+    );
