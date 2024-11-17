@@ -241,10 +241,10 @@ const SellerProfile = () => {
 
   return (
     <div className="flex w-full mt-12 justify-around">
+            <Toaster />
       <div className="flex flex-col gap-[6vh] justify-start">
         <div className="flex gap-[6vw] justify-around">
           <div className="relative p-6 w-[33vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
-            <Toaster />
 
             <div
               className="flex mb-6 relative w-fit mx-auto"
@@ -390,8 +390,8 @@ const SellerProfile = () => {
           </div>
         </div>
 
-        <div className="relative py-6 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
-          <h2 className="text-xl mb-4">Visabale Products</h2>
+        <div className="relative py-4 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
+          <h2 className="text-xl mb-3">Visabale Products</h2>
           <div className=" grid grid-cols-3 gap-3">
             {products.map(
               (product, index) =>
