@@ -140,39 +140,7 @@ const SellerProfile = () => {
     }
   };
 
-  const handleUploadClick = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("profilePicture", selectedFile);
-      formData.append("userName", user.userName);
-
-      try {
-        const response = await axios.put(
-          "/api/seller/uploadPicture",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-        toast.success(response.data.message, {
-          className: "text-white bg-gray-800",
-        });
-
-        // Refresh seller data after upload
-        if (user.userName) {
-          await getSeller({ userName: user.userName }, {});
-        }
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Upload failed", {
-          className: "text-white bg-gray-800",
-        });
-      }
-    } else {
-      toast.error("Please select a file first", {
-        className: "text-white bg-gray-800",
-      });
-    }
-  };
+  
 
   const handleSaveClick = async () => {
     setIsEditing(false);
@@ -233,6 +201,8 @@ const SellerProfile = () => {
       ],
     };
   };
+
+ 
 
   if (!sell?.userName)
     return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;

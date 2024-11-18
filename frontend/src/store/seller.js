@@ -20,7 +20,7 @@ export const useSellerStore = create((set) => ({
             if (body.seller) {
                 delete body.seller.password;  // Remove sensitive info
                 set({ sell: body.seller });
-                console.log(body.seller);
+                // console.log(body.seller);
                 return { success: true, message: "Fetched seller data" };
             } else {
                 return { success: false, message: "No seller data found" };

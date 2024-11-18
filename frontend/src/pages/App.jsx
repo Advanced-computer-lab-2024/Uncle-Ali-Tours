@@ -50,6 +50,7 @@ import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import Security from './Security.jsx';
+import EditProduct from "../components/EditProduct.jsx";
 
 
 
@@ -149,6 +150,8 @@ function App() {
         <Route path="/updateActivity" element={<UpdateActivity/>} />
         <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
+
+        <Route path="/product/edit/:id" element={<EditProduct />} />
 
       </Routes>
       :

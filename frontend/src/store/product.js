@@ -8,6 +8,7 @@ export const useProductStore = create((set) => ({
   // Fetch products with filters and sorting
  // product.js in your zustand store
 getProducts: async (filter = {}, sort = {}) => {
+  console.log(filter)
   try {
       const queryString = new URLSearchParams({
           filter: JSON.stringify(filter),
