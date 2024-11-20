@@ -215,7 +215,7 @@ const SellerProfile = () => {
             <Toaster />
       <div className="flex flex-col gap-[6vh] justify-start">
         <div className="flex gap-[6vw] justify-around">
-          <div className="relative p-6 w-[33vh] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
 
             <div
               className="flex mb-6 relative w-fit mx-auto"
@@ -353,7 +353,7 @@ const SellerProfile = () => {
             </div>
           </div>
 
-          <div className="relative p-6 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+          <div className="relative p-6 w-[36vw] backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
             <h3 className="text-xl text-center">Sales Data</h3>
             {showChart && products.length > 0 && (
               <Bar data={getSalesData()} options={{ responsive: true }} />
@@ -361,9 +361,9 @@ const SellerProfile = () => {
           </div>
         </div>
 
-        <div className="relative py-4 px-10 w-full backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
+        <div className="relative py-4 px-10 w-[50vw] backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
           <h2 className="text-xl mb-3">Visabale Products</h2>
-          <div className=" grid grid-cols-3 gap-3">
+          <div className="flex flex-wrap gap-3">
             {products.map(
               (product, index) =>
                 !product.archive && (

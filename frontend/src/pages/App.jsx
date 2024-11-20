@@ -100,7 +100,7 @@ function App() {
 
   return (
     <div >
-    <div className="rounded-lg shadow-lg text-center text-[#1e1e2e] min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl text-white font-black bg-[#161821f0] ">
+    <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] ">
       <Navbar />
       {!loading ? 
       <Routes>
