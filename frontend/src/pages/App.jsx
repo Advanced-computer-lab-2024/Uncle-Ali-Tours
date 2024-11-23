@@ -51,7 +51,7 @@ import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
-
+import WishlistPage from "./WishlistPage";
 
 
 
@@ -152,7 +152,7 @@ function App() {
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
-
+        <Route path="/wishlist" element={<WishlistPage user={user}/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

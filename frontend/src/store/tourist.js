@@ -1,9 +1,11 @@
 import {create} from 'zustand';
-import { badgeLevel, deleteTourist, getTourist, updateTourist } from '../../../backend/controllers/tourist.controller';
+import { addProductWishlist, badgeLevel, deleteTourist, getTourist, removeProductWishlist, updateTourist } from '../../../backend/controllers/tourist.controller';
 import { useUserStore } from './user';
 import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
     tourist:{},
+    wishlistedProducts: [],
+    errorMessage: "",
     settourist: (tourist) => set({tourist}),
     getTourist: async (filter = {}, sort = {}) => {
       const queryString = new URLSearchParams({
@@ -228,6 +230,65 @@ export const useTouristStore = create((set) => ({
           toast.error("Failed to update points.");
         }
       },
+       addProductWishlist: async (name, _id) => {
+        const res = await fetch('/api/tourist/addProductWishlist', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName: name, _id })
+        });
+    
+        const data = await res.json();
+        console.log("data", data);
+    
+        if (!data.success) {
+            return { success: false, message: data.message };
+        }
+    
+        // Use the updated ProductsWishlist from the response
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsWishlist: data.data // Update with the actual updated wishlist from the server
+            }
+        }));
+    
+        return { success: true, message: "Added successfully." };
+    },
+    removeProductWishlist: async(name,_id)=>{
+        const res = await fetch('/api/tourist/removeProductWishlist',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            console.log("data remove", data);
+            if (!data.success) return {success: false, message: data.message};
+          
+            set((state) => ({tourist: {...state.tourist,ProductsWishlist:state.tourist.ProductsWishlist?.filter(item => item !==_id)}}))
+            return{success: true, message: "Removed successfully."};
+    },
+
       
+    getWishlistedProducts: async (userName) => {
+        try {
+          const response = await fetch(`/api/tourist/getWishlistedProducts/${userName}`);
+          console.log("Response", response);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to fetch wishlisted products");
+          }
+    
+          const data = await response.json();
+          set({ wishlistedProducts: data.data, errorMessage: "" }); // Update store state with products
+        } catch (error) {
+          console.error("Error fetching wishlisted products:", error);
+          set({ errorMessage: error.message || "Unable to fetch wishlisted products" });
+        }
+      },
+
 
     }));

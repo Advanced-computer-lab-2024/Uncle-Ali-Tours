@@ -59,6 +59,9 @@ function ProductContainerForSeller({ product }) {
         <button onClick={() => handleEdit(product)} className="mr-2 transform w-fit transition-transform duration-300 hover:scale-125">
           <FaEdit size="18" color="white" />
         </button>
+        <button onClick={() => handleEdit(product)} className="mr-2 transform w-fit transition-transform duration-300 hover:scale-125">
+          <FaEdit size="18" color="white" />
+        </button>
         </div>
       </div>
       <Modal
