@@ -1,7 +1,8 @@
 # Uncle-Ali-Tours
 
-#Motivation
-The Trip Advising Website was developed as a part of the Advanced Computing Laboratory (ACL) course (Code: CSEN701) at the German University in Cairo. This project was inspired by the growing need for efficient and personalized trip planning tools in today's fast-paced world.
+## Motivation
+
+The **Trip Advising Website** was developed as part of the **Advanced Computing Laboratory (ACL)** course (Code: CSEN701) at the German University in Cairo. This project was inspired by the growing need for efficient and personalized trip planning tools in today's fast-paced world.
 
 Travelers often face challenges in finding trustworthy information, comparing options, and making decisions that fit their preferences and budget. Our project addresses this gap by providing a user-friendly platform that offers recommendations, reviews, and detailed information to simplify the trip planning process.
 
