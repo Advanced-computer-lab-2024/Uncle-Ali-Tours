@@ -51,8 +51,15 @@ import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
+<<<<<<< Updated upstream
 import WishlistPage from "./WishlistPage";
 
+=======
+import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import ViewPastItineraries from './viewPastItineraries.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewPastActivities from './ViewPastActivities.jsx';
+>>>>>>> Stashed changes
 
 
 function App() {
@@ -150,6 +157,11 @@ function App() {
         <Route path="/updateActivity" element={<UpdateActivity/>} />
         <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
+        <Route path="/upcomingItineraries" element={<ViewUpcomingItineraries/>} />
+        <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
+        <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
+        <Route path="/pastActivities" element={<ViewPastActivities/>} />
+
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
         <Route path="/wishlist" element={<WishlistPage user={user}/>} />

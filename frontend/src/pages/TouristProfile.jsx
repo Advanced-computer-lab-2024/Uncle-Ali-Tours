@@ -190,6 +190,16 @@ const handleDeleteAccountRequest = async () => {
             </button>
 
            </div>
+           <Link to='/upcomingItineraries'>
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Upcoming Itineraries</button></Link> 
+           <Link to='/pastItineraries'>
+           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>Past Itineraries</button></Link>
+           <br />  
+           <Link to='/upcomingActivities'>
+           <button className='bg-black text-white m-6 p-2 rounded' >Upcoming Activities</button></Link>
+           <Link to='/pastActivities'>
+           <button className='bg-black text-white m-6 p-2 rounded' >Past Activities</button></Link>
+           <br />     
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
            {isWalletVisible && (
             <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>

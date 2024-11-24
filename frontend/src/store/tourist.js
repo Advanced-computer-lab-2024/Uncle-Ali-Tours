@@ -230,6 +230,7 @@ export const useTouristStore = create((set) => ({
           toast.error("Failed to update points.");
         }
       },
+<<<<<<< Updated upstream
        addProductWishlist: async (name, _id) => {
         const res = await fetch('/api/tourist/addProductWishlist', {
             method: "PUT",
@@ -290,5 +291,93 @@ export const useTouristStore = create((set) => ({
         }
       },
 
+=======
+
+      fetchUpcomingItineraries: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/upcomingItineraries?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching upcoming itineraries:", error);
+            toast.error("Failed to fetch upcoming itineraries.");
+            return []; // Return an empty array on error
+        }
+    },
+    
+    fetchPastItineraries: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/pastItineraries?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching past itineraries:", error);
+            toast.error("Failed to fetch past itineraries.");
+            return []; // Return an empty array on error
+        }
+    },
+    fetchUpcomingActivities: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/upcomingActivities?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching upcoming activities:", error);
+            toast.error("Failed to fetch upcoming activities.");
+            return []; // Return an empty array on error
+        }
+    },
+    fetchPastActivities: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/pastActivities?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching past activities:", error);
+            toast.error("Failed to fetch past activities.");
+            return []; // Return an empty array on error
+        }
+    },
+>>>>>>> Stashed changes
 
     }));

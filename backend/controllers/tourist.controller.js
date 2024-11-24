@@ -450,7 +450,7 @@ export const unItiniraryBook = async(req,res) => {
         const itinerarry = await Itinerary.findById(_id);
         console.log(itinerarry)
         if (!itinerarry) {
-            return res.status(404).json({ success: false, message: "Activity not found" });
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
         }
 
         // Get the current date and time
@@ -501,6 +501,7 @@ export const getMyPromos = async (req, res) => {
     }
 }
 
+<<<<<<< Updated upstream
 export const addProductWishlist = async (req, res) => {
     const { userName, _id } = req.body;
     try {
@@ -576,3 +577,128 @@ export const getWishlistedProducts = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during fetching wishlisted products" });
     }
 };
+=======
+export const getMyUpcomingItineraries = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
+        if (!allItineraries) {
+            return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
+            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
+                const firstAvailableDate = new Date(itinerary.availableDates[0]);
+                return firstAvailableDate > now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingItineraries,
+            message: 'Upcoming itineraries fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting upcoming itineraries:", error);
+            res.status(500).json({ success: false, message: "Server error fetching upcoming itineraries" });
+        }
+}
+
+export const getMyPastItineraries = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
+        if (!allItineraries) {
+            return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
+            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
+                const firstAvailableDate = new Date(itinerary.availableDates[0]);
+                return firstAvailableDate < now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingItineraries,
+            message: 'Past itineraries fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting past itineraries:", error);
+            res.status(500).json({ success: false, message: "Server error fetching past itineraries" });
+        }
+}
+
+export const getMyUpcomingActivities = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allActivities = await Tourist.findOne({ userName }).select('ActivityBookings -_id').populate('ActivityBookings');
+        if (!allActivities) {
+            return res.status(404).json({ success: false, message: "Tourist or activities not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingActivities = allActivities.ActivityBookings.filter(activity => {
+            if (activity.date) {
+                const activityDate = new Date(activity.date);
+                return activityDate > now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingActivities,
+            message: 'Upcoming activities fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting upcoming activities:", error);
+            res.status(500).json({ success: false, message: "Server error fetching upcoming activities" });
+        }
+}
+export const getMyPastActivities = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allActivities = await Tourist.findOne({ userName }).select('ActivityBookings -_id').populate('ActivityBookings');
+        if (!allActivities) {
+            return res.status(404).json({ success: false, message: "Tourist or activities not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingActivities = allActivities.ActivityBookings.filter(activity => {
+            if (activity.date) {
+                const activityDate = new Date(activity.date);
+                return activityDate < now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingActivities,
+            message: 'Past activities fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting past activities:", error);
+            res.status(500).json({ success: false, message: "Server error fetching past activities" });
+        }
+}
+
+>>>>>>> Stashed changes
