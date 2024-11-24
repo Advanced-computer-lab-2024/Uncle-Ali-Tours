@@ -1,9 +1,5 @@
 import express from "express";
-<<<<<<< Updated upstream
-import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook, addProductWishlist,removeProductWishlist, getWishlistedProducts} from "../controllers/tourist.controller.js";
-=======
-import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities} from "../controllers/tourist.controller.js";
->>>>>>> Stashed changes
+import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , addProductWishlist,removeProductWishlist, getWishlistedProducts,getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities} from "../controllers/tourist.controller.js";
 import { redeemPoints } from '../controllers/tourist.controller.js';  // Import the redeemPoints controller function
 import { checkPurchaseStatusByUsername } from "../controllers/tourist.controller.js";
 const router = express.Router();
@@ -22,12 +18,9 @@ router.put("/unBook",unBook);
 router.put("/unRealActivityBook",unBookRealActivity);
 router.put("/unItiniraryBook",unItiniraryBook);
 router.post("/promos",getMyPromos);
-<<<<<<< Updated upstream
 router.put("/addProductWishlist",addProductWishlist);
 router.put("/removeProductWishlist",removeProductWishlist);
 router.get("/getWishlistedProducts/:userName", getWishlistedProducts);
-=======
->>>>>>> Stashed changes
 router.put("/updatePoints",updateMyPoints);
 router.get("/upcomingItineraries",getMyUpcomingItineraries);
 router.get("/pastItineraries",getMyPastItineraries);

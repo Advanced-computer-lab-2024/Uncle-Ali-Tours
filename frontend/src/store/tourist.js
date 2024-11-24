@@ -230,7 +230,6 @@ export const useTouristStore = create((set) => ({
           toast.error("Failed to update points.");
         }
       },
-<<<<<<< Updated upstream
        addProductWishlist: async (name, _id) => {
         const res = await fetch('/api/tourist/addProductWishlist', {
             method: "PUT",
@@ -291,7 +290,6 @@ export const useTouristStore = create((set) => ({
         }
       },
 
-=======
 
       fetchUpcomingItineraries: async (userName) => {
         try {
@@ -378,6 +376,5 @@ export const useTouristStore = create((set) => ({
             return []; // Return an empty array on error
         }
     },
->>>>>>> Stashed changes
 
     }));

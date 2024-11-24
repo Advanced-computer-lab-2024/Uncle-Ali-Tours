@@ -51,15 +51,12 @@ import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
-<<<<<<< Updated upstream
 import WishlistPage from "./WishlistPage";
 
-=======
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewPastItineraries from './viewPastItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
->>>>>>> Stashed changes
 
 
 function App() {

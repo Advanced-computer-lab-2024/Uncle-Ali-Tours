@@ -501,7 +501,6 @@ export const getMyPromos = async (req, res) => {
     }
 }
 
-<<<<<<< Updated upstream
 export const addProductWishlist = async (req, res) => {
     const { userName, _id } = req.body;
     try {
@@ -577,7 +576,6 @@ export const getWishlistedProducts = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during fetching wishlisted products" });
     }
 };
-=======
 export const getMyUpcomingItineraries = async (req,res) => {
     const {userName} = req.query;
     try{
@@ -701,4 +699,3 @@ export const getMyPastActivities = async (req,res) => {
         }
 }
 
->>>>>>> Stashed changes
