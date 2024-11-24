@@ -86,6 +86,7 @@ const activitySchema = new mongoose.Schema({
        required: true,
        default: 0,
      },
+     tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' , default: []}],
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

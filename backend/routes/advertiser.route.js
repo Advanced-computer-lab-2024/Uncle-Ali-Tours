@@ -4,8 +4,9 @@ import {
     getAdvertiser,
     updateAdvertiser,
     deleteAdvertiser,
+    getAdvertiserReport,
     uploadProfilePicture,
-    upload
+    upload,
 } from "../controllers/advertiser.controller.js";
 
 const router = express.Router();
@@ -18,5 +19,5 @@ router.post('/', createAdvertiser);
 router.put('/', updateAdvertiser);
 router.delete('/', deleteAdvertiser);
 router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePicture);
-
+router.get('/report/:userName', getAdvertiserReport);
 export default router;

@@ -23,11 +23,34 @@ const TourGuideProfilePage = () =>{
     const [profilePic, setProfilePic] = useState(null);
     const [previewFile, setPreviewFile] = useState(localStorage.getItem("ProfilePicture") || "");
     const editorRef = useRef(null);
-
+    const [report, setReport] = useState({
+      totalTourists: 0,
+      activities: [],
+      itineraries: []
+    });
     const handleButtonClick = () => {
         setIsRequired(false);
     };
+    useEffect(() => {
+      const fetchReport = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/api/advertiser/report/${user.userName}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch report');
+          }
+          const data = await response.json(); // Parse the JSON data
+          console.log('Fetched Report:', data); // Debug log
+          setReport(data); // Update the report state
+        } catch (error) {
+          console.error('Error fetching report:', error);
+          toast.error('Failed to fetch report.', { className: 'text-white bg-gray-800' });
+        }
+      };
     
+      if (user.userName) {
+        fetchReport();
+      }
+    }, [user.userName]);
     const [updatedGuide,setUpdatedGuide]= useState({});  
     const handleButtonClickk = async () => {
         if(!isRequired){
@@ -314,7 +337,80 @@ const TourGuideProfilePage = () =>{
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
             </div>
-           )}           </div>
+           )}         
+           {/* Report Section */}
+
+      <div className="mt-6 bg-gray-700 p-4 rounded-md">
+        <h2 className="text-xl mb-4">Tourist Report</h2>
+        <p>
+          <strong>Total Tourists:</strong> {report.totalTourists}
+        </p>
+        <div className="mt-4">
+          <h3 className="text-lg mb-2">Activities</h3>
+          <table className="w-full text-left text-sm border-collapse border border-gray-600">
+            <thead>
+              <tr>
+                <th className="border border-gray-600 px-2 py-1">Title</th>
+                <th className="border border-gray-600 px-2 py-1">Date</th>
+                <th className="border border-gray-600 px-2 py-1">Tourists</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.activities.length > 0 ? (
+                report.activities.map((activity, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-600 px-2 py-1">{activity.title}</td>
+                    <td className="border border-gray-600 px-2 py-1">
+                      {new Date(activity.date).toLocaleDateString()}
+                    </td>
+                    <td className="border border-gray-600 px-2 py-1">{activity.numberOfTourists}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="border border-gray-600 px-2 py-1" colSpan="3">
+                    No activities available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+      <div className="mt-4">
+          <h3 className="text-lg mb-2">Itineraries</h3>
+          <table className="w-full text-left text-sm border-collapse border border-gray-600">
+            <thead>
+              <tr>
+                <th className="border border-gray-600 px-2 py-1">Title</th>
+                <th className="border border-gray-600 px-2 py-1">Language</th>
+                <th className="border border-gray-600 px-2 py-1">Tourists</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.itineraries.length > 0 ? (
+                report.itineraries.map((itinerary, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-600 px-2 py-1">{itinerary.title}</td>
+                    <td className="border border-gray-600 px-2 py-1">
+                      {itinerary.language}
+                    </td>
+                    <td className="border border-gray-600 px-2 py-1">{itinerary.numberOfTourists}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="border border-gray-600 px-2 py-1" colSpan="3">
+                    No itineraries available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+           
+             </div>
         
     );
 };
