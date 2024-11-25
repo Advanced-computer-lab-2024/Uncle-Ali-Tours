@@ -54,7 +54,7 @@ import EditProduct from "../components/EditProduct.jsx";
 import WishlistPage from "./WishlistPage";
 
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
-import ViewPastItineraries from './viewPastItineraries.jsx';
+import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
 
