@@ -141,46 +141,56 @@ export const useItineraryStore = create((set, get) => ({
   },
 
   createItineraryReview: async (itineraryId, rating, comment, user) => {
-    try {
-      if (typeof rating !== 'number' || rating < 1 || rating > 5) {
-        return { success: false, message: 'Rating must be between 1 and 5.' };
-      }
-      if (typeof comment !== 'string' || comment.trim() === '') {
+    console.log("Request Payload:", { rating, comment, user });
+    if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+        return { success: false, message: 'Rating must be a number between 1 and 5.' };
+    }
+
+    if (typeof comment !== 'string' || comment.trim() === '') {
         return { success: false, message: 'Comment cannot be empty.' };
-      }
-      if (!user || !user.userName) {
+    }
+
+    const { userName: name } = user;
+    console.log('User received in function:', name);
+    // Check if user is defined, else return an error
+    if (!user || !name) {
         return { success: false, message: 'User information is required.' };
-      }
+    }
 
-      const res = await fetch(`/api/itinerary/${itineraryId}/reviews`, {
+    console.log('Before fetch call');
+    const res = await fetch(`/api/itinerary/${itineraryId}/reviews`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, comment, name: user.userName }),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating, comment, name }),
+    });
+    console.log("Raw Response:", res);
+    console.log("Response Status:", res.status, res.statusText);
+    if (!res.ok) {
+        const errorText = await res.text(); 
         console.error(`HTTP Error: ${res.status} ${res.statusText}. Response: ${errorText}`);
         return { success: false, message: `HTTP Error: ${res.status} ${res.statusText}` };
-      }
+    }
+    console.log('After fetch call');
+    console.log("Raw Response:", res);
+    const data = await res.json();
+    console.log("Response Data:", data);
+    if (data.success && data.review) {
+        const currentItinerary = get().currentItinerary || { reviews: [], numReviews: 0, rating: 0 };
 
-      const data = await res.json();
-      if (data.success && data.review) {
-        set((state) => ({
-          currentItinerary: {
-            ...state.currentItinerary,
-            reviews: [...state.currentItinerary.reviews, data.review],
+        const updatedItinerary = {
+            ...currentItinerary,
+            reviews: [...currentItinerary.reviews, data.review],
             numReviews: data.numReviews,
             rating: data.rating,
-          },
-        }));
+        };
+        console.log("Updated Itinerary:", updatedItinerary);
+        set({ currentItinerary: updatedItinerary });
         return { success: true, message: data.message };
-      } else {
+    } else {
+        console.error('Error from API:', data.message);
         return { success: false, message: data.message || 'Could not add review' };
-      }
-    } catch (error) {
-      console.error("Error adding review:", error.message);
-      return { success: false, message: "Could not add review" };
     }
   },
 

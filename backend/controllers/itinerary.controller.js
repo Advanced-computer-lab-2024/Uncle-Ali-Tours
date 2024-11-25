@@ -137,10 +137,8 @@ export const createItineraryReview = async (req, res) => {
 
         itinerary.reviews.push(review);
         itinerary.numReviews = itinerary.reviews.length;
-        itinerary.rating =
-            itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) / itinerary.reviews.length;
+        itinerary.rating = itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) / itinerary.reviews.length;
         await itinerary.save();
-
         res.status(201).json({
             success: true,
             message: 'Review added',
@@ -247,3 +245,4 @@ export const flagItinerary = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
