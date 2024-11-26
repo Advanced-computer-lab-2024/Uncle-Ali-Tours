@@ -5,7 +5,7 @@ import Activity from "../models/activity.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import Promo from "../models/promo.model.js"
 import Product from "../models/product.model.js";
-
+import Order from "../models/order.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -697,5 +697,85 @@ export const getMyPastActivities = async (req,res) => {
             console.log("Error getting past activities:", error);
             res.status(500).json({ success: false, message: "Server error fetching past activities" });
         }
+}
+
+export const getMyOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName
+        const orders = await Order.find({ creator: userName }).populate('products'); // Populate the products if needed
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ success: false, message: "No orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: orders,
+            message: "Orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching orders" });
+    }
+}
+
+export const getMyCurrentOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName and status is "Shipping"
+        const currentOrders = await Order.find({ creator: userName, status: "Shipping" }).populate('products');
+
+        if (!currentOrders || currentOrders.length === 0) {
+            return res.status(404).json({ success: false, message: "No current orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: currentOrders,
+            message: "Current orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching current orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching current orders" });
+    }
+}
+export const getMyPastOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName and status is "Shipped"
+        const pastOrders = await Order.find({ creator: userName, status: "Shipped" }).populate('products');
+
+        if (!pastOrders || pastOrders.length === 0) {
+            return res.status(404).json({ success: false, message: "No past orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: pastOrders,
+            message: "Past orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching past orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching past orders" });
+    }
 }
 
