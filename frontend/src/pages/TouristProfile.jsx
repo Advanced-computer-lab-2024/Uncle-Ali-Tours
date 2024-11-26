@@ -276,7 +276,7 @@ const handleDeleteAccountRequest = async () => {
           )
         </div>
       )}
-      <Link to='/transportationActivity'>
+      <Link to='/ViewTransportationActivity'>
       <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
         <br />
           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 

@@ -464,7 +464,7 @@ const handleUploadClick = async () => {
         </div>
         <div>
         <Link to='/CreateTransportationActivity'><button className='bg-black text-white m-6 p-2 rounded'>create transportation activity</button></Link>
-        <Link to='/ViewTransportationActivity'>
+        <Link to='/TransportationActivityPage'>
       <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
       </div>
 
