@@ -48,7 +48,7 @@ import ViewReviews from "./ViewReviews";
 import AdminItineraryPage from './AdminItineraryPage';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
-import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import TransportationActivityPage from './TransportationActivityPage.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
 import WishlistPage from "./WishlistPage";
@@ -57,6 +57,7 @@ import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
+import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 
 
 function App() {
@@ -137,7 +138,7 @@ function App() {
         <Route path="/flightBooking" element={<FlightBookingPage/>}/>
         <Route path="/bookedFlights" element={<BookedFlights/>}/>
         <Route path="/bookedHotels" element={<BookedHotels/>}/>
-    
+        <Route path="/ViewTransportationActivity" element={<ViewTransportationActivity/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
 
@@ -147,7 +148,7 @@ function App() {
 
         <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
-        <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
+        <Route path="/TransportationActivityPage" element={<TransportationActivityPage />} />
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
