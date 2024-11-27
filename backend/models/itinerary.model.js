@@ -92,6 +92,7 @@ const itinerarySchema = new mongoose.Schema({
        required: false,
        default: 0,
      },
+     tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
 });
 
 const Itinerary = mongoose.model("Itinerary", itinerarySchema);

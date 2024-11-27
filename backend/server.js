@@ -80,7 +80,6 @@ connectDB().then(() => {
     app.use("/api/activity", activityRoutes);
     app.use("/api/product", productRoutes);
     app.use("/api/itinerary", itineraryRoutes);
-    app.use("/api/tourGuide", tourGuide);
     app.use("/api/attraction", attractionRoute);
     app.use("/api/seller", sellerRoutes);
     app.use("/api/advertiser", advertiserRoute);

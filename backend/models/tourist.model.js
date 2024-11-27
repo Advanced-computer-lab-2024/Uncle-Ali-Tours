@@ -45,9 +45,15 @@ const touristModel = new mongoose.Schema({
         type:[String],
         required:false
     },ActivityBookings:{
-        type:[String],
+        type:[mongoose.Schema.Types.ObjectId],
+        ref: 'Activity',
         required:false
     },itineraryBookings:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref: 'Itinerary',
+        required:false
+    },
+    productsWishlist:{
         type:[String],
         required:false
     },

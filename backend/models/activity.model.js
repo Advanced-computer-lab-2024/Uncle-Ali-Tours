@@ -75,21 +75,23 @@ const activitySchema = new mongoose.Schema({
         default: false 
     }, // Add this flag
 
+    isAppropriate: { // Add this field
+        type: Boolean,
+        required: false,
+        default: true, // Set default as true
+    },
     reviews: [reviewSchema],
      rating: {
        type: Number,
        required: true,
        default: 0,
-     },isAppropriate: { // Add this field
-        type: Boolean,
-        required: false,
-        default: true, // Set default as true
-    },
+     },
      numReviews: {
        type: Number,
        required: true,
        default: 0,
      },
+     tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' , default: []}],
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

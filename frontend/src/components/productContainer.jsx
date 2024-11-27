@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-
+import {useUserStore} from '../store/user.js';
+import { useTouristStore } from '../store/tourist.js';
+import { Link } from 'react-router-dom';
+import { FaRegHeart, FaHeart } from 'react-icons/fa'; 
 function ProductContainer({ product, productChanger, tourist }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogType, setDialogType] = useState(null); // "rate" or "review"
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+    const user = useUserStore((state) => state.user);
+
+    const { addProductWishlist,removeProductWishlist} = useTouristStore();
+
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
     let avRating = 0
     product.rate.map((r) => avRating += r.rating )
     avRating /= product.rate.length
+
+
 
     // Handle opening the dialog
     const openDialog = (type) => {
@@ -83,6 +94,43 @@ function ProductContainer({ product, productChanger, tourist }) {
         }
     };
 
+
+    const handleWishlist = async (id) => {
+        if (user.type !== "tourist") {
+            return toast.error("You are not allowed to add products to the wishlist", { className: 'text-white bg-gray-800' });
+        }
+        
+        const { success, message } = await addProductWishlist(user.userName, id);
+        if (success) {
+            // Optionally update the state immediately
+            setIsWishlisted(true);
+            toast.success(message, { className: "text-white bg-gray-800" });
+        } else {
+            toast.error(message, { className: "text-white bg-gray-800" });
+        }
+    };
+    
+    const handleRemoveFromWishlist = async (id) => {
+        if (user.type !== "tourist") {
+            return toast.error("You are not allowed to remove products from the wishlist", { className: 'text-white bg-gray-800' });
+        }
+        
+        const { success, message } = await removeProductWishlist(user.userName, id);
+        if (success) {
+            // Optionally update the state immediately
+            setIsWishlisted(false);
+            toast.success(message, { className: "text-white bg-gray-800" });
+        } else {
+            toast.error(message, { className: "text-white bg-gray-800" });
+        }
+    };
+    
+    useEffect(() => {
+        if (tourist) {
+            setIsWishlisted(tourist.productsWishlist?.includes(product._id));  // Update based on current tourist state
+        }
+    }, [tourist, product._id]); 
+
     return (
         <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rounded h-fit'>
             <Toaster />
@@ -108,6 +156,21 @@ function ProductContainer({ product, productChanger, tourist }) {
                 <button onClick={() => handleReviewClick('rate')}>
                     Rate
                 </button>
+                <button
+                    onClick={() => isWishlisted ? handleRemoveFromWishlist(product._id) : handleWishlist(product._id)}
+                    className="transform transition-colors duration-300 hover:text-red-500 focus:outline-none"
+                >
+                    {isWishlisted ? (
+                        <FaHeart className="text-red-500" /> // Filled red heart if wishlisted
+                    ) : (
+                        <FaRegHeart className="text-gray-500" /> // Empty heart if not wishlisted
+                    )}
+                </button>
+         {user?.type === "tourist" && (
+                <Link to="/wishlist" className="text-blue-500 hover:underline">
+                    My Wishlist
+                </Link>
+            )}
             </div>
 
             {/* Dialog for Rating or Review */}
@@ -118,6 +181,9 @@ function ProductContainer({ product, productChanger, tourist }) {
                             {dialogType === 'rate' ? 'Rate the Product' : 'Write a Review'}
                         </h2>
                         
+
+         
+
                         {dialogType === 'rate' && (
                             <div className="mb-4">
                                 <label className="block mb-2">Rating (out of 5):</label>
@@ -143,7 +209,6 @@ function ProductContainer({ product, productChanger, tourist }) {
                                 />
                             </div>
                         )}
-
                         <button
                             onClick={handleSubmit}
                             className="bg-blue-500 text-white p-2 rounded mr-2"

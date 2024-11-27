@@ -4,7 +4,8 @@ import Itinerary from "../models/itinerary.model.js";
 import Activity from "../models/activity.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import Promo from "../models/promo.model.js"
-
+import Product from "../models/product.model.js";
+//import Order from "../models/order.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -149,7 +150,7 @@ export const redeemPoints = async (req, res) => {
 
 export const checkPurchaseStatusByUsername = async (req, res) => {
     const { username, productId } = req.params;
-
+    
     try {
         // Find the tourist by username
         const tourist = await Tourist.findOne({ userName : username }).populate('purchasedProducts');
@@ -449,7 +450,7 @@ export const unItiniraryBook = async(req,res) => {
         const itinerarry = await Itinerary.findById(_id);
         console.log(itinerarry)
         if (!itinerarry) {
-            return res.status(404).json({ success: false, message: "Activity not found" });
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
         }
 
         // Get the current date and time
@@ -497,6 +498,284 @@ export const getMyPromos = async (req, res) => {
         console.log("Error getting promos:", error);
         res.status(500).json({ success: false, message: "Server error getting promos" });
 
+    }
+}
+
+export const addProductWishlist = async (req, res) => {
+    const { userName, _id } = req.body;
+    try {
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Check if product is already in wishlist
+        if (tourist.productsWishlist.includes(_id)) {
+            return res.status(404).json({ success: false, message: "Already in Wishlist" });
+        }
+
+        // Add product to wishlist
+        tourist.productsWishlist.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        // Send the updated wishlist back in the response
+        return res.status(200).json({
+            success: true,
+            data: tourist.productsWishlist,  // Return the updated wishlist
+            message: 'Added to wishlist successfully'
+        });
+    } catch (error) {
+        console.error("Error Adding to Wishlist:", error);
+        res.status(500).json({ success: false, message: "Server error during Add to Wishlist" });
+    }
+};
+export const removeProductWishlist = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.productsWishlist.includes(_id)){
+            return res.status(404).json({ success: false, message: "not in wishlist" });
+        }
+        const product = await Product.findById(_id);
+        console.log(product)
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+        tourist.productsWishlist = tourist.productsWishlist.filter(item => item !==_id);
+        await tourist.save();
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'removed successfully' });
+        
+    }catch (error) {
+        console.error("Error Adding to Wishlist:", error);
+        res.status(500).json({ success: false, message: "Server error during Removing from wishlist" });
+    }
+}
+
+export const getWishlistedProducts = async (req, res) => {
+    const { userName } = req.params; // Get userName from request parameters
+
+    try {
+        // Find tourist by username and populate productsWishlist
+        const tourist = await Tourist.findOne({ userName }).populate('productsWishlist');
+        
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Find the products in the wishlist
+        const wishlistedProducts = await Product.find({ _id: { $in: tourist.productsWishlist } });
+
+        // Return success response with wishlisted products
+        return res.status(200).json({ success: true, data: wishlistedProducts });
+    } catch (error) {
+        console.error("Error Fetching Wishlisted Products:", error);
+        res.status(500).json({ success: false, message: "Server error during fetching wishlisted products" });
+    }
+};
+export const getMyUpcomingItineraries = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
+        if (!allItineraries) {
+            return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
+            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
+                const firstAvailableDate = new Date(itinerary.availableDates[0]);
+                return firstAvailableDate > now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingItineraries,
+            message: 'Upcoming itineraries fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting upcoming itineraries:", error);
+            res.status(500).json({ success: false, message: "Server error fetching upcoming itineraries" });
+        }
+}
+
+export const getMyPastItineraries = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
+        if (!allItineraries) {
+            return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
+            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
+                const firstAvailableDate = new Date(itinerary.availableDates[0]);
+                return firstAvailableDate < now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingItineraries,
+            message: 'Past itineraries fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting past itineraries:", error);
+            res.status(500).json({ success: false, message: "Server error fetching past itineraries" });
+        }
+}
+
+export const getMyUpcomingActivities = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allActivities = await Tourist.findOne({ userName }).select('ActivityBookings -_id').populate('ActivityBookings');
+        if (!allActivities) {
+            return res.status(404).json({ success: false, message: "Tourist or activities not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingActivities = allActivities.ActivityBookings.filter(activity => {
+            if (activity.date) {
+                const activityDate = new Date(activity.date);
+                return activityDate > now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingActivities,
+            message: 'Upcoming activities fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting upcoming activities:", error);
+            res.status(500).json({ success: false, message: "Server error fetching upcoming activities" });
+        }
+}
+export const getMyPastActivities = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allActivities = await Tourist.findOne({ userName }).select('ActivityBookings -_id').populate('ActivityBookings');
+        if (!allActivities) {
+            return res.status(404).json({ success: false, message: "Tourist or activities not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingActivities = allActivities.ActivityBookings.filter(activity => {
+            if (activity.date) {
+                const activityDate = new Date(activity.date);
+                return activityDate < now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingActivities,
+            message: 'Past activities fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting past activities:", error);
+            res.status(500).json({ success: false, message: "Server error fetching past activities" });
+        }
+}
+
+export const getMyOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName
+        const orders = await Order.find({ creator: userName }).populate('products'); // Populate the products if needed
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ success: false, message: "No orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: orders,
+            message: "Orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching orders" });
+    }
+}
+
+export const getMyCurrentOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName and status is "Shipping"
+        const currentOrders = await Order.find({ creator: userName, status: "Shipping" }).populate('products');
+
+        if (!currentOrders || currentOrders.length === 0) {
+            return res.status(404).json({ success: false, message: "No current orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: currentOrders,
+            message: "Current orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching current orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching current orders" });
+    }
+}
+export const getMyPastOrders = async (req, res) => {
+    const { userName } = req.query;
+
+    try {
+        // Validate input
+        if (!userName) {
+            return res.status(400).json({ success: false, message: "User name is required" });
+        }
+
+        // Find all orders where the creator matches the userName and status is "Shipped"
+        const pastOrders = await Order.find({ creator: userName, status: "Shipped" }).populate('products');
+
+        if (!pastOrders || pastOrders.length === 0) {
+            return res.status(404).json({ success: false, message: "No past orders found for this user" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: pastOrders,
+            message: "Past orders fetched successfully",
+        });
+    } catch (error) {
+        console.error("Error fetching past orders:", error);
+        res.status(500).json({ success: false, message: "Server error fetching past orders" });
     }
 }
 

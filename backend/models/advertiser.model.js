@@ -54,7 +54,8 @@ const advertiserModel = new mongoose.Schema({
         required: false,
         type: String,
     },
-    
+    activities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }],
+    itineraries: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' }],
 }, {
     timestamps: true 
 });

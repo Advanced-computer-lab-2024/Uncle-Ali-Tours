@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import Itinerary from "../models/itinerary.model.js";
 
 dotenv.config();
 
@@ -136,7 +137,7 @@ export const updateAdvertiser = async (req,res) => {
     }
     
     try {
-        const AdvertiserExists = await Advertiser.exists({username: userName});
+        const AdvertiserExists = await Advertiser.exists({userName, userName});
         if(!AdvertiserExists){
             return res.status(404).json({ success: false, message: "Advertiser not found" });
         }
@@ -144,7 +145,7 @@ export const updateAdvertiser = async (req,res) => {
             fs.unlinkSync(path.join(__dirname, `../${AdvertiserExists.profilePicture}`));
           }
 
-        const updatedAdvertiser = await Advertiser.findOneAndUpdate({ username: userName }, newAdvertiser, { new: true });
+        const updatedAdvertiser = await Advertiser.findOneAndUpdate({ userName: userName }, newAdvertiser, { new: true });
         res.status(200).json({success:true, data:  updatedAdvertiser});
     }
     catch (error) {
@@ -183,3 +184,44 @@ export const deleteAdvertiser = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
+
+export const getAdvertiserReport = async (req, res) => {
+    try {
+        const advertiserUserName = req.params.userName;
+        console.log("Fetched UserName",advertiserUserName);
+        const activities = await Activity.find({ creator: advertiserUserName }).populate('tourists');
+        const itineraries = await Itinerary.find({ creator: advertiserUserName }).populate('tourists');
+        console.log("itin",itineraries);
+        const activitytotalTourists = activities.reduce((count, activity) => {
+          const tourists = activity.tourists;
+          return count + tourists.length;
+        }, 0);
+        const itinerarytotalTourists = itineraries.reduce((count, itinerary) => {
+          const tourists = itinerary.tourists;
+          return count + tourists.length;
+        }, 0);
+        const totalTourists=activitytotalTourists+itinerarytotalTourists;
+        const report = {
+          totalTourists,
+          activities: activities.map(activity => ({
+            title: activity.name,
+            date: activity.date,
+            numberOfTourists: (activity.tourists).length,
+          })),
+          itineraries: itineraries.map(itinerary => ({
+            title: itinerary.name,
+            language:itinerary.language,
+            numberOfTourists: (itinerary.tourists).length,
+          })),
+        };
+        console.log("bellingham",report.itineraries);
+        console.log("bellingham2",report.activities);
+        
+
+        res.status(200).json(report);
+    } catch (error) {
+      console.error('Error generating report:', error);
+        res.status(500).json({ error: 'Failed to generate report' });
+    }
+};
+

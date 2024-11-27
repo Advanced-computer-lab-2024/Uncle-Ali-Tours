@@ -48,12 +48,17 @@ import ViewReviews from "./ViewReviews";
 import AdminItineraryPage from './AdminItineraryPage';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
-import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import TransportationActivityPage from './TransportationActivityPage.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
 import BookMark from '../components/BookMark';
+import WishlistPage from "./WishlistPage";
 
-
+import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import ViewPastItineraries from './ViewPastItineraries.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewPastActivities from './ViewPastActivities.jsx';
+import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 
 
 function App() {
@@ -101,7 +106,7 @@ function App() {
 
   return (
     <div >
-    <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] ">
+    <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] overflow-x-hidden">
       <Navbar />
       {!loading ? 
       <Routes>
@@ -134,7 +139,7 @@ function App() {
         <Route path="/flightBooking" element={<FlightBookingPage/>}/>
         <Route path="/bookedFlights" element={<BookedFlights/>}/>
         <Route path="/bookedHotels" element={<BookedHotels/>}/>
-    
+        <Route path="/ViewTransportationActivity" element={<ViewTransportationActivity/>}/>
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
@@ -145,16 +150,21 @@ function App() {
 
         <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
-        <Route path="/transportationActivity" element={<ViewTransportationActivity />} />
+        <Route path="/TransportationActivityPage" element={<TransportationActivityPage />} />
         <Route path="/tourguidereviews" element={<TourGuideReviews/>} />
         <Route path="/touristviewitineraries" element={<TouristViewItineraries/>} />
         <Route path="/touristviewactivities" element={<TouristViewActivities/>} />
         <Route path="/updateActivity" element={<UpdateActivity/>} />
         <Route path="/adminItineraryPage" element={<AdminItineraryPage/>} />
         <Route path="/adminActivitiesPage" element={<AdminActivitiesPage/>} />
+        <Route path="/upcomingItineraries" element={<ViewUpcomingItineraries/>} />
+        <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
+        <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
+        <Route path="/pastActivities" element={<ViewPastActivities/>} />
+
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
-
+        <Route path="/wishlist" element={<WishlistPage user={user}/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />
