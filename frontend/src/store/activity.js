@@ -170,4 +170,69 @@ export const useActivityStore = create((set, get) => ({
       return { success: false, message: error.message };
     }
   },
+
+  bookmarkActivity: async (activityId, userName) => {
+    console.log('Activity ID:', activityId);
+    console.log('User name:', userName);
+    
+    try {
+        const res = await fetch('/api/activity/bookmark', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activityId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error bookmarking activity:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+removeBookmark: async (activityId, userName) => {
+    try {
+        const res = await fetch('/api/activity/bookmark', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activityId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error removing bookmark:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+getBookmarkedActivities: async (userName) => {
+    try {
+        const res = await fetch(`/api/activity/bookmarks?userName=${userName}`);
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, bookmarks: data.bookmarks };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+        return { success: false, message: error.message };
+    }
+},
+
 }));
+
+
+
+
+
+
+
+

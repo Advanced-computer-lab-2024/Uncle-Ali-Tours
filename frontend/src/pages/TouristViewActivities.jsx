@@ -5,12 +5,15 @@ import { useTouristStore } from '../store/tourist';
 import Dialog from '../components/Dialog.jsx'
 import FormDialog from '../components/FormDialog.jsx'
 import ActivityContainer from '../components/ActivityContainer.jsx';
+import TouristActivityContainer from '../components/TouristActivityContainer.jsx';
+
 function TouristViewActivities() {
     const [filter, setFilter] = useState(
         {}
     );
     const [applyPreferences, setApplyPreferences] = useState(false);
     const [curActivity, setCurActivity] = useState(-1);
+
     const changeActivity = (id) => (
       setCurActivity(id)
     )
@@ -21,6 +24,10 @@ function TouristViewActivities() {
   const [sort, setSort] = useState(
     {}
 );
+const [activity, setActivities] = useState([]);
+
+const [bookmarkedIds, setBookmarkedIds] = useState([]); // Store bookmarked activity IDs
+
 const { tourist } = useTouristStore();
 useEffect(() => {
   getCategories();
@@ -54,7 +61,52 @@ useEffect(() => {
      setSort({});
      
    };
+  
 
+   const fetchActivities = async () => {
+    try {
+        const response = await fetch('/api/activity');
+        const data = await response.json();
+        if (data.success) {
+            setActivities(data.data);
+        }
+    } catch (error) {
+        console.error('Error fetching activities:', error);
+    }
+};
+
+useEffect(() => {
+    fetchActivities();
+    fetchBookmarkedActivities(); // Fetch bookmarked activities on page load
+
+}, []);
+
+const fetchBookmarkedActivities = async () => {
+  try {
+      const response = await fetch(
+          `/api/activity/bookmarkedActivities?userName=${localStorage.getItem('userName')}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        const ids = data.data.map((activity) => activity._id);
+        setBookmarkedIds(ids); // Save bookmarked activity IDs
+      }
+  } catch (error) {
+      console.error('Error fetching bookmarked activities:', error);
+  }
+};
+
+
+// Handle Bookmark Toggle
+const handleBookmarkToggle = (activityId, isBookmarked) => {
+  if (isBookmarked) {
+      setBookmarkedIds((prev) => [...prev, activityId]); // Add to bookmarks
+  } else {
+      setBookmarkedIds((prev) => prev.filter((id) => id !== activityId)); // Remove from bookmarks
+  }
+};
+
+  
 
    return (
     <div className='text-black'>
@@ -82,7 +134,12 @@ useEffect(() => {
         </div>
         {
             activities.map((activity, index)=> (
-                <ActivityContainer key={index} activityChanger={changeActivity} activity={activity}/>   
+                <TouristActivityContainer key={index}
+                //activityChanger={activity}
+                  activity={activity}
+                    isBookmarked={bookmarkedIds.includes(activity._id)} // Pass bookmark status
+                    onBookmarkToggle={handleBookmarkToggle} // Pass toggle function onBookmarkToggle={handleBookmarkToggle} // Pass the toggle function here
+/>   
             ))
         }
         <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>

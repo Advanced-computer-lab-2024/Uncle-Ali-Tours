@@ -252,6 +252,11 @@ const handleDeleteAccountRequest = async () => {
       
       {/* Complaints Button */}
       <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
+
+      <Link to="/bookmarks">
+    <button className="bg-black text-white m-6 p-2 rounded">View Bookmarks</button>
+</Link>
+
       {/* Display Complaints */}
       {showComplaints && (
         <div className="mt-4 bg-gray-700 p-4 rounded">

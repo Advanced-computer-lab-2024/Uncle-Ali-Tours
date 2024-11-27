@@ -19,8 +19,10 @@ function CreateActivity() {
     tags: [],
     specialDiscounts: '',
     bookingOpen: false,
-    creator: user?.userName || '', // Assuming the user's name is used as the creator
+    creator: user?.userName, // Assuming the user's name is used as the creator
   });
+
+  console.log("user " , user?.userName || "")
 
   const [tagsFields, setTagsFields] = useState([]);
   const autocompleteRef = useRef(null);
@@ -67,7 +69,7 @@ function CreateActivity() {
         tags: [],
         specialDiscounts: '',
         bookingOpen: false,
-        creator: user?.userName || '',
+        creator: user?.userName,
       });
       setTagsFields([]); // Clear tag fields after creation
     } else {
@@ -143,15 +145,7 @@ function CreateActivity() {
           required
         />
         
-        <input
-          type="text"
-          name="creator"
-          placeholder="Creator"
-          value={newActivity.creator}
-          onChange={handleInputChange}
-          className="block w-full p-2 mb-4 border border-gray-300 rounded-lg"
-          required
-        />
+        
         
 
         {/* Tags Section */}

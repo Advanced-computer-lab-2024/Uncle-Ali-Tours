@@ -71,6 +71,10 @@ const activitySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    isBookmarked: { type: Boolean, 
+        default: false 
+    }, // Add this flag
+
     reviews: [reviewSchema],
      rating: {
        type: Number,

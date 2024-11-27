@@ -1,8 +1,93 @@
 import Activity from "../models/activity.model.js";
+import Bookmark from "../models/bookmark.model.js";
 
+export const addBookmark = async (req, res) => {
+    const { userName, activityId } = req.body;
+
+    if (!userName || !activityId) {
+        return res.status(400).json({ message: "User name and Activity ID are required" });
+    }
+
+    try {
+        const existingBookmark = await Bookmark.findOne({ userName, activityId });
+        if (existingBookmark) {
+            return res.status(400).json({ message: "Activity already bookmarked" });
+        }
+
+        const bookmark = new Bookmark({ userName, activityId });
+        await bookmark.save();
+        res.status(201).json({ message: "Activity bookmarked successfully", bookmark });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getBookmarkedActivities = async (req, res) => {
+    try {
+        const bookmarkedActivities = await Activity.find({ isBookmarked: true });
+        res.status(200).json({ success: true, data: bookmarkedActivities });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export const toggleBookmark = async (req, res) => {
+    const { activityId } = req.body;
+
+    if (!activityId) {
+        return res.status(400).json({ success: false, message: "Activity ID is required" });
+    }
+
+    try {
+        // Find the activity
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        // Toggle the isBookmarked flag
+        activity.isBookmarked = !activity.isBookmarked;
+        await activity.save();
+
+        res.status(200).json({
+            success: true,
+            message: activity.isBookmarked ? "Activity bookmarked" : "Bookmark removed",
+            activity,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export const removeBookmark = async (req, res) => {
+    const { userName, activityId } = req.body;
+
+    if (!userName || !activityId) {
+        return res.status(400).json({ message: "User name and Activity ID are required" });
+    }
+
+    try {
+        const deletedBookmark = await Bookmark.findOneAndDelete({ userName, activityId });
+        if (!deletedBookmark) {
+            return res.status(404).json({ message: "Bookmark not found" });
+        }
+
+        res.status(200).json({ message: "Bookmark removed successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+
+// Create Activity
 // Create Activity
 export const createActivity = async (req, res) => {
     const activity = req.body;
+    console.log(activity)
     const newActivity = new Activity({
         ...activity,
         isAppropriate: activity.isAppropriate !== undefined ? activity.isAppropriate : true // Default to true
@@ -67,11 +152,13 @@ export const toggleActivityAppropriateness = async (req, res) => {
 export const getActivity = async (req, res) => {
     const { filter, sort, minPrice, maxPrice } = req.query;
 
-    let parsedFilter = filter ? JSON.parse(filter) : {};
+    let parsedFilter = await filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
 
     // Ensure the filter doesn't include inappropriate activities
-    parsedFilter.isAppropriate = true;
+    // parsedFilter.isAppropriate = true;
+
+    console.log(parsedFilter);
 
     if (minPrice || maxPrice) {
         parsedFilter.price = {};
@@ -87,6 +174,7 @@ export const getActivity = async (req, res) => {
 
     try {
         const activities = await Activity.find(parsedFilter).sort(parsedSort);
+        console.log(activities);
         return res.status(200).json({ success: true, data: activities });
     } catch (error) {
         return res.status(404).json({ message: error.message });
@@ -163,3 +251,14 @@ export const getAllActivities = async (req, res) => {
       res.status(500).json({ success: false, message: "Failed to fetch all activities" });
     }
   };
+
+
+
+
+
+
+
+
+
+
+  

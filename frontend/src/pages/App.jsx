@@ -51,6 +51,7 @@ import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
+import BookMark from '../components/BookMark';
 
 
 
@@ -136,6 +137,7 @@ function App() {
     
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
+        <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
