@@ -62,20 +62,19 @@ const SideMenu = ({ isOpen, onClose }) => {
             <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === true ? "bg-gray-900" : ""}`}>
               <h2
                 onClick={() => toggleMenu(index)}
-                className="text-xl transition-colors w-full mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700"
+                className={`${expandedIndex === index ? "text-red-200" : ""} text-xl transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700`}
               >
                 {item.title}
                 <span className="float-right my-auto h-fit">
-                  <FaAngleDown className={`transition-transform ${expandedIndex === index ? "rotate-180" : ""}`} />
+                  <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === index ? "rotate-180" : ""}`} />
                 </span>
               </h2>
-              {expandedIndex === index && (
-                <ul>
+                <ul className={`transition-all duration-500 ${expandedIndex === index ? "h-[15vh]" : "h-[0px]"}`}>
                   {item.subItems.map((subItem, subIndex) => (
                     <li key={subIndex}>
                       <Link
                         to={subItem.path}
-                        className="block px-4 hover:bg-gray-700 py-1 transition-colors w-[80%] mx-auto my-2 rounded"
+                        className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2" : "h-[0px]  text-[0px]"} block transition-colors mx-auto rounded`}
                         onClick={onClose}
                       >
                         {subItem.name}
@@ -83,7 +82,6 @@ const SideMenu = ({ isOpen, onClose }) => {
                     </li>
                   ))}
                 </ul>
-              )}
             </div>
           ))}
       </nav>
