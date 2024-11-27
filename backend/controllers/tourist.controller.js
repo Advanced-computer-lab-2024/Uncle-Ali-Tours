@@ -5,7 +5,7 @@ import Activity from "../models/activity.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import Promo from "../models/promo.model.js"
 import Product from "../models/product.model.js";
-import Order from "../models/order.js";
+//import Order from "../models/order.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
