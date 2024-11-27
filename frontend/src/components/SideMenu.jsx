@@ -49,8 +49,8 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-[7vh] rounded-lg right-0 h-[60vh] mr-5 w-64 bg-[#161821f0] text-white transform ${
-        isOpen ? "translate-x-0" : "translate-x-[calc(100%+1.25rem)]"
+      className={`fixed top-[7vh] rounded-lg right-0 h-[60vh] mr-[0.8vw] w-64 bg-[#161821f0] text-white transform ${
+        isOpen ? "translate-x-0" : "translate-x-[calc(100%+0.8vw)]"
       } transition-transform duration-300 ease-in-out z-50`}
     >
       <button onClick={onClose} className="absolute top-4 right-4 text-white">
