@@ -74,7 +74,7 @@ const SideMenu = ({ isOpen, onClose }) => {
                     <li key={subIndex}>
                       <Link
                         to={subItem.path}
-                        className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2" : "h-[0px]  text-[0px]"} block transition-colors mx-auto rounded`}
+                        className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2" : "h-[0px] text-[0px]"} block mx-auto rounded`}
                         onClick={onClose}
                       >
                         {subItem.name}
