@@ -62,6 +62,10 @@ const touristModel = new mongoose.Schema({
         ref: 'Promo',
         required:false
     }, 
+		notifications: {
+			type: [mongoose.Schema.Types.ObjectId],
+			ref: 'Notification',
+	}
     },{
         timestamps: true
     });

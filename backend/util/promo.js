@@ -1,4 +1,5 @@
 import Tourist from "../models/tourist.model.js";
+import Notification from "../models/notification.model.js";
 import Promo from "../models/promo.model.js";
 const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
@@ -40,6 +41,17 @@ export const checkBD = async () => {
         } else {
           if (!tourist.promoCodes.includes(promo._id)){
             tourist.promoCodes.push(promo._id);
+						if (!tourist.notifications) {
+							tourist.notifications = [];
+						}
+						const notification = new Notification({
+							userName: tourist.userName,
+							title: "Birthday Promo",
+							message: "You have received a birthday promo code, check it out!",
+							link: "/" // link to promo page
+						});
+						await notification.save();
+						tourist.notifications.push(notification._id);
             await sendEmail(mailOptions);
             await tourist.save();
           console.log("added existing promo");
