@@ -5,9 +5,11 @@ const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 
 export const checkBD = async () => {
-  const tourists = await Tourist.find().select(
+  const tourists = await Tourist.find({userName: "todaysuser"}).select(
     "dateOfBirth email userName promoCodes"
   );
+
+	console.log(tourists);
 
   for (let tourist of tourists) {
     if (tourist.dateOfBirth) {

@@ -53,7 +53,7 @@ import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
 import BookMark from '../components/BookMark';
 import WishlistPage from "./WishlistPage";
-
+import Notification from './Notification.jsx';
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
@@ -121,6 +121,7 @@ function App() {
         <Route path="/viewProducts" element={<ViewProducts />} />
         <Route path="/activityCategory" element={<ActivityCategory />} />
         <Route path="/itineraryPage" element={<ItineraryPage />} />
+						<Route path="/notifications" element={<Notification />} />
         <Route path="/createItinerary" element={<CreateItinerary />} />
         <Route path="/sellerProfile" element={<SellerProfilePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />

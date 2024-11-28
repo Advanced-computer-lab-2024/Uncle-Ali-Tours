@@ -102,7 +102,7 @@ connectDB().then(() => {
 });
 
 
-
+checkBD();
  nodeCrone.schedule('0 0 * * *', async () => {
      await checkBD();
   }

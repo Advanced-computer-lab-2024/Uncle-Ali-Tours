@@ -9,7 +9,7 @@ const Settings = () => {
   return (
     <div className="flex h-fit my-auto justify-center z-50">
       <FlyoutLink FlyoutContent={SettingsContent}>
-        <FaGear size={22} className="my-auto hover:animate-spin" />
+        <FaGear size={22} className="my-auto mx-2 hover:animate-spin" />
       </FlyoutLink>
     </div>
   );

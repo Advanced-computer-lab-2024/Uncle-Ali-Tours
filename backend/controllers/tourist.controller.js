@@ -1,4 +1,5 @@
 import Tourist from "../models/tourist.model.js";
+import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
 import Itinerary from "../models/itinerary.model.js";
 import Activity from "../models/activity.model.js";
@@ -43,7 +44,7 @@ export const getTourist = async(req,res) => {
     let parsedFilter = filter ? JSON.parse(filter) : {};
     let parsedSort = sort ? JSON.parse(sort) : {};
     try {
-        const Tourists = await Tourist.find(parsedFilter).sort(parsedSort);
+        const Tourists = await Tourist.find(parsedFilter).sort(parsedSort).populate("notifications").populate("promoCodes").populate("productsWishlist").populate("myBookings").populate("ActivityBookings").populate("itineraryBookings");
        return res.status(200).json({success:true, data: Tourists});
     } catch (error) {
         res.status(404).json({ message: error.message });
@@ -778,4 +779,28 @@ export const getMyPastOrders = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error fetching past orders" });
     }
 }
+
+
+export const markNotificationAsRead = async (req, res) => {
+	try {
+		const { userName } = req.body;
+		console.log(userName);
+		const tourist = await Tourist.findOne({ userName });
+		if (!tourist) 
+			return res.status(404).json({ success: false, message: "Tourist not found" });
+		tourist.notifications.forEach(async (notification) => {
+			const notificationData = await Notification.findByIdAndUpdate(notification, { read: true }, { new: true }); 
+			console.log(notificationData);
+			});
+		await tourist.save();
+		res.status(200).json({ success: true, message: "Notification marked as read" });
+	}
+	catch (error) {
+		console.error("Error marking notification as read:", error);
+		res.status(500).json({ success: false, message: "Server error marking notification as read" });
+	}
+};
+
+
+
 
