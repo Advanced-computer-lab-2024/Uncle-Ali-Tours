@@ -9,10 +9,15 @@ import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
 import TouristPromos from '../components/TouristPromos.jsx';
 import { FiLoader } from 'react-icons/fi';
+import { FaEye, FaEdit } from "react-icons/fa";
+import { IoSaveOutline } from "react-icons/io5";
+import BronzeBadge from '../images/bronze.png';
+import SilverBadge from '../images/silver.png';
+import GoldBadge from '../images/gold.png';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
-  const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel} = useTouristStore();
+  const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel ,fetchUpcomingActivities, fetchUpcomingItineraries} = useTouristStore();
   const [isRequired, setIsRequired] = useState(true);
   const [updatedTourist, setUpdatedTourist] = useState({});
   const [isWalletVisible, setIsWalletVisible] = useState(false);
@@ -28,7 +33,9 @@ const TouristProfile = () => {
   const { createRequest } = useRequestStore();
   const {tags, getTags} = useTagStore();
   const navigate = useNavigate();
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [upcomingItineraries,setUpcomingItineraries]= useState(0);
+  const [upcomingActivities,setUpcomingActivities]= useState(0);
 
   
   
@@ -48,6 +55,19 @@ const fetchBadge = async () => {
         toast.error('Failed to fetch badge level');
     }
 };
+useEffect(() => {
+  // Fetch itineraries and activities when the component mounts
+  const fetchData = async () => {
+    const itineraries = await fetchUpcomingItineraries(user.userName);
+    const activities = await fetchUpcomingActivities(user.userName);
+
+    setUpcomingItineraries(itineraries.length); // Update state with number of itineraries
+    setUpcomingActivities(activities.length); // Update state with number of activities
+  };
+
+  fetchData();
+}, []);
+
 
 const handleRedirect1 = () => {
   navigate('/touristviewitineraries');
@@ -155,146 +175,237 @@ const handleDeleteAccountRequest = async () => {
   }
 };
 
+const handleSaveClick = async () => {
+  setIsEditing(false);
+  if (!Object.keys(updatedTourist).length) return;
+  const { success, message } = await updateTourist(
+    user.userName,
+    updatedTourist
+  );
+  console.log(updatedTourist);
+  success
+    ? toast.success(message, { className: "text-white bg-gray-800" })
+    : toast.error(message, { className: "text-white bg-gray-800" });
+};
+const getBadgeImage = () => {
+  switch (badge) {
+    case 'level 2':
+      return SilverBadge;
+    case 'level 3':
+      return GoldBadge;
+    default:
+      return BronzeBadge; 
+  }
+};
+
 
 // if(!tourist.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
  
   return (
-    <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-       <Toaster/>
-           <h1>profile</h1>
-           <div className="grid">
-           <label>Badge Level: <input type="text" value={badge} readOnly style={{ color: 'black', backgroundColor: 'white' }} /></label> 
-           <label>NAME : <input type = "text" name='userName' defaultValue={tourist.userName} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange= {(e) => setUpdatedTourist({ ...updatedTourist, userName: e.target.value})}></input></label>
-           <label>Email : <input type = "text" name='email' defaultValue={tourist.email} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, email: e.target.value})}></input></label>
-           <label>Mobile number : <input type = "text" name='mobileNumber' defaultValue={tourist.mobileNumber} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, mobileNumber: e.target.value})}></input></label>
-           <label>occupation : <input type = "text" name='occupation' defaultValue={tourist.occupation} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, occupation: e.target.value})}></input></label>
-          
-           <label>Nationality : <input type = "text" name='nationality' defaultValue={tourist.nationality} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, nationality: e.target.value})}></input></label>
-           <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={tourist.dateOfBirth ? tourist.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedTourist({ ...updatedTourist, dateOfBirth: e.target.value})}></input></label>   
-           
-           <Link to='/viewProducts'>
-          <button className='bg-black text-white m-6 p-2 rounded' >product</button> </Link> <Link to ='/viewItineraries'> <button className='bg-black text-white m-6 p-2 rounded' >itinerary</button></Link> <Link to='/viewActivities'> <button className='bg-black text-white m-6 p-2 rounded' >activities</button> </Link> <Link to ='/viewAttractions'> <button className='bg-black text-white m-6 p-2 rounded' >attraction</button></Link> <Link to ='/bookedFlights'> <button className='bg-black text-white m-6 p-2 rounded' >flight booking</button></Link> <Link to ='/bookedHotels'> <button className='bg-black text-white m-6 p-2 rounded' >hotel booking</button></Link>
-           
-
-          <button
-                onClick={handleRedirect1}
-                className='bg-black text-white m-6 p-2 rounded'
-            >
-            Tourist Itinerary
-            </button>
-            <button
-                onClick={handleRedirect2}
-                className='bg-black text-white m-6 p-2 rounded'
-            >
-            Tourist Activities
-            </button>
-
-           </div>
-           <Link to='/upcomingItineraries'>
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Upcoming Itineraries</button></Link> 
-           <Link to='/pastItineraries'>
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>Past Itineraries</button></Link>
-           <br />  
-           <Link to='/upcomingActivities'>
-           <button className='bg-black text-white m-6 p-2 rounded' >Upcoming Activities</button></Link>
-           <Link to='/pastActivities'>
-           <button className='bg-black text-white m-6 p-2 rounded' >Past Activities</button></Link>
-           <br />     
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleWalletClick}>Wallet</button>
-           {isWalletVisible && (
-            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>You have {walletMoney} {user.chosenCurrency} in your wallet.</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsWalletVisible(false)}>Close</button>
-            </div>
-           )}
-           <Dialog
-           msg={`You have ${tourist.myPoints} points. Do you want to redeem these points for ${pointsMoney} ${user.chosenCurrency}?`}
-           accept={redeemPoints}
-           reject={() => console.log("Redemption canceled")}
-           acceptButtonText="Redeem Points"
-           rejectButtonText="Cancel"
-           />
-
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
-           <br />
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button> 
-           <br />      
-          
-          <br />
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
-           {isDeleteVisible && (
-            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>Are you sure you want to request to delete your account?</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
-            </div>
-           )}
-
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>save</button>
-
-           <br />
-
-           <h2>Select Your Vacation Preferences:</h2>
-        {tags && tags.length > 0 ? (
-          tags.map((tag) => (
-            <label key={tag._id || tag.name}>
-              <input
-                type="checkbox"
-                value={tag.name}
-                onChange={handlePreferencesChange}
-                checked={preferences.includes(tag.name)}
-              />
-              {tag.name}
-            </label>
-          ))
-        ) : (
-          <p>Loading preferences...</p>
-        )}
-        <br/>
-        <button className="bg-black text-white m-6 p-2 rounded" onClick={handleSavePreferences}>Save Preferences</button>
-        <button className="bg-red-500 text-white m-6 p-2 rounded" onClick={handleClearPreferences}>Clear All Preferences</button>
-
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedeemClick}>My Points</button>
-      <br />
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button>
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleProfileUpdate}>Save</button>
-      
-      {/* Complaints Button */}
-      <button className='bg-black text-white m-6 p-2 rounded' onClick={handleFetchComplaints}>View Complaints</button>
-
-      <Link to="/bookmarks">
-    <button className="bg-black text-white m-6 p-2 rounded">View Bookmarks</button>
-</Link>
-
-      {/* Display Complaints */}
-      {showComplaints && (
-        <div className="mt-4 bg-gray-700 p-4 rounded">
-          <h2 className="text-xl mb-2">My Complaints</h2> (
-           { complaints.map((complaint) => (
-              <div key={complaint._id} className="mb-4 p-3 bg-gray-600 rounded">
-                <h3 className="text-lg font-semibold">Title:{complaint.title}</h3>
-                <p>Body:{complaint.body}</p>
-                <p>Status: {complaint.status}</p>
+    <div className="flex w-full mt-12 justify-around">
+    <Toaster />
+      <div className="flex flex-col gap-[6vh] justify-start"> 
+        <div className="flex gap-[6vw] justify-around"> 
+         <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[68vh] max-w-3xl rounded-lg shadow-lg text-white left-[-20%]"> 
+         <div className="absolute top-[-25px] left-[50%] transform -translate-x-[50%] w-24 h-24">
+          <img src={getBadgeImage()} alt={`${badge} badge`} className="h-full w-full object-contain" />
+         </div>
+         <br />
+          <div className="space-y-4 flex flex-col justify-around h-[22vh] justify-items-start "> 
+              <div className="flex justify-between"> 
+                <p className="text-center my-auto">Name: </p>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={tourist.userName || ""}
+                  className={`bg-transparent h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 focus:outline-none rounded-md px-2 py-2`}
+                  readOnly={true}
+                  onChange={(e) =>
+                    updateTourist(tourist.userName, { userName: e.target.value })
+                  }
+                />
               </div>
-            ))}
-          )
-        </div>
-      )}
-      <Link to='/ViewTransportationActivity'>
-      <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
-        <br />
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
-           {isDeleteVisible && (
-            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>Are you sure you want to request to delete your account?</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Email:</p>
+                <input
+                  type="text"
+                  name="email"
+                  defaultValue={tourist.email || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    updateTourist(tourist.userName, { email: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Mobile:</p>
+                <input
+                  type="number"
+                  name="mobileNumber"
+                  defaultValue={tourist.mobileNumber || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    setUpdatedTourist({
+                      ...updatedTourist,
+                      mobileNumber: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Nationality:</p>
+                <input
+                  type="text"
+                  name="nationality"
+                  defaultValue={tourist.nationality || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    setUpdatedTourist({
+                      ...updatedTourist,
+                      nationality: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="flex justify-between">
+              <p className="text-center my-auto">Date Of Birth:</p>
+              <input
+                type="text"
+                name="dateOfBirth"
+                defaultValue={
+                  tourist.dateOfBirth
+                    ? new Date(tourist.dateOfBirth).toLocaleDateString('en-GB') // Display format
+                    : ""
+                }
+                className={`${
+                  isEditing ? "bg-gray-800" : "bg-transparent"
+                } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                readOnly={!isEditing}
+                onChange={(e) => {
+                  const dateInput = e.target.value;
+                  const [day, month, year] = dateInput.split('/');
+                  
+                  // Ensure the input has valid parts
+                  if (day && month && year) {
+                    const formattedDate = new Date(`${year}-${month}-${day}`);
+                    if (!isNaN(formattedDate)) {
+                      setUpdatedTourist({
+                        ...updatedTourist,
+                        dateOfBirth: formattedDate.toISOString(), // Save in ISO format
+                      });
+                    } else {
+                      console.error("Invalid date format entered.");
+                    }
+                  }
+                }}
+              />
             </div>
-           )}
 
-           <TouristPromos userName={user.userName} />
+              <div className="flex justify-between">
+                <p className="text-center my-auto">Occupation:</p>
+                <input
+                  type="text"
+                  name="occupation"
+                  defaultValue={tourist.occupation || ""}
+                  className={`${
+                    isEditing ? "bg-gray-800" : "bg-transparent"
+                  } transition-colors focus:outline-none h-[2.3ch] w-[21ch] border-none text-white border border-gray-600 my-4 rounded-md px-2 py-2`}
+                  readOnly={!isEditing}
+                  onChange={(e) =>
+                    setUpdatedTourist({
+                      ...updatedTourist,
+                      occupation: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              {!isEditing ? (
+                <button
+                  className="mb-4 w-fit focus:outline-none"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <FaEdit />
+                </button>
+              ) : (
+                <button
+                  className="mb-4 w-fit focus:outline-none"
+                  onClick={handleSaveClick}
+                >
+                  <IoSaveOutline />
+                </button>
+              )}
+              
+            </div>
+            <Dialog
+              msg={`You have ${tourist.myPoints} points. Do you want to redeem these points for ${pointsMoney} ${user.chosenCurrency}?`}
+              accept={redeemPoints}
+              reject={() => console.log("Redemption canceled")}
+              acceptButtonText="Redeem Points"
+              rejectButtonText="Cancel"
+              />
+          </div>
+          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white justify-between"> 
+            <div className="flex-1 flex flex-col justify-center items-center border-b border-white">
+              <h3 className="text-xl font-bold mb-2">Wallet</h3>
+              <p className="text-2xl">{walletMoney} {user.chosenCurrency}</p>
+              <br/>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-center items-center mt-4">
+              <p className="text-2xl mb-2">{tourist.myPoints} points</p>
 
+              <button 
+                className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2"
+                onClick={handleRedeemClick}
+              >
+                Redeem Points
+              </button>
+            </div>
+          </div>
+          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white justify-right"> 
+            <TouristPromos userName={user.userName} />
+          </div>
+        </div>
+        <div className="relative py-4 px-10 w-[45vw] h-[25vh] backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white left-[25%] transform -translate-y-[125%] flex">
+        <div className="flex-1 flex items-center justify-center relative">
+          <div className="text-center">
+            <p className="text-lg font-bold">Upcoming Itineraries</p>
+            <p className="text-xl mt-2">{upcomingItineraries}</p>
+            <Link to="/upcomingItineraries" className="mx-2 relative">
+              <button className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2">view</button>
+            </Link> 
+          </div>
+          <div className="absolute right-0 h-[80%] w-[1px] bg-white"></div>
+          </div>
+          <div className="flex-1 flex items-center justif y-center relative">
+            <div className="text-center w-[100%]">
+              <p className="text-lg font-bold">Upcoming Activities</p>
+              <p className="text-xl mt-2">{upcomingActivities}</p>
+              <Link to="/upcomingActivities" className="mx-2 relative">
+              <button className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2">view</button>
+              </Link> 
+            </div>
+            <div className="absolute right-0 h-[80%] w-[1px] bg-white"></div>
+          </div>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-lg font-bold">Current Orders</p>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
     </div>
   );
 };    

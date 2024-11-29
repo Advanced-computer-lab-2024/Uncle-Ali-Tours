@@ -23,14 +23,16 @@ function TouristPromos({userName = ""}) {
     }, [userName])
 
   return (
-    <div className='bg-black w-fit p-4 rounded-lg mx-auto'>
+    <div className='w-fit p-4 rounded-lg mx-auto'>
         <p className='text-lg'>PROMOS</p>
         {
             promos.map(promo => (
-                <div key={promo._id} className='bg-white mt-2 text-black p-1 rounded-lg'>
+                <div key={promo._id} className='mt-2 text-white p-1 rounded-lg'>
+                    <div className="flex-1 flex flex-col justify-center items-center border-b border-white">
+                    </div>
                     <h3>{promo.code}</h3>
                     <p>{promo.description}</p>
-                    <p>Discount: {promo.discount}</p>
+                    <p>Discount: {promo.discount}%</p>
                 </div>
             ))
         }

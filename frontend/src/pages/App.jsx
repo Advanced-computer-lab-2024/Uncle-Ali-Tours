@@ -61,6 +61,7 @@ import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import WishlistPage from "./WishlistPage";
 
+import ViewMyComplaints from './ViewMyComplaints.jsx';
 
 function App() {
   const {  user, setUser } = useUserStore();
@@ -163,7 +164,7 @@ function App() {
         <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
-
+        <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
         <Route path="/wishlist" element={<WishlistPage user={user}/>} />
