@@ -99,10 +99,7 @@ export const getTourGuide = async (req, res) => {
   const { userName } = req.query;
 
   try {
-    const guide = await TourGuide.findOne({ userName }).select("-password");
-    if (!guide) {
-      return res.status(404).json({ message: "Tour guide not found" });
-    }
+    const guide = await TourGuide.find({ userName }).select("-password").populate("notifications");
 
     const profilePicturePath = guide.profilePicture
       ? `http://localhost:5000${guide.profilePicture}`
@@ -110,7 +107,7 @@ export const getTourGuide = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      guide: { ...guide.toObject(), profilePicturePath },
+      data: guide,
     });
   } catch (error) {
     console.error("Error fetching tour guide:", error);

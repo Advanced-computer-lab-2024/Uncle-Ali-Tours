@@ -231,12 +231,12 @@ export const useItineraryStore = create((set, get) => ({
   },
 
   // Flagging an itinerary as appropriate/inappropriate
-  flagItinerary: async (itineraryID, isAppropriate) => {
+  flagItinerary: async (itineraryID, isAppropriate ,userName ,link) => {
     try {
       const res = await fetch(`/api/itinerary/flag`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: itineraryID, isAppropriate }),
+        body: JSON.stringify({ id: itineraryID, isAppropriate ,userName,link}),
       });
       const body = await res.json();
       if (!body.success) {

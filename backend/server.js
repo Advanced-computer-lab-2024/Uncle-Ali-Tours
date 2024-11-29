@@ -6,7 +6,6 @@ import { connectDB } from './config/db.js';
 import { checkBD } from './util/promo.js';
 
 // Route imports
-import path from "path";
 import { fileURLToPath } from "url";
 import activityRoutes from './routes/activity.route.js';
 import activityCategoryRoutes from './routes/activityCategory.route.js';
@@ -27,6 +26,8 @@ import sellerRoutes from './routes/seller.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
+import notificationroutes from './routes/notifications.route.js'
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,8 @@ app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
 app.use("/api/promo", promoRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/notifications", notificationroutes);
+
 
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

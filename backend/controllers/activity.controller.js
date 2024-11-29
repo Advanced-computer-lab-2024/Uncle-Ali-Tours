@@ -1,5 +1,9 @@
 import Activity from "../models/activity.model.js";
 import Bookmark from "../models/bookmark.model.js";
+const { EMAIL } = process.env;
+import { sendEmail } from "../util/email.js";
+import Advertiser from "../models/advertiser.model.js"
+import Notification from "../models/notification.model.js";
 
 export const addBookmark = async (req, res) => {
     const { userName, activityId } = req.body;
@@ -123,7 +127,7 @@ export const createActivity = async (req, res) => {
 };
 export const toggleActivityAppropriateness = async (req, res) => {
     const { id } = req.params;
-    const { isAppropriate } = req.body;
+    const { isAppropriate ,userName ,link} = req.body;
   
     try {
       // Find the activity by ID
@@ -137,12 +141,41 @@ export const toggleActivityAppropriateness = async (req, res) => {
   
       // Save the updated activity
       await activity.save();
-  
-      res.json({
-        success: true,
-        message: `Activity marked as ${isAppropriate ? "appropriate" : "inappropriate"}`,
-        data: activity,
-      });
+
+        const advertiser = await Advertiser.findOne({userName});
+        if(!advertiser){
+            res.status(402).json({success:false, message :"Advertiser was not found"})
+        }
+        if (!advertiser.notifications) {
+            advertiser.notifications = [];
+        }
+        const notification = new Notification({
+            userName: advertiser.userName,
+            title: `Marked as ${isAppropriate?"appropriate":"inappropriate"}`,
+            message: `your activity has been marked as ${isAppropriate?"appropriate":"inappropriate"} by admin`,
+            link: link // link to promo page
+        });
+        await notification.save();
+        advertiser.notifications.push(notification._id);
+        await advertiser.save()
+        if(!advertiser.email){
+            return  res.status(403).json({success:false, message :"email was not found"});
+        }
+        if( !advertiser.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
+            return res.status(405).json({success:false, message: 'email format is wrong' });
+        }
+        const mailOptions = {
+            from: EMAIL,
+            to: advertiser.email,
+            subject:`Marked as ${isAppropriate?"appropriate":"inappropriate"}`,
+        html:`<h1>your activity has been marked as ${isAppropriate?"appropriate":"inappropriate"} by admin</h1><p>${link}</p>`,
+        };
+        const { success, message: emailMessage } = await sendEmail(mailOptions);
+        if(success){
+            res.status(200).json({success:true, message : "marked successfuly"});
+    }else{
+        res.status(500).json({success:false, message :"marked successfuly but problem happend while sending the email"});
+    }
     } catch (error) {
       console.error("Error toggling appropriateness:", error);
       res.status(500).json({ success: false, message: "Error updating activity appropriateness" });
@@ -158,7 +191,7 @@ export const getActivity = async (req, res) => {
     // Ensure the filter doesn't include inappropriate activities
     // parsedFilter.isAppropriate = true;
 
-    console.log(parsedFilter);
+    // console.log(parsedFilter);
 
     if (minPrice || maxPrice) {
         parsedFilter.price = {};

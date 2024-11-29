@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSellerStore } from "../store/seller";
+import { useGuideStore} from "../store/tourGuide"
+import { useAdvertiserstore} from "../store/advertiser"
 import Settings from "./Settings";
 import { IoMenu } from "react-icons/io5";
 import { MdHome } from "react-icons/md";
@@ -13,6 +15,9 @@ function Navbar() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 	const { tourist } = useTouristStore();
   const { sell } = useSellerStore();
+  const { advertiser } = useAdvertiserstore()
+  const { guide } = useGuideStore()
+
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   const toggleSideMenu = () => {
@@ -39,9 +44,9 @@ function Navbar() {
               Products
             </Link>
           )}
-{user.type === "tourist" &&
+{!!user.userName &&
 					<Link to="/notifications" className="mx-2 relative">
-							{	 tourist?.notifications?.filter((n)=> !n.read).length > 0 &&
+							{	 {...tourist, ...guide, ...advertiser}?.notifications?.filter((n)=> !n.read).length > 0 &&
 						<span className="absolute top-0 right-0 rounded-full bg-blue-500 text-white w-[9px] h-[9px]">&nbsp;</span>
 						}
 						<FaBell size="20" />

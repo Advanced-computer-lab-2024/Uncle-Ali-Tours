@@ -91,7 +91,7 @@ export const createAdvertiser = async (req, res) => {
 export const getAdvertiser = async (req, res) => {
     const { userName } = req.params; // Get userName from route parameters
     try {
-        const advertiser = await Advertiser.findOne({ userName });
+        const advertiser = await Advertiser.findOne({ userName }).populate("notifications");
         if (!advertiser) {
             return res.status(404).json({ success: false, message: "Advertiser not found" });
         }

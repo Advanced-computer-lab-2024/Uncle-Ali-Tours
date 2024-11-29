@@ -49,9 +49,9 @@ export const useActivityStore = create((set, get) => ({
   // Fetch activities, show only appropriate ones unless admin
   getActivities: async (filter = {}, sort = {}) => {
     const userIsAdmin = get().userIsAdmin; // Retrieve admin status
-    if (!userIsAdmin) {
-      filter.isAppropriate = true; // Apply filter if not an admin
-    }
+    // if (!userIsAdmin) {
+    //   filter.isAppropriate = true; // Apply filter if not an admin
+    // }
   
     const queryString = new URLSearchParams({
       filter: JSON.stringify(filter),
@@ -118,12 +118,12 @@ export const useActivityStore = create((set, get) => ({
   },
 
   // Flag activity as inappropriate (Admin only)
-  updateActivityAppropriateness: async (activityID, isAppropriate) => {
+  updateActivityAppropriateness: async (activityID, isAppropriate,userName,link) => {
     try {
       const res = await fetch(`/api/activity/flag/${activityID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isAppropriate }),
+        body: JSON.stringify({ isAppropriate,userName,link }),
       });
       const data = await res.json();
       if (data.success) {
