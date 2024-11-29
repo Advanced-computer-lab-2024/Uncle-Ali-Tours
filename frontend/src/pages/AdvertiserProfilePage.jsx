@@ -11,8 +11,11 @@ import AvatarEditor from 'react-avatar-editor';
 import { useRequestStore } from '../store/requests.js';
 import { Link } from 'react-router-dom';
 import { FiLoader } from 'react-icons/fi';
+import {useActivityStore} from "../store/activity";
 const AdvertiserProfile = () => {
-  const { user } = useUserStore(); 
+  const { user } = useUserStore();
+  const [filter, setFilter] = useState({});
+  const { getActivities, activities } = useActivityStore();
   const { advertiser, getAdvertiser, updateAdvertiser, uploadProfilePicture } = useAdvertiserstore(); 
   const [isRequired, setIsRequired] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,6 +34,59 @@ const AdvertiserProfile = () => {
   activities: [],
   itineraries: []
 });
+const [salesReport, setSalesReport] = useState([]);
+const [filteredReport, setFilteredReport] = useState([]);
+const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
+
+ useEffect(() => {
+  fetchSalesReport();
+ },[activities]);
+const fetchSalesReport = async () => {
+  await getActivities({ ...filter, creator: user.userName }); // Ensure itineraries are fetched
+
+
+  const activitiesSales = activities
+    .map((activity) => ({
+      name: activity.name,
+      revenue: (activity.numberOfBookings || 0) * activity.price,
+      dates: activity.date || "2024-11-01",
+    }));
+
+  const data = [
+    ...activitiesSales,
+  ];
+
+  setSalesReport(data);
+  
+  setFilteredReport(data);
+};
+const handleFilterChange = (field, value) => {
+  setFilters((prev) => ({ ...prev, [field]: value }));
+};
+
+const applyFilters = () => {
+  let filtered = salesReport;
+
+
+
+  // Filter by date range
+  if (filters.dateRange.start && filters.dateRange.end) {
+    filtered = filtered.filter((item) => {
+      const itemDate = new Date(item.date);
+      const startDate = new Date(filters.dateRange.start);
+      const endDate = new Date(filters.dateRange.end);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  }
+
+  // Filter by month
+  if (filters.month) {
+    filtered = filtered.filter((item) => new Date(item.date).getMonth() + 1 === parseInt(filters.month));
+  }
+
+  setFilteredReport(filtered);
+  
+};
   const navigate = useNavigate();
   const { createRequest } = useRequestStore();
 
@@ -515,39 +571,66 @@ const handleUploadClick = async () => {
           </table>
         </div>
 
-      <div className="mt-4">
-          <h3 className="text-lg mb-2">Itineraries</h3>
-          <table className="w-full text-left text-sm border-collapse border border-gray-600">
-            <thead>
-              <tr>
-                <th className="border border-gray-600 px-2 py-1">Title</th>
-                <th className="border border-gray-600 px-2 py-1">Language</th>
-                <th className="border border-gray-600 px-2 py-1">Tourists</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.itineraries.length > 0 ? (
-                report.itineraries.map((itinerary, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-600 px-2 py-1">{itinerary.title}</td>
-                    <td className="border border-gray-600 px-2 py-1">
-                      {itinerary.language}
-                    </td>
-                    <td className="border border-gray-600 px-2 py-1">{itinerary.numberOfTourists}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="border border-gray-600 px-2 py-1" colSpan="3">
-                    No itineraries available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+ 
+      </div>
+                                     {/* Sales Report Section */}
+                                     <div className="relative py-8 px-8 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-full rounded-lg shadow-lg text-white">
+          <h3 className="text-2xl text-center mb-4">Sales Report</h3>
+
+          {/* Filters */}
+          <div className="flex gap-4 mb-4">
+
+            <input
+              type="date"
+              value={filters.dateRange.start}
+              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, start: e.target.value })}
+              className="bg-gray-800 text-white rounded-md px-2 py-2"
+            />
+            <input
+              type="date"
+              value={filters.dateRange.end}
+              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, end: e.target.value })}
+              className="bg-gray-800 text-white rounded-md px-2 py-2"
+            />
+            <button
+              onClick={applyFilters}
+              className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-600"
+            >
+              Apply Filters
+            </button>
+          </div>
+
+          {/* Report Table */}
+          <table className="w-full text-white">
+  <thead>
+    <tr className="border-b border-gray-600">
+      <th className="py-2 px-4">Name</th>
+      <th className="py-2 px-4">Revenue</th>
+      <th className="py-2 px-4"> Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredReport.length > 0 ? (
+      filteredReport.map((item, index) => (
+        <tr key={index} className="border-b border-gray-600">
+          <td className="py-2 px-4">{item.name}</td>
+          <td className="py-2 px-4">${item.revenue}</td>
+          <td className="py-2 px-4">{item.dates}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan="6" className="py-4 text-center">
+          No sales data available for the selected filters.
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
         </div>
-      </div>
-      </div>
+             </div>
+
        
   );
 };

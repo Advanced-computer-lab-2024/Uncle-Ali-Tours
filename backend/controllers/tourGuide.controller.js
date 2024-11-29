@@ -260,34 +260,20 @@ export const createTourGuideReview = async (req, res) => {
 export const getTourGuideReport = async (req, res) => {
   try {
       const tourGuideUserName = req.params.userName;
-      console.log("Fetched UserName",tourGuideUserName);
-      const activities = await Activity.find({ creator: tourGuideUserName }).populate('tourists');
       const itineraries = await Itinerary.find({ creator: tourGuideUserName }).populate('tourists');
-      console.log("itin",itineraries);
-      const activitytotalTourists = activities.reduce((count, activity) => {
-        const tourists = activity.tourists;
-        return count + tourists.length;
-      }, 0);
       const itinerarytotalTourists = itineraries.reduce((count, itinerary) => {
         const tourists = itinerary.tourists;
         return count + tourists.length;
       }, 0);
-      const totalTourists=activitytotalTourists+itinerarytotalTourists;
+      const totalTourists=itinerarytotalTourists;
       const report = {
         totalTourists,
-        activities: activities.map(activity => ({
-          title: activity.name,
-          date: activity.date,
-          numberOfTourists: (activity.tourists).length,
-        })),
         itineraries: itineraries.map(itinerary => ({
           title: itinerary.name,
           language:itinerary.language,
           numberOfTourists: (itinerary.tourists).length,
         })),
       };
-      console.log("bellingham",report.itineraries);
-      console.log("bellingham2",report.activities);
       
 
       res.status(200).json(report);

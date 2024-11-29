@@ -52,7 +52,6 @@ const SellerProfile = () => {
   const [filter, setFilter] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [showChart, setShowChart] = useState(true); // Toggle for chart visibility
-
  
   useEffect(() => {
     handlePress();
@@ -71,12 +70,62 @@ const SellerProfile = () => {
   const editorRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null); // To preview the image
+  
+  const [salesReport, setSalesReport] = useState([]);
+  const [filteredReport, setFilteredReport] = useState([]);
+  const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
 
-  // useEffect(() => {
-  //         setPreviewFile(sell.profilePicture);
-  //         localStorage.setItem("profilePicture", sell.profilePicture);
-  // }, [user.userName, sell.profilePicture]);
+   useEffect(() => {
+    fetchSalesReport();
+   });
+  const fetchSalesReport = async () => {
+    await getProducts({ ...filter, creator: user.userName }); // Ensure products are fetched
+    if (products.length === 0) {
+      console.error("No products fetched");
+      return;
+    }
+  
+    const productsSales = products
+      .map((product) => ({
+        name: product.name,
+        revenue: (product.sales || 0) * product.price,
+      }));
+  
+    const data = [
+      ...productsSales,
+    ];
+  
+    setSalesReport(data);
+    
+    setFilteredReport(data);
+  };
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
+  const applyFilters = () => {
+    let filtered = salesReport;
+
+
+
+    // Filter by date range
+    if (filters.dateRange.start && filters.dateRange.end) {
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.date);
+        const startDate = new Date(filters.dateRange.start);
+        const endDate = new Date(filters.dateRange.end);
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    }
+
+    // Filter by month
+    if (filters.month) {
+      filtered = filtered.filter((item) => new Date(item.date).getMonth() + 1 === parseInt(filters.month));
+    }
+
+    setFilteredReport(filtered);
+    
+  };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -189,7 +238,9 @@ const SellerProfile = () => {
     }
   };
 
+ 
   const getSalesData = () => {
+
     return {
       labels: products.map((product) => product.name),
       datasets: [
@@ -362,7 +413,7 @@ const SellerProfile = () => {
         </div>
 
         <div className="relative py-4 px-10 w-[50vw] backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white">
-          <h2 className="text-xl mb-3">Visabale Products</h2>
+          <h2 className="text-xl mb-3">Visible Products</h2>
           <div className="flex flex-wrap gap-3">
             {products.map(
               (product, index) =>
@@ -371,6 +422,61 @@ const SellerProfile = () => {
                 )
             )}
           </div>
+        </div>
+                      {/* Sales Report Section */}
+                      <div className="relative py-8 px-8 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-full rounded-lg shadow-lg text-white">
+          <h3 className="text-2xl text-center mb-4">Sales Report</h3>
+
+          {/* Filters */}
+          <div className="flex gap-4 mb-4">
+
+            <input
+              type="date"
+              value={filters.dateRange.start}
+              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, start: e.target.value })}
+              className="bg-gray-800 text-white rounded-md px-2 py-2"
+            />
+            <input
+              type="date"
+              value={filters.dateRange.end}
+              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, end: e.target.value })}
+              className="bg-gray-800 text-white rounded-md px-2 py-2"
+            />
+            <button
+              onClick={applyFilters}
+              className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-600"
+            >
+              Apply Filters
+            </button>
+          </div>
+
+          {/* Report Table */}
+          <table className="w-full text-white">
+  <thead>
+    <tr className="border-b border-gray-600">
+      <th className="py-2 px-4">Name</th>
+      <th className="py-2 px-4">Revenue</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredReport.length > 0 ? (
+      filteredReport.map((item, index) => (
+        <tr key={index} className="border-b border-gray-600">
+          <td className="py-2 px-4">{item.name}</td>
+          <td className="py-2 px-4">${item.revenue}</td>
+          <td className="py-2 px-4">{item.date}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan="6" className="py-4 text-center">
+          No sales data available for the selected filters.
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
         </div>
       </div>
 
@@ -385,6 +491,7 @@ const SellerProfile = () => {
           )}
         </div>
       </div>
+
 
       <div className="flex justify-between mt-6">
          

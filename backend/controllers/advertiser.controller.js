@@ -188,19 +188,13 @@ export const deleteAdvertiser = async (req, res) => {
 export const getAdvertiserReport = async (req, res) => {
     try {
         const advertiserUserName = req.params.userName;
-        console.log("Fetched UserName",advertiserUserName);
         const activities = await Activity.find({ creator: advertiserUserName }).populate('tourists');
-        const itineraries = await Itinerary.find({ creator: advertiserUserName }).populate('tourists');
-        console.log("itin",itineraries);
         const activitytotalTourists = activities.reduce((count, activity) => {
           const tourists = activity.tourists;
           return count + tourists.length;
         }, 0);
-        const itinerarytotalTourists = itineraries.reduce((count, itinerary) => {
-          const tourists = itinerary.tourists;
-          return count + tourists.length;
-        }, 0);
-        const totalTourists=activitytotalTourists+itinerarytotalTourists;
+
+        const totalTourists=activitytotalTourists;
         const report = {
           totalTourists,
           activities: activities.map(activity => ({
@@ -208,14 +202,8 @@ export const getAdvertiserReport = async (req, res) => {
             date: activity.date,
             numberOfTourists: (activity.tourists).length,
           })),
-          itineraries: itineraries.map(itinerary => ({
-            title: itinerary.name,
-            language:itinerary.language,
-            numberOfTourists: (itinerary.tourists).length,
-          })),
+
         };
-        console.log("bellingham",report.itineraries);
-        console.log("bellingham2",report.activities);
         
 
         res.status(200).json(report);
