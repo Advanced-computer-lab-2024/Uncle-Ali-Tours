@@ -1,5 +1,4 @@
 import Itinerary from "../models/itinerary.model.js";
-import asyncHandler from 'express-async-handler';
 
 // Create a new itinerary
 export const createItinerary = async (req, res) => {
@@ -86,6 +85,22 @@ export const getItinerary = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+
+export const getItineraryById = async (req, res) => {
+    try {
+        const itinerary = await Itinerary.findById(req.params.id);
+        
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+
+        res.status(200).json({ success: true, data: itinerary });
+        return itinerary;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 // Delete an itinerary
 export const deleteItinerary = async (req, res) => {

@@ -41,6 +41,7 @@ function BookedHotels() {
         {userBookedHotels.length === 0 && <p>No booked hotels</p>}
     {userBookedHotels.map((hotel) => (
         <div key={hotel.data.id} className='m-4 p-4 border-2 border-black rounded-lg'>
+            <p>Hotel: {hotel.name}</p>
             <p>Hotel Offer ID: {hotel.data[0].id}</p>
             <p>Price: {hotel.data[0].price.total} {hotel.data[0].price.currency}</p>
             <p>Check In Date: {hotel.data[0].checkInDate}</p>

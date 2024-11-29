@@ -28,12 +28,12 @@ const activitySchema = new mongoose.Schema({
     },
     location: {
         type: {
-            type: String, 
-            enum: ['Point'], 
+            type: String,
+            enum: ['Point'],
             required: false
         },
         coordinates: {
-            type: [Number], 
+            type: [Number],
             required: false
         }
     },

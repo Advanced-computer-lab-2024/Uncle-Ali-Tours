@@ -181,6 +181,21 @@ export const getActivity = async (req, res) => {
     }
 };
 
+export const getActivityById = async (req, res) => {
+    try {
+        const activity = await Activity.findById(req.params.id);
+
+        if (!activity) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        res.status(200).json({ success: true, data: activity });
+        return activity;
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // Update Activity (including isAppropriate flag)
 export const updateActivity = async (req, res) => {
     const { id, newActivity } = req.body;

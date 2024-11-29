@@ -61,7 +61,7 @@ const itinerarySchema = new mongoose.Schema({
   },
   isPayed: {
     type: Boolean,
-    default: true, 
+    default: true,
   },
   numberOfBookings: {
     type: Number,
@@ -69,13 +69,12 @@ const itinerarySchema = new mongoose.Schema({
   },
   isActivated: {
     type: Boolean,
-    default: true, 
+    default: true,
   },
   isAppropriate: {
     type: Boolean,
     default: true,
     required: false,
- 
   },
   isBooked: {
     type: Boolean,

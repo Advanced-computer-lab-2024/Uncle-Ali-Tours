@@ -1,10 +1,9 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import ActivityContainer from '../components/ActivityContainer.jsx';
+import Dialog from '../components/Dialog.jsx';
+import FormDialog from '../components/FormDialog.jsx';
 import { useActivityStore } from '../store/activity';
 import { useTouristStore } from '../store/tourist';
-import Dialog from '../components/Dialog.jsx'
-import FormDialog from '../components/FormDialog.jsx'
-import ActivityContainer from '../components/ActivityContainer.jsx';
 function ViewActivities() {
     const [filter, setFilter] = useState(
         {}

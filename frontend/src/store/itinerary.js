@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import axios from 'axios';
+import { create } from 'zustand';
 
 export const useItineraryStore = create((set, get) => ({
   currentItinerary: {},
@@ -49,10 +49,28 @@ export const useItineraryStore = create((set, get) => ({
       if (!body.success) return body;
 
       set({ itineraries: body.data });
+      console.log(body.data);
       return { success: true, message: "Fetched itineraries" };
     } catch (error) {
       console.error("Error fetching itineraries:", error);
       return { success: false, message: "Error fetching itineraries" };
+    }
+  },
+
+  getItineraryById: async (itineraryID) => {
+    try {
+      const res = await fetch(`/api/itinerary/${itineraryID}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const body = await res.json();
+      if (!body.success) return body;
+
+      set({ currentItinerary: body.data });
+      return { success: true, message: "Fetched itinerary" };
+    } catch (error) {
+      console.error("Error fetching itinerary:", error);
+      return { success: false, message: "Error fetching itinerary" };
     }
   },
 

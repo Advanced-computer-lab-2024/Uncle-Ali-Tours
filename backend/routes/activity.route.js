@@ -1,10 +1,11 @@
 import express from "express";
-import { addBookmark,toggleBookmark, getBookmarkedActivities, removeBookmark,createActivity, deleteActivity, getActivity, updateActivity, createActivityReview,getAllActivities,toggleActivityAppropriateness } from "../controllers/activity.controller.js";
+import { addBookmark, createActivity, createActivityReview, deleteActivity, getActivity, getActivityById, getAllActivities, getBookmarkedActivities, removeBookmark, toggleActivityAppropriateness, toggleBookmark, updateActivity } from "../controllers/activity.controller.js";
 
 const router = express.Router();
 
 router.post("/", createActivity);
 router.get("/", getActivity);
+router.get("/:id", getActivityById);
 router.delete("/", deleteActivity);
 router.put("/", updateActivity);
 router.post('/:id/reviews', createActivityReview);

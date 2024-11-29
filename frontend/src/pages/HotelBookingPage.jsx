@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useHotelStore } from '../store/hotel';
 import { useUserStore } from '../store/user';
 
 function HotelBookingPage() {
   const [cityName, setcityName] = useState('');
+  const [hotelName, setHotelName] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [bookedHotel, setBookedHotel] = useState({data : {}, creator : ''});
@@ -11,6 +13,7 @@ function HotelBookingPage() {
   const [viewingOffers, setViewingOffers] = useState(false);
   const { user } = useUserStore();
 const {cityCode,searchCity ,getHotelListByCity ,hotels ,getHotelOffers ,offers ,addBookedHotels } = useHotelStore();
+const navigate = useNavigate();
   
 const handleSearch = async () => {
     setLoading(true);
@@ -22,28 +25,42 @@ const handleSearch = async () => {
     setLoading(false);
   };
 
-  const handleViewOffers = async (hotelId ,checkInDate ,checkOutDate) => {
+  const handleViewOffers = async (hotelName ,hotelId ,checkInDate ,checkOutDate) => {
     setLoading(true);
     console.log('Viewing offers for hotel:', hotelId);
     await getHotelOffers(hotelId ,checkInDate ,checkOutDate);
+    setHotelName(hotelName);
     console.log('offers:',offers);
+    console.log('hotels:' , hotels);
     setViewingOffers(true);
     setLoading(false);
   };
 
-  const handleAddBookHotel = async (data) => {
+  const handleAddBookHotel = async (hotelName, data) => {
     console.log('Adding hotel:', data);
     setBookedHotel((prevBookedHotel) => ({
       ...prevBookedHotel,
       data: data,
       creator: user.userName,
+      name: hotelName,
     }));
   }
 
   const handlePayHotel = async () => {
-    await addBookedHotels(bookedHotel);
+    // setBookedHotel((prevBookedHotel) => ({
+    //   ...prevBookedHotel,
+    //   isPaid: true,
+    // }));
+    try{
+      navigate(`/payment/hotel/${bookedHotel.data.id}` , { state: { bookedHotel : bookedHotel } });
+    }
+    catch(error){
+      console.error('Error:', error);
+    }
+    // ----to be added to the payment page when successful payment is done
+    // await addBookedHotels(bookedHotel);
     console.log('bookedHotel data:',bookedHotel.data);
-    console.log('bookedHotel:',bookedHotel);
+    // console.log('bookedHotel:',bookedHotel);
   }
 
   return (
@@ -119,7 +136,7 @@ const handleSearch = async () => {
             }}
             >
               <p style={{ margin: '0 0 10px 0', fontSize: '18px', fontWeight: 'bold' }}>{hotel.name}</p>
-              <button onClick={() => handleViewOffers(hotel.hotelId, checkInDate, checkOutDate)} style={{
+              <button onClick={() => handleViewOffers(hotel.name , hotel.hotelId, checkInDate, checkOutDate)} style={{
                   padding: '10px 20px',
                   backgroundColor: '#28A745',
                   color: 'white',
@@ -159,12 +176,13 @@ const handleSearch = async () => {
                   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                 }}
                 >
+                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>{hotelName}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Offer ID: {offer.id}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Price: {offer.price.total} {offer.price.currency}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Room Type: {offer.room.type}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Check-in: {offer.checkInDate}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Check-out: {offer.checkOutDate}</p>
-                  <button onClick={() => handleAddBookHotel(offer)}  style={{
+                  <button onClick={() => handleAddBookHotel(hotelName, offer)}  style={{
                     padding: '10px 20px',
                     backgroundColor: '#28A745',
                     color: 'white',
@@ -184,7 +202,7 @@ const handleSearch = async () => {
                     cursor: 'pointer',
                     }}
                     >
-                    pay
+                    checkout
                 </button>
                 </div>
               ))}

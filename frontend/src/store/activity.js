@@ -75,6 +75,26 @@ export const useActivityStore = create((set, get) => ({
       return { success: false, message: "Error fetching activities" };
     }
   },
+
+  // Fetch activity by ID
+  getActivityById: async (id) => {
+    try {
+      const res = await fetch(`/api/activity/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const body = await res.json();
+      if (body.success) {
+        set({ currentActivity: body.data });
+        return { success: true };
+      } else {
+        return { success: false, message: body.message };
+      }
+    } catch (error) {
+      console.error("Error fetching activity by ID:", error);
+      return { success: false, message: "Error fetching activity by ID" };
+    }
+  },
   
   // Create a new activity
   createActivity: async (newActivity) => {

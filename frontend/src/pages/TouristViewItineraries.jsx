@@ -1,15 +1,14 @@
-import React from 'react'
-import { useState , useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
+import Dialog from '../components/Dialog.jsx';
+import FormDialog from '../components/FormDialog.jsx';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
 import { useItineraryStore } from '../store/itinerary';
 import { useTouristStore } from '../store/tourist';
-import TouristItineraryContainer from '../components/TouristItineraryContainer';
-import Dialog from '../components/Dialog.jsx'
-import FormDialog from '../components/FormDialog.jsx'
 
 
 function TouristViewItineraries() {
   const { tourist } = useTouristStore(); 
-    const [filter, setFilter] = useState({isActivated: true});
+    const [filter, setFilter] = useState({});
     const [curActivity, setCuritinrary] = useState(-1);
     const changeitinrary = (id) => ( setCuritinrary(id))
     const [applyPreferences, setApplyPreferences] = useState(false);
@@ -43,9 +42,10 @@ useEffect(() => {
   const SortingList=["High to low","Low to High"];
 
    const handlePress = async () => {
-    await getItineraries({ ...filter, isActivated: true } , sort);
-    console.log(filter);
-   };
+    if(filter.name === "") delete filter.name;
+    getItineraries(filter, sort);
+    console.log(filter, sort);
+    };
 
    const handleSort =  () => {
     setVisibillity((prev) => !prev);
@@ -60,9 +60,9 @@ useEffect(() => {
         /> 
         Apply My Preferences
       </label>
-        <input className='w-[15ch] m-2 pl-1'  name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' value={filter.minPrice || ""} name={"bud"} placeholder='minBudget' onChange={(e) => setFilter({ ...filter, minPrice: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' value={filter.maxPrice || ""} name={"bud"} placeholder='maxBudget' onChange={(e) => setFilter({ ...filter, maxPrice: e.target.value})}/>
+        <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
+        <input className='w-[15ch] m-2 pl-1' type="number" value={filter.minPrice || ""} name={"bud"} placeholder='minBudget' onChange={(e) => setFilter({ ...filter, minPrice: e.target.value})}/>
+        <input className='w-[15ch] m-2 pl-1' type="number" value={filter.maxPrice || ""} name={"bud"} placeholder='maxBudget' onChange={(e) => setFilter({ ...filter, maxPrice: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1'  name={"date"} placeholder='Date' onChange={(e) => setFilter({ ...filter, availableDates: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1'  name={'pref'} placeholder='PreferenceTags' onChange={(e) => setFilter({ ...filter, preferenceTag: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1'  name={'lang'} placeholder='Language' onChange={(e) => setFilter({ ...filter, language: e.target.value})}/>
@@ -70,7 +70,7 @@ useEffect(() => {
         <div className={` grid w-fit mx-auto`} >
         <div>
       <div className='mb-4 text-xl'>
-            Available Itineraries   
+            Available Itineraries
         </div>
         {
             itineraries.map((itinerary, index)=> (
