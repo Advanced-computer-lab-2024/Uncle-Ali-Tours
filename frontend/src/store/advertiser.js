@@ -40,7 +40,7 @@ export const useAdvertiserstore = create((set) => ({
             if (body.advertiser) {
                 delete body.advertiser.password;  // Remove sensitive info
                 set({ advertiser: body.advertiser });
-                console.log(body.advertiser);
+                // console.log(body.advertiser);
                 return { success: true, message: "Fetched advertiser data" };
             } else {
                 return { success: false, message: "No advertiser data found" };

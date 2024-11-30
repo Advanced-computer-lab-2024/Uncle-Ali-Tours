@@ -207,7 +207,7 @@ export const getActivity = async (req, res) => {
 
     try {
         const activities = await Activity.find(parsedFilter).sort(parsedSort);
-        console.log(activities);
+        // console.log(activities);
         return res.status(200).json({ success: true, data: activities });
     } catch (error) {
         return res.status(404).json({ message: error.message });
