@@ -61,6 +61,8 @@ import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
+import CheckoutPage from './CheckOutPage.jsx';
+
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 
@@ -147,6 +149,8 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
+        <Route path="/checkoutPage" element={<CheckoutPage />} />
+            
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>

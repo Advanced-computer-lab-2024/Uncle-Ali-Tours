@@ -6,6 +6,7 @@ export const useTouristStore = create((set) => ({
     tourist:{},
     wishlistedProducts: [],
     cartProducts:[],
+    checkoutList: [],
     errorMessage: "",
     settourist: (tourist) => set({tourist}),
     getTourist: async (filter = {}, sort = {}) => {
@@ -351,6 +352,19 @@ export const useTouristStore = create((set) => ({
           set({ errorMessage: error.message || "Unable to fetch Cart products" });
         }
       },
+      checkoutProducts: () => {
+        set((state) => ({
+            checkoutList: [...state.cartProducts], // Move all cart products to checkout
+            cartProducts: [], // Clear the cart
+        }));
+    },
+
+    // Remove a product from the checkout list
+    removeFromCheckout: (_id) => {
+        set((state) => ({
+            checkoutList: state.checkoutList.filter((product) => product._id !== _id),
+        }));
+    },
 
 
       fetchUpcomingItineraries: async (userName) => {
