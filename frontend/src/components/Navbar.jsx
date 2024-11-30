@@ -62,6 +62,15 @@ function Navbar() {
               <IoMenu size="25" className="mx-2"/>
             </button>
           )}
+           {user?.type === "admin" && (
+            <button
+              onClick={toggleSideMenu}
+              className="mx-2 focus:outline-none"
+              aria-label={isSideMenuOpen ? "Close menu" : "Open menu"}
+            >
+              <IoMenu size="25" className="mx-2"/>
+            </button>
+          )}
         </div>
       </nav>
 

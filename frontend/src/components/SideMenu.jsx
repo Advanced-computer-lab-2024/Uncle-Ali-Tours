@@ -7,7 +7,7 @@ import { useTouristStore } from "../store/tourist";
 import { toast } from "react-hot-toast";
 
 const SideMenu = ({ isOpen, onClose }) => {
-  const {updateTourist} = useTouristStore();
+  const { updateTourist } = useTouristStore();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [preferences, setPreferences] = useState([]);
   const { tags, getTags } = useTagStore();
@@ -23,7 +23,7 @@ const SideMenu = ({ isOpen, onClose }) => {
     }
   }, [user]);
 
-  const menuItems = [
+  const menuItemsTourist = [
     {
       title: "Book",
       subItems: [
@@ -66,6 +66,37 @@ const SideMenu = ({ isOpen, onClose }) => {
     },
   ];
 
+  const menuItemsAdmin = [
+    {
+      title: "Tags & Categories",
+      subItems: [
+        { name: "Preference Tags", path: "/preferenceTag" },
+        { name: "Activity Categories", path: "/activityCategory" },
+      ],
+    },
+    {
+      title: "Itenirary & Activities",
+      subItems: [
+        { name: "Itinerary", path: "/AdminItineraryPage" },
+        { name: "Activities", path: "/AdminActivitiesPage" },
+      ],
+    },
+    {
+      title: "Products",
+      subItems: [
+        { name: "Products", path: "/product" },
+      ],
+    },
+    {
+      title: "Users Settings",
+      subItems: [
+        { name: "Complaints", path: "/complaints" },
+        { name: "View Delete Requests", path: "/viewDeleteRequests" },
+
+      ],
+    },
+  ];
+
   const toggleMenu = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
@@ -87,71 +118,69 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-[7vh] rounded-lg right-0 h-[65vh] mr-[0.8vw] w-64 bg-[#161821f0] text-white transform ${
-        isOpen ? "translate-x-0" : "translate-x-[calc(100%+0.8vw)]"
-      } transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
+      className={`fixed top-[7vh] rounded-lg right-0 h-[65vh] mr-[0.8vw] w-64 bg-[#161821f0] text-white transform ${isOpen ? "translate-x-0" : "translate-x-[calc(100%+0.8vw)]"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
     >
       <button onClick={onClose} className="absolute top-4 right-4 text-white">
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
-        {user.type === "tourist" &&
-          menuItems.map((item, index) => (
-            <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
-              <h2
-                onClick={() => toggleMenu(index)}
-                className={`${expandedIndex === index ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
-              >
-                {item.title}
-                <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === index ? "rotate-180" : ""}`} />
-              </h2>
-              <ul className={`transition-all duration-500 ${expandedIndex === index ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
-                {item.subItems.map((subItem, subIndex) => (
-                  <li key={subIndex}>
-                    <Link
-                      to={subItem.path}
-                      className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded`}
-                      onClick={onClose}
-                    >
-                      {subItem.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        
-        {/* My Preferences Section */}
-        <div className={`mb-4 w-[90%] mx-auto ${expandedIndex === menuItems.length ? "bg-gray-900" : ""}`}>
-          <h2
-            onClick={() => toggleMenu(menuItems.length)}
-            className={`${expandedIndex === menuItems.length ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
-          >
-            My Preferences
-            <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === menuItems.length ? "rotate-180" : ""}`} />
-          </h2>
-          <ul className={`transition-all duration-500 ${expandedIndex === menuItems.length ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
-            {tags && tags.length > 0 ? (
-              tags.map((tag) => (
-                <li key={tag._id || tag.name}>
-                  <button
-                    onClick={() => handlePreferenceToggle(tag.name)}
-                    className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === menuItems.length ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
+        {(user.type === "tourist" ? menuItemsTourist : menuItemsAdmin).map((item, index) => (
+          <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
+            <h2
+              onClick={() => toggleMenu(index)}
+              className={`${expandedIndex === index ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
+            >
+              {item.title}
+              <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === index ? "rotate-180" : ""}`} />
+            </h2>
+            <ul className={`transition-all duration-500 ${expandedIndex === index ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
+              {item.subItems.map((subItem, subIndex) => (
+                <li key={subIndex}>
+                  <Link
+                    to={subItem.path}
+                    className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded`}
+                    onClick={onClose}
                   >
-                    {tag.name}
-                    {preferences.includes(tag.name) && <FaCheck className="text-green-500" />}
-                  </button>
+                    {subItem.name}
+                  </Link>
                 </li>
-              ))
-            ) : (
-              <li className="px-4 py-1 text-sm">Loading preferences...</li>
-            )}
-          </ul>
-        </div>
+              ))}
+            </ul>
+          </div>
+        ))}
+
+        {/* Render "My Preferences" section only for tourists */}
+        {user.type === "tourist" && (
+          <div className={`mb-4 w-[90%] mx-auto ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "bg-gray-900" : ""}`}>
+            <h2
+              onClick={() => toggleMenu(user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length)}
+              className={`${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
+            >
+              My Preferences
+              <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "rotate-180" : ""}`} />
+            </h2>
+            <ul className={`transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
+              {tags && tags.length > 0 ? (
+                tags.map((tag) => (
+                  <li key={tag._id || tag.name}>
+                    <button
+                      onClick={() => handlePreferenceToggle(tag.name)}
+                      className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
+                    >
+                      {tag.name}
+                      {preferences.includes(tag.name) && <FaCheck className="text-green-500" />}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-1 text-sm">Loading preferences...</li>
+              )}
+            </ul>
+          </div>
+        )}
       </nav>
     </div>
   );
 };
 
 export default SideMenu;
-
