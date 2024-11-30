@@ -1,10 +1,11 @@
 import {create} from 'zustand';
-import { addProductWishlist, badgeLevel, deleteTourist, getTourist, removeProductWishlist, updateTourist } from '../../../backend/controllers/tourist.controller';
+import { addProductToCart, addProductWishlist, badgeLevel, deleteTourist, getCartProducts, getTourist, removeProductCart, removeProductWishlist, updateTourist } from '../../../backend/controllers/tourist.controller';
 import { useUserStore } from './user';
 import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
     tourist:{},
     wishlistedProducts: [],
+    cartProducts:[],
     errorMessage: "",
     settourist: (tourist) => set({tourist}),
     getTourist: async (filter = {}, sort = {}) => {
@@ -287,6 +288,63 @@ export const useTouristStore = create((set) => ({
         } catch (error) {
           console.error("Error fetching wishlisted products:", error);
           set({ errorMessage: error.message || "Unable to fetch wishlisted products" });
+        }
+      },
+      addProductToCart: async (name, _id) => {
+        const res = await fetch('/api/tourist/addProductToCart', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName: name, _id })
+        });
+    
+        const data = await res.json();
+        console.log("data", data);
+    
+        if (!data.success) {
+            return { success: false, message: data.message };
+        }
+    
+        // Use the updated ProductsCart from the response
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsCart: data.data // Update with the actual updated cart from the server
+            }
+        }));
+    
+        return { success: true, message: "Added successfully." };
+    },
+    removeProductCart: async(name,_id)=>{
+        const res = await fetch('/api/tourist/removeProductCart',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            console.log("data remove", data);
+            if (!data.success) return {success: false, message: data.message};
+          
+            set((state) => ({tourist: {...state.tourist,ProductsCart:state.tourist.ProductsCart?.filter(item => item !==_id)}}))
+            return{success: true, message: "Removed successfully."};
+    },
+    getCartProducts: async (userName) => {
+        try {
+          const response = await fetch(`/api/tourist/getCartProducts/${userName}`);
+          console.log("Response", response);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to fetch cart products");
+          }
+    
+          const data = await response.json();
+          set({ cartProducts: data.data, errorMessage: "" }); // Update store state with products
+        } catch (error) {
+          console.error("Error fetching Cart products:", error);
+          set({ errorMessage: error.message || "Unable to fetch Cart products" });
         }
       },
 

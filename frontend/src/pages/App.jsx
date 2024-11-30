@@ -53,6 +53,7 @@ import Security from './Security.jsx';
 import EditProduct from "../components/EditProduct.jsx";
 import BookMark from '../components/BookMark';
 import WishlistPage from "./WishlistPage";
+import CartPage from "./CartPage.jsx";
 import Notification from './Notification.jsx';
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
@@ -165,7 +166,8 @@ function App() {
 
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
-        <Route path="/wishlist" element={<WishlistPage user={user}/>} />
+        <Route path="/wishlist" element={<WishlistPage user={user}/>}/> 
+         <Route path="/Cart" element={<CartPage user={user}/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

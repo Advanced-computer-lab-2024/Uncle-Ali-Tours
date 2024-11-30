@@ -577,6 +577,81 @@ export const getWishlistedProducts = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during fetching wishlisted products" });
     }
 };
+export const addProductToCart = async (req, res) => {
+    const { userName, _id } = req.body;
+    try {
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Check if product is already in Cart
+        if (tourist.productsCart.includes(_id)) {
+            return res.status(404).json({ success: false, message: "Already in Cart" });
+        }
+
+        // Add product to Cart
+        tourist.productsCart.push(_id);
+        await tourist.save(); // Save changes to the database
+
+        // Send the updated cart back in the response
+        return res.status(200).json({
+            success: true,
+            data: tourist.productsCart,  // Return the updated Cart
+            message: 'Added to Cart successfully'
+        });
+    } catch (error) {
+        console.error("Error Adding to Cart:", error);
+        res.status(500).json({ success: false, message: "Server error during Add to Cart" });
+    }
+};
+export const removeProductCart = async(req,res) => {
+    const {userName , _id} = req.body;
+    try{
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        console.log(_id)
+        if(!tourist.productsCart.includes(_id)){
+            return res.status(404).json({ success: false, message: "not in Cart" });
+        }
+        const product = await Product.findById(_id);
+        console.log(product)
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+        tourist.productsCart = tourist.productsCart.filter(item => item !==_id);
+        await tourist.save();
+        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'removed successfully' });
+        
+    }catch (error) {
+        console.error("Error Adding to Cart:", error);
+        res.status(500).json({ success: false, message: "Server error during Removing from Cart" });
+    }
+}
+
+export const getCartProducts = async (req, res) => {
+    const { userName } = req.params; // Get userName from request parameters
+
+    try {
+        // Find tourist by username and populate productsCart
+        const tourist = await Tourist.findOne({ userName }).populate('productsCart');
+        
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+
+        // Find the products in the Cart
+        const AddedToCartProducts = await Product.find({ _id: { $in: tourist.productsCart } });
+
+        // Return success response with AddedToCart products
+        return res.status(200).json({ success: true, data: AddedToCartProducts });
+    } catch (error) {
+        console.error("Error Fetching AddedToCart Products:", error);
+        res.status(500).json({ success: false, message: "Server error during fetching AddedToCart products" });
+    }
+};
 export const getMyUpcomingItineraries = async (req,res) => {
     const {userName} = req.query;
     try{
