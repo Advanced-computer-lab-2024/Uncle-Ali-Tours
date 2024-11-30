@@ -12,10 +12,10 @@ function ProductContainer({ product, productChanger, tourist }) {
     const [review, setReview] = useState('');
     const user = useUserStore((state) => state.user);
 
-    const { addProductWishlist,removeProductWishlist} = useTouristStore();
+    const { addProductWishlist,removeProductWishlist, getWishlistedProducts} = useTouristStore();
 
     const [isWishlisted, setIsWishlisted] = useState(false);
-    const { addProductToCart,removeProductCart} = useTouristStore();
+    const { addProductToCart,removeProductCart, getCartProducts} = useTouristStore();
 
     const [isAddedToCart, setIsAddedToCart] = useState(false);
 
