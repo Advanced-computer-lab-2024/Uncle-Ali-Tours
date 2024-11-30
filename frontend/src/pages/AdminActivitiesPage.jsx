@@ -7,9 +7,10 @@ import { useActivityStore } from '../store/activity.js';
 import { useUserStore } from '../store/user.js';
 
 function AdminActivityPage() {
-  const { user } = useUserStore(); // Fetching user details (Only admin should have access)
-  const { activities, getAllActivities, updateActivityAppropriateness } = useActivityStore();
+  const  user  =  JSON.parse(localStorage.getItem("user")) // Fetching user details (Only admin should have access)
+  const { activities, getActivities, updateActivityAppropriateness } = useActivityStore();
   const [curActivity, setCurActivity] = useState({}); // Holds the current activity for flagging
+  console.log(user)
 
   // Dialog functions
   const { showDialog } = dialog();
@@ -17,8 +18,8 @@ function AdminActivityPage() {
   // Fetch all activities when the component mounts
   useEffect(() => {
     const fetchActivities = async () => {
-      if (user && user.role === 'admin') {
-        const response = await getAllActivities(); // Fetch all activities without filtering
+      if (user && user.type === 'admin') {
+        const response = await getActivities(); // Fetch all activities without filtering
         if (!response.success) {
           toast.error('Failed to load activities', { className: "text-white bg-gray-800" });
         }
@@ -28,12 +29,13 @@ function AdminActivityPage() {
     };
 
     fetchActivities();
-  }, [user.role, getAllActivities]);
+  }, [user.type, getActivities]);
 
   // Toggle the appropriateness of the selected activity
   const flagActivity = async () => {
     const newStatus = !curActivity.isAppropriate;
-    const { success, message } = await updateActivityAppropriateness(curActivity._id, newStatus);
+    const link = `${window.location.origin}/activityDetail/${curActivity._id}`;
+    const { success, message } = await updateActivityAppropriateness(curActivity._id, newStatus,curActivity.creator,link);
     if (success) {
       toast.success(message, { className: "text-white bg-gray-800" });
       // Update the `isAppropriate` status locally

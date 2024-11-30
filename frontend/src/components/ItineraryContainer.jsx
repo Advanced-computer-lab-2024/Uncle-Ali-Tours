@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { Link, useNavigate } from 'react-router-dom';
-import Dialog, { dialog } from '../components/Dialog.jsx';
-import { useItineraryStore } from '../store/itinerary.js';
-import { useGuideStore } from '../store/tourGuide.js';
-import {useUserStore} from '../store/user.js';
-import { formdialog } from './FormDialog.jsx';
-import Rating from './Rating';
-import { adjustableDialog } from './AdjustableDialog.jsx';
+import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
-import { set } from 'mongoose';
+import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
+import { Link, useNavigate } from 'react-router-dom';
+import { dialog } from '../components/Dialog.jsx';
+import { useItineraryStore } from '../store/itinerary.js';
+import { useGuideStore } from '../store/tourGuide.js';
 import { useTouristStore } from '../store/tourist.js';
+import { useUserStore } from '../store/user.js';
+import { adjustableDialog } from './AdjustableDialog.jsx';
+import { formdialog } from './FormDialog.jsx';
+import Rating from './Rating';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -142,7 +140,7 @@ const handleActivateClick = () => {
 
 const handleSubmitTourGuideReview = async (e) => {
   e.preventDefault();
-  const tourGuideName = itinerary.creator;  
+  const tourGuideName = itinerary.creator;
 
 if (!tourGuideName) {
     console.error('Error: tour guide name is missing');
@@ -167,7 +165,7 @@ if( !tourist?.itineraryBookings?.includes(itinerary._id))
 
 const handleBook = async (id) =>{
   if(user.type !== "tourist"){
-        return toast.error("you are not alloewd to book an activity" , { className: 'text-white bg-gray-800' });
+        return toast.error("you are not alloewd to book an itinerary" , { className: 'text-white bg-gray-800' });
       }
       const { success, message } = await updateItineraryBookings(user.userName,id);
       if(success) {await updateMyPoints(user.userName,itinerary.price)}
@@ -304,19 +302,7 @@ const deactivate = async () => {
           View Reviews
         </button>
       </div>
-
       
-
-
-      <button
-        onClick={handleBookClick}
-        disabled={itinerary.isBooked} // disable button if already booked
-        className={`p-2 ${itinerary.isBooked ? 'bg-gray-500' : 'bg-blue-500'} text-white rounded`}
-      >
-        {itinerary.isBooked ? 'Booked' : 'Book Now'}
-      </button>
-
-
         <div className='flex justify-between'>
         <div className='flex'>
         <Link 
@@ -337,8 +323,8 @@ const deactivate = async () => {
         Share via Mail
         </button>
         {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
-         <button onClick={() => (handleBook(itinerary._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
-         <button onClick={() => (handleUnBook(itinerary._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
+         <button onClick={() => (handleBook(itinerary._id))} className="p-2 bg-blue-500 text-white">book</button>  :   
+         <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
          }
         {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { dialog } from '../components/Dialog.jsx';
-import { formdialog } from './FormDialog.jsx'; 
-import { FiLoader } from 'react-icons/fi'; 
-import { useUserStore } from '../store/user.js';
 import toast, { Toaster } from 'react-hot-toast';
+import { FiLoader } from 'react-icons/fi';
+import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
+import { Link, useNavigate } from 'react-router-dom';
+import { dialog } from '../components/Dialog.jsx';
 import { useActivityStore } from '../store/activity.js';
-import { Link } from 'react-router-dom';
-import Rating from './Rating';
 import { useTouristStore } from '../store/tourist.js';
+import { useUserStore } from '../store/user.js';
+import { formdialog } from './FormDialog.jsx';
+import Rating from './Rating';
 
 function ActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ function ActivityContainer({ activity, activityChanger }) {
   const [comment, setComment] = useState('');
   const displayPrice = (activity.price * user.currencyRate).toFixed(2);
   const {tourist, updateRealActivityBookings,unRealActivityBook} = useTouristStore();
-  
+  const navigate = useNavigate();
 
   const handleClick = () => {
     showDialog()
@@ -102,6 +102,15 @@ function ActivityContainer({ activity, activityChanger }) {
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
 
+  const handleBookClick = async (activityID) => {
+    try{
+      navigate(`/payment/activity/${activityID}`);
+    }
+    catch(error){
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
       <Toaster />
@@ -168,8 +177,8 @@ function ActivityContainer({ activity, activityChanger }) {
         Share via Mail
         </button>
         {   !tourist?.ActivityBookings?.includes(activity._id) ?
-         <button onClick={() => (handleBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
-         <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
+         <button onClick={() => (handleBookClick(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  : <div></div>   
+        //  <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
          }
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">

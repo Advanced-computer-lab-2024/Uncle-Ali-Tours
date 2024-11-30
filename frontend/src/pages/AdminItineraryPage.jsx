@@ -22,8 +22,9 @@ function AdminItineraryPage() {
   const toggleAppropriateness = async (itinerary) => {
     if (itinerary) {
       // Toggle the 'isAppropriate' field
+      const link = `${window.location.origin}/itineraryDetail/${itinerary._id}`; 
       const updatedItinerary = { ...itinerary, isAppropriate: !itinerary.isAppropriate };
-      const { success, message } = await flagItinerary(updatedItinerary._id, updatedItinerary.isAppropriate);
+      const { success, message } = await flagItinerary(updatedItinerary._id, updatedItinerary.isAppropriate,updatedItinerary.creator,link);
       if (success) {
         toast.success(
           updatedItinerary.isAppropriate ? "Itinerary marked as appropriate." : "Itinerary flagged as inappropriate.", 

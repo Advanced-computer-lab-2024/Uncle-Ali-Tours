@@ -1,5 +1,10 @@
 import Itinerary from "../models/itinerary.model.js";
 import asyncHandler from 'express-async-handler';
+import TourGuide from "../models/tourGuide.model.js"
+const { EMAIL } = process.env;
+import { sendEmail } from "../util/email.js";
+import Notification from "../models/notification.model.js";
+
 
 // Create a new itinerary
 export const createItinerary = async (req, res) => {
@@ -86,6 +91,22 @@ export const getItinerary = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+
+export const getItineraryById = async (req, res) => {
+    try {
+        const itinerary = await Itinerary.findById(req.params.id);
+        
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+
+        res.status(200).json({ success: true, data: itinerary });
+        return itinerary;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 // Delete an itinerary
 export const deleteItinerary = async (req, res) => {
@@ -221,7 +242,7 @@ export const bookItinerary = async (req, res) => {
 
 // Flag an itinerary as appropriate or inappropriate
 export const flagItinerary = async (req, res) => {
-    const { id, isAppropriate } = req.body;  // Expecting an ID and a boolean flag for appropriateness
+    const { id, isAppropriate ,userName ,link} = req.body;  // Expecting an ID and a boolean flag for appropriateness
 
     try {
         const itinerary = await Itinerary.findById(id);
@@ -235,13 +256,43 @@ export const flagItinerary = async (req, res) => {
 
         // Save the updated itinerary
         await itinerary.save();
-
-        res.status(200).json({
-            success: true,
-            message: isAppropriate ? "Itinerary marked as appropriate" : "Itinerary marked as inappropriate",
-            data: itinerary
+        const guide = await TourGuide.findOne({userName});
+        if(!guide){
+            res.status(402).json({success:false, message :"Tour Guide was not found"})
+        }
+        if (!guide.notifications) {
+            guide.notifications = [];
+        }
+        const notification = new Notification({
+            userName: guide.userName,
+            title: `Marked as ${isAppropriate?"appropriate":"inappropriate"}`,
+            message: `your itinerary has been marked as ${isAppropriate?"appropriate":"inappropriate"} by admin`,
+            link: link // link to promo page
         });
+        await notification.save();
+        guide.notifications.push(notification._id);
+        await guide.save()
+        if(!guide.email){
+            return  res.status(403).json({success:false, message :"email was not found"});
+        }
+        if( !guide.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ){
+            return res.status(405).json({success:false, message: 'email format is wrong' });
+        }
+        const mailOptions = {
+            from: EMAIL,
+            to: guide.email,
+            subject:`Marked as ${isAppropriate?"appropriate":"inappropriate"}`,
+        html:`<h1>your itinerary has been marked as ${isAppropriate?"appropriate":"inappropriate"} by admin</h1><p>${link}</p>`,
+        };
+        const { success, message: emailMessage } = await sendEmail(mailOptions);
+        if(success){
+            res.status(200).json({success:true, message : "marked successfuly"});
+    }else{
+        res.status(500).json({success:false, message :"marked successfuly but problem happend while sending the email"});
+    }
+
     } catch (error) {
+        console.log(error.message)
         res.status(500).json({ success: false, message: error.message });
     }
 };

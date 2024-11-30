@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFlightStore } from '../store/flight';
 import { useUserStore } from '../store/user';
 
@@ -15,6 +16,7 @@ function FlightBookingPage() {
     const { originSkyId,originEntityId,destinationSkyId,destinationEntityId,  flights, getOrigin, getDestination, getFlightList , addBookedFlights} = useFlightStore();
     const { user } = useUserStore();
     const cabinClassOptions = ['economy' , 'business' , 'first'];
+    const navigate = useNavigate();
 
     const handleSearch = async () => {
         setLoading(true);
@@ -52,9 +54,16 @@ function FlightBookingPage() {
     }
 
     const handlePayFlight = async () => {
-        await addBookedFlights(bookedFlight);
-        console.log('bookedFlight data:',bookedFlight.data);
-        console.log('bookedFlight:',bookedFlight);
+        try{
+            navigate(`/payment/flight/${bookedFlight.data.id}` , { state: { bookedFlight : bookedFlight } });
+          }
+          catch(error){
+            console.error('Error:', error);
+          }
+        //---- will call this in the success of payment later
+        // await addBookedFlights(bookedFlight);
+        // console.log('bookedFlight data:',bookedFlight.data);
+        // console.log('bookedFlight:',bookedFlight);
     }
     
     return (

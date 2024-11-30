@@ -5,6 +5,10 @@ const flightBookingSchema = new mongoose.Schema({
     creator: {
         type: String,
         required: true
+    },
+    isPaid: {
+        type: Boolean,
+        default: false
     }
 });
 

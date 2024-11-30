@@ -1,11 +1,12 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import { connectDB } from './config/db.js';
 import nodeCrone from 'node-cron';
+import { connectDB } from './config/db.js';
 import { checkBD } from './util/promo.js';
 
 // Route imports
+import { fileURLToPath } from "url";
 import activityRoutes from './routes/activity.route.js';
 import activityCategoryRoutes from './routes/activityCategory.route.js';
 import advertiserRoute from './routes/advertiser.route.js';
@@ -16,16 +17,17 @@ import flightBookingRoutes from './routes/flightBooking.route.js';
 import hotelBookingRoutes from './routes/hotelBooking.route.js';
 import itineraryRoutes from './routes/itinerary.route.js';
 import optRoutes from './routes/otp.route.js';
+import paymentRoutes from './routes/payment.route.js';
 import preferencetagRoute from './routes/preferencetag.route.js';
 import productRoutes from './routes/product.routes.js';
+import promoRoutes from './routes/promo.route.js';
 import requestsRoute from './routes/requests.route.js';
 import sellerRoutes from './routes/seller.route.js';
 import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
-import promoRoutes from './routes/promo.route.js';
+import notificationroutes from './routes/notifications.route.js'
 import path from "path";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +37,6 @@ import transportaionActivity from './routes/transportationActivity.route.js';
 
 // Initialize dotenv to load environment variables
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -65,6 +66,8 @@ app.use("/api/requests", requestsRoute);
 app.use("/api/share",shareRoutes);
 app.use("/api/transportaionActivity",transportaionActivity);
 app.use("/api/promo", promoRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/notifications", notificationroutes);
 
 
 

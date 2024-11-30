@@ -67,8 +67,13 @@ const tourGuideModel = new mongoose.Schema({
        default: 0,
      },
      
+     
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }],
     itineraries: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' }],
+    notifications: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Notification',
+}
     },{
         timestamps: true
     }

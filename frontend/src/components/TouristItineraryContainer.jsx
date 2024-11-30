@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { Link, useNavigate } from 'react-router-dom';
-import Dialog, { dialog } from '../components/Dialog.jsx';
+import React, { useState } from 'react';
+import { Card } from 'react-bootstrap';
+import toast from 'react-hot-toast';
+import { FiLoader } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useGuideStore } from '../store/tourGuide.js';
-import {useUserStore} from '../store/user.js';
-import { formdialog } from './FormDialog.jsx';
+import { useTouristStore } from '../store/tourist.js';
+import { useUserStore } from '../store/user.js';
 import Rating from './Rating';
-import { Card } from 'react-bootstrap';
-import toast, { Toaster } from 'react-hot-toast';
-import { FiLoader } from 'react-icons/fi';
 
 
 function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -22,7 +20,7 @@ function TouristItineraryContainer({itinerary, itineraryChanger , accept , rejec
   const { createTourGuideReview } = useGuideStore();
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
-
+const { tourist } = useTouristStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
@@ -120,16 +118,15 @@ if (!itinerary.isBooked) {
     alert('Failed to add review: ' + message);
   }
 };
-const handleBookClick = async () => {
-  const { success, message } = await bookItinerary(itinerary._id);
-  if (success) {
-    toast.success(message, { className: "text-white bg-gray-800" });
-    alert("Booked Sucess");
-    console.log("Booked Successfully");
-  } else {
-    toast.error(message, { className: "text-white bg-gray-800" });
+const handleBookClick = async (itineraryID) => {
+  try{
+    navigate(`/payment/itinerary/${itineraryID}`);
+  }
+  catch(error){
+    console.error('Error:', error);
   }
 };
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
@@ -214,16 +211,15 @@ const handleBookClick = async () => {
           View Reviews
         </button>
       </div>
-      <button
-        onClick={handleBookClick}
-        disabled={itinerary.isBooked} // disable button if already booked
-        className={`p-2 ${itinerary.isBooked ? 'bg-gray-500' : 'bg-blue-500'} text-white rounded`}
-      >
-        {itinerary.isBooked ? 'Booked' : 'Book Now'}
-      </button>
+      <div className='flex justify-between'>
+      {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
+         <button onClick={() => (handleBookClick(itinerary._id))} className="p-2 bg-blue-500 text-white">book</button>  :   
+         <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
+         }
+         </div>
         <div className='flex justify-between'>
         <div className='flex'>
-        </div>    
+        </div>
         <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(itinerary._id)}>copy link</button>
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail

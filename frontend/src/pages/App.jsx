@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { Link, Route, Routes } from "react-router-dom";
 import { FiLoader } from 'react-icons/fi';
+import { Route, Routes } from "react-router-dom";
+import BookMark from '../components/BookMark';
+import EditProduct from "../components/EditProduct.jsx";
 import Navbar from "../components/Navbar";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
@@ -10,7 +12,9 @@ import { useUserStore } from "../store/user";
 import ActivityCategory from "./ActivityCategory";
 import ActivityDetail from "./ActivityDetail";
 import ActivityPage from "./ActivityPage";
+import AdminActivitiesPage from './AdminActivitiesPage';
 import AdminDashboard from "./AdminDashboardPage";
+import AdminItineraryPage from './AdminItineraryPage';
 import AdvertiserProfile from "./AdvertiserProfilePage";
 import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
@@ -19,6 +23,7 @@ import ChangePassword from "./ChangePassword";
 import Complaints from "./Complaints";
 import CreateActivity from "./CreateActivity";
 import CreateItinerary from "./CreateItinerary";
+import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
 import FileComplaint from "./FileComplaint";
 import FlightBookingPage from "./FlightBookingPage";
 import HomePage from "./HomePage";
@@ -27,9 +32,12 @@ import ItineraryDetail from "./ItineraryDetail";
 import ItineraryPage from "./ItineraryPage";
 import LoginPage from "./LoginPage";
 import MuseumsPage from "./MuseumsPage";
+import Notification from './Notification.jsx';
+import PaymentPage from "./PaymentPage";
 import PreferenceTag from "./PreferenceTag";
 import Productpage from "./Productpage";
 import RegisterPage from "./RegisterPage";
+import Security from './Security.jsx';
 import SellerProfilePage from "./SellerProfilePage";
 import TourGuideProfilePage from "./TourGuideProfilePage";
 import TourGuideReviews from "./TourGuideReviews";
@@ -37,12 +45,15 @@ import TouristProfile from './TouristProfile';
 import TouristViewActivities from "./TouristViewActivities";
 import TouristViewItineraries from "./TouristViewItineraries";
 import TransportationActivityDetail from "./TransportationActivityDetail";
+import TransportationActivityPage from './TransportationActivityPage.jsx';
 import UpdateActivity from "./UpdateActivity";
 import UpdateItinerary from "./UpdateItinerary";
 import ViewActivities from "./ViewActivities";
 import ViewAttractions from "./ViewAttractions";
 import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
+import ViewPastActivities from './ViewPastActivities.jsx';
+import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
 import AdminItineraryPage from './AdminItineraryPage';
@@ -60,7 +71,11 @@ import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import WishlistPage from "./WishlistPage";
 
+import ViewMyComplaints from './ViewMyComplaints.jsx';
 
 function App() {
   const {  user, setUser } = useUserStore();
@@ -163,11 +178,14 @@ function App() {
         <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
-
+        <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
+
         <Route path="/wishlist" element={<WishlistPage user={user}/>}/> 
          <Route path="/Cart" element={<CartPage user={user}/>} />
+        <Route path="/wishlist" element={<WishlistPage user={user}/>} />
+        <Route path="/payment/:type/:id" element={<PaymentPage />} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

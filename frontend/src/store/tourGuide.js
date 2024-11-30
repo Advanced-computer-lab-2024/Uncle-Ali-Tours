@@ -12,18 +12,18 @@ export const useGuideStore = create((set) => ({
                 params: { userName },
             });
             const body = res.data;
-
+            console.log(body)
             if (!body.success) {
                 return body;
             }
 
-            if (body.guide) {
-                delete body.guide.password;  // Remove sensitive info
-                set({ guide: body.guide });
-                console.log(body.guide);
+
+            if (!!body) {
+                delete body.password;  // Remove sensitive info
+                set({ guide: body.data[0] });
                 return { success: true, message: "Fetched guide data" };
             } else {
-                return { success: false, message: "No guide data found" };
+                set({ guide: {} });
             }
         } catch (error) {
             console.error("Error fetching guide data:", error);

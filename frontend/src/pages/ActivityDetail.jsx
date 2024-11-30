@@ -14,8 +14,7 @@ function ActivityDetail(){
         navigate("/")
       }
 
-      console.log(id)
-    
+      // console.log(id)
     getActivities({_id:id});
 
     if(!activities[0]) return <FiLoader size={50} className='animate-spin mx-auto mt-[49vh]'/>;  
