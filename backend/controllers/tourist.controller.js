@@ -579,7 +579,7 @@ export const getWishlistedProducts = async (req, res) => {
     }
 };
 export const addProductToCart = async (req, res) => {
-    const { userName, _id } = req.body;
+    const { userName, _id  , quantity} = req.body;
     try {
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
@@ -592,7 +592,7 @@ export const addProductToCart = async (req, res) => {
         }
 
         // Add product to Cart
-        tourist.productsCart.push(_id);
+        tourist.productsCart.push({ productId: _id, quantity: quantity });
         await tourist.save(); // Save changes to the database
 
         // Send the updated cart back in the response
@@ -606,53 +606,59 @@ export const addProductToCart = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during Add to Cart" });
     }
 };
-export const removeProductCart = async(req,res) => {
-    const {userName , _id} = req.body;
-    try{
+export const removeProductCart = async (req, res) => {
+    const { userName, productId } = req.body; // Change `_id` to `productId` as per the new schema
+    try {
+        // Find tourist by username
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        console.log(_id)
-        if(!tourist.productsCart.includes(_id)){
-            return res.status(404).json({ success: false, message: "not in Cart" });
+
+        // Find the product in the cart and check if it exists
+        const productIndex = tourist.productsCart.findIndex(item => item.productId.toString() === productId);
+
+        if (productIndex === -1) {
+            return res.status(404).json({ success: false, message: "Product not found in cart" });
         }
-        const product = await Product.findById(_id);
-        console.log(product)
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
-        }
-        tourist.productsCart = tourist.productsCart.filter(item => item !==_id);
-        await tourist.save();
-        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'removed successfully' });
+
+        // Remove the product from the cart
+        tourist.productsCart.splice(productIndex, 1);
         
-    }catch (error) {
-        console.error("Error Adding to Cart:", error);
-        res.status(500).json({ success: false, message: "Server error during Removing from Cart" });
+        // Save the tourist with the updated cart
+        await tourist.save();
+        return res.status(200).json({ success: true, data: tourist.productsCart, message: 'Product removed successfully' });
+    } catch (error) {
+        console.error("Error removing from cart:", error);
+        res.status(500).json({ success: false, message: "Server error during removing product from cart" });
     }
-}
+};
 
 export const getCartProducts = async (req, res) => {
     const { userName } = req.params; // Get userName from request parameters
 
     try {
-        // Find tourist by username and populate productsCart
-        const tourist = await Tourist.findOne({ userName }).populate('productsCart');
+        // Find tourist by username and include productsCart
+        const tourist = await Tourist.findOne({ userName }).populate('productsCart.productId'); // Populate productId
         
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
 
-        // Find the products in the Cart
-        const AddedToCartProducts = await Product.find({ _id: { $in: tourist.productsCart } });
+        // Map over productsCart to include both productId and quantity
+        const cartProducts = tourist.productsCart.map(item => ({
+            productId: item.productId,  // The populated product data
+            quantity: item.quantity      // The quantity from the cart
+        }));
 
-        // Return success response with AddedToCart products
-        return res.status(200).json({ success: true, data: AddedToCartProducts });
+        // Return success response with cartProducts
+        return res.status(200).json({ success: true, data: cartProducts });
     } catch (error) {
-        console.error("Error Fetching AddedToCart Products:", error);
-        res.status(500).json({ success: false, message: "Server error during fetching AddedToCart products" });
+        console.error("Error Fetching Cart Products:", error);
+        res.status(500).json({ success: false, message: "Server error during fetching cart products" });
     }
 };
+
 export const getMyUpcomingItineraries = async (req,res) => {
     const {userName} = req.query;
     try{

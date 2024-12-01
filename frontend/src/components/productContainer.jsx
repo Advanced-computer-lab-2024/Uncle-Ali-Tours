@@ -5,6 +5,7 @@ import { useTouristStore } from '../store/tourist.js';
 import { Link } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa'; 
 import { FaShoppingCart } from 'react-icons/fa';
+import QuantitySelector from './QuantitySelector.jsx';
 function ProductContainer({ product, productChanger, tourist }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogType, setDialogType] = useState(null); // "rate" or "review"
@@ -18,6 +19,8 @@ function ProductContainer({ product, productChanger, tourist }) {
     const { addProductToCart,removeProductCart, getCartProducts} = useTouristStore();
 
     const [isAddedToCart, setIsAddedToCart] = useState(false);
+    const [quantity, setQuantity] = useState(1);
+
 
     let avRating = 0
     product.rate.map((r) => avRating += r.rating )
@@ -113,12 +116,16 @@ function ProductContainer({ product, productChanger, tourist }) {
             toast.error(message, { className: "text-white bg-gray-800" });
         }
     };
+    const handleQuantityChange = (newQuantity) => {
+        setQuantity(newQuantity);
+    };
+
     const handleCart = async (id) => {
         if (user.type !== "tourist") {
             return toast.error("You are not allowed to add products to the Cart", { className: 'text-white bg-gray-800' });
         }
         
-        const { success, message } = await addProductToCart(user.userName, id);
+        const { success, message } = await addProductToCart(user.userName, id, quantity);
         if (success) {
             // Optionally update the state immediately
             setIsAddedToCart(true);
@@ -212,6 +219,7 @@ function ProductContainer({ product, productChanger, tourist }) {
                 </Link>
             )}
             </div>
+            <QuantitySelector onChange={handleQuantityChange} />
             <button
                     onClick={() => isAddedToCart ? handleRemoveFromCart(product._id) : handleCart(product._id)}
                     className="transform transition-colors duration-300 hover:text-red-500 focus:outline-none"
