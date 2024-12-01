@@ -199,7 +199,7 @@ export const deleteTourGuide = async (req, res) => {
     if (guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
       fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
     }
-        if (!tourGuideExists) {
+        if (!guide) {
             return res.status(404).json({ success: false, message: "tour Guide is not found" });
         }
         const activeItineraries = await Itinerary.findOne({ creator: userName, numberOfBookings: { $ne: 0 } });

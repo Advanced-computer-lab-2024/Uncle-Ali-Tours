@@ -21,7 +21,7 @@ function Promo() {
         })
         const {success, message} = await res.json();
 
-        console.log(seccess, message)
+        console.log(success, message)
 
         if(success)
             toast.success(message)

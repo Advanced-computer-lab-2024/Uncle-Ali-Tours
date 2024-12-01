@@ -10,7 +10,10 @@ export const create = async (req, res) => {
         const promo = new Promo({
             code: req.body.code,
             discount: req.body.discount
+            
         });
+        await promo.save(); 
+
         res.status(201).json({success: true,message: "Promo created successfully"});
     } catch (error) {
         res.status(500).json({success: false, message: error.message });

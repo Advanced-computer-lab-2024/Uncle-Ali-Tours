@@ -4,6 +4,7 @@ import {useUserStore} from '../store/user.js';
 import { useTouristStore } from '../store/tourist.js';
 import { Link } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa'; 
+import { FaShoppingCart } from 'react-icons/fa';
 function ProductContainer({ product, productChanger, tourist }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogType, setDialogType] = useState(null); // "rate" or "review"
@@ -11,9 +12,12 @@ function ProductContainer({ product, productChanger, tourist }) {
     const [review, setReview] = useState('');
     const user = useUserStore((state) => state.user);
 
-    const { addProductWishlist,removeProductWishlist} = useTouristStore();
+    const { addProductWishlist,removeProductWishlist, getWishlistedProducts} = useTouristStore();
 
     const [isWishlisted, setIsWishlisted] = useState(false);
+    const { addProductToCart,removeProductCart, getCartProducts} = useTouristStore();
+
+    const [isAddedToCart, setIsAddedToCart] = useState(false);
 
     let avRating = 0
     product.rate.map((r) => avRating += r.rating )
@@ -109,6 +113,21 @@ function ProductContainer({ product, productChanger, tourist }) {
             toast.error(message, { className: "text-white bg-gray-800" });
         }
     };
+    const handleCart = async (id) => {
+        if (user.type !== "tourist") {
+            return toast.error("You are not allowed to add products to the Cart", { className: 'text-white bg-gray-800' });
+        }
+        
+        const { success, message } = await addProductToCart(user.userName, id);
+        if (success) {
+            // Optionally update the state immediately
+            setIsAddedToCart(true);
+            toast.success(message, { className: "text-white bg-gray-800" });
+        } else {
+            toast.error(message, { className: "text-white bg-gray-800" });
+        }
+    };
+    
     
     const handleRemoveFromWishlist = async (id) => {
         if (user.type !== "tourist") {
@@ -128,6 +147,27 @@ function ProductContainer({ product, productChanger, tourist }) {
     useEffect(() => {
         if (tourist) {
             setIsWishlisted(tourist.productsWishlist?.includes(product._id));  // Update based on current tourist state
+        }
+    }, [tourist, product._id]); 
+
+    const handleRemoveFromCart = async (id) => {
+        if (user.type !== "tourist") {
+            return toast.error("You are not allowed to remove products from the Cart", { className: 'text-white bg-gray-800' });
+        }
+        
+        const { success, message } = await removeProductCart(user.userName, id);
+        if (success) {
+            // Optionally update the state immediately
+            setIsAddedToCart(false);
+            toast.success(message, { className: "text-white bg-gray-800" });
+        } else {
+            toast.error(message, { className: "text-white bg-gray-800" });
+        }
+    };
+    
+    useEffect(() => {
+        if (tourist) {
+            setIsAddedToCart(tourist.productsCart?.includes(product._id));  // Update based on current tourist state
         }
     }, [tourist, product._id]); 
 
@@ -172,6 +212,23 @@ function ProductContainer({ product, productChanger, tourist }) {
                 </Link>
             )}
             </div>
+            <button
+                    onClick={() => isAddedToCart ? handleRemoveFromCart(product._id) : handleCart(product._id)}
+                    className="transform transition-colors duration-300 hover:text-red-500 focus:outline-none"
+                >
+                    {isAddedToCart ? (
+                        <FaShoppingCart className="text-green-500" /> //Cart filled in green if added to cart
+
+                    ) : (
+                        <FaShoppingCart className="text-gray-500" /> // Empty cart if not added to cart.
+                    )}
+                </button>
+         {user?.type === "tourist" && (
+                <Link to="/Cart" className="text-blue-500 hover:underline">
+                    My Cart
+                </Link>
+            )}
+            
 
             {/* Dialog for Rating or Review */}
             {isDialogOpen && (

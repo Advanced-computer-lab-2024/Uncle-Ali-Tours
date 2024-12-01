@@ -163,7 +163,7 @@ export const deleteSeller = async (req, res) => {
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
         }
-        await Product.findAndDelete({creator:userName});
+        await Product.deleteMany({creator:userName});
         await Seller.findOneAndDelete({ userName: userName });
         // Remove profile picture file if it exists
     if (seller.profilePicture && fs.existsSync(path.join(__dirname, `../${seller.profilePicture}`))) {
@@ -171,6 +171,6 @@ export const deleteSeller = async (req, res) => {
     }
         res.json({ success: true, message: "Seller profile deleted successfully" });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
+        res.status(506).json({ success: false, message: "Server error", error: error.message });
     }
 };

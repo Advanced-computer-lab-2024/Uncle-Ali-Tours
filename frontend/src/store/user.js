@@ -207,9 +207,9 @@ export const useUserStore = create((set) => ({
                 case "tourist":
                     typeRes = await deleteTourist(userName);
                     break;
-                default:
-                    break;
-            }
+                    default:
+                        return{success: false, message: "Invalid user type."};
+                }
             if(!typeRes.success){
                 return typeRes;
             }

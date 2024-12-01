@@ -57,6 +57,10 @@ const touristModel = new mongoose.Schema({
         type:[String],
         required:false
     },
+    productsCart:{
+        type:[String],
+        required:false
+    },
     promoCodes:{
         type:[mongoose.Schema.Types.ObjectId],
         ref: 'Promo',

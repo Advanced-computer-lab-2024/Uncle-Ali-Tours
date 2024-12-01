@@ -1,5 +1,6 @@
 import express from "express";
 import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook, markNotificationAsRead ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , addProductWishlist,removeProductWishlist, getWishlistedProducts,getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities,addDeliveryAddress} from "../controllers/tourist.controller.js";
+import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook, markNotificationAsRead ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , addProductWishlist,removeProductWishlist, getWishlistedProducts,getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities,removeProductCart,getCartProducts,addProductToCart} from "../controllers/tourist.controller.js";
 import { redeemPoints } from '../controllers/tourist.controller.js';  // Import the redeemPoints controller function
 import { checkPurchaseStatusByUsername } from "../controllers/tourist.controller.js";
 
@@ -22,6 +23,9 @@ router.post("/promos",getMyPromos);
 router.put("/addProductWishlist",addProductWishlist);
 router.put("/removeProductWishlist",removeProductWishlist);
 router.get("/getWishlistedProducts/:userName", getWishlistedProducts);
+router.put("/addProductToCart",addProductToCart);
+router.put("/removeProductCart",removeProductCart);
+router.get("/getCartProducts/:userName", getCartProducts);
 router.put("/updatePoints",updateMyPoints);
 router.get("/upcomingItineraries",getMyUpcomingItineraries);
 router.get("/pastItineraries",getMyPastItineraries);

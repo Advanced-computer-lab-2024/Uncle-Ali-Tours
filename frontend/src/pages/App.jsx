@@ -56,11 +56,14 @@ import ViewPastActivities from './ViewPastActivities.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
-import ViewTransportationActivity from './ViewTransportationActivity.jsx';
-import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import CartPage from "./CartPage.jsx";
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
+import CheckoutPage from './CheckOutPage.jsx';
+
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 
@@ -148,7 +151,8 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
-        
+        <Route path="/checkoutPage" element={<CheckoutPage />} />
+            
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
@@ -170,6 +174,9 @@ function App() {
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
+
+        <Route path="/wishlist" element={<WishlistPage user={user}/>}/> 
+         <Route path="/Cart" element={<CartPage user={user}/>} />
         <Route path="/wishlist" element={<WishlistPage user={user}/>} />
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
       </Routes>
