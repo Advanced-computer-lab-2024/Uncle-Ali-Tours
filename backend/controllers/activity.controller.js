@@ -300,6 +300,30 @@ export const getAllActivities = async (req, res) => {
     }
   };
 
+  export const interestedIn = async(req, res) => {
+    try{
+        const {touristId,activityId} = req.body;
+        const activity = await Activity.findById(activityId);
+        activity.interstedIn.push(touristId);
+        await activity.save();
+        return res.status(200).json({ success: true,data:activity, message: 'you will get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
+
+export const removeInterestedIn = async(req, res) => {
+    try{
+        const {touristId,activityId} = req.body;
+        const activity = await Activity.findById(activityId);
+        activity.interstedIn = activity.interstedIn.filter(item => item !==touristId);
+        await activity.save(); // Save changes to the database
+        return res.status(200).json({ success: true,data:activity, message: 'you will not get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
+
 
 
 

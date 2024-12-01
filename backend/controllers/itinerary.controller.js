@@ -4,6 +4,7 @@ import TourGuide from "../models/tourGuide.model.js"
 const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 import Notification from "../models/notification.model.js";
+import Tourist from "../models/tourist.model.js";
 
 
 // Create a new itinerary
@@ -296,4 +297,28 @@ export const flagItinerary = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const interestedIn = async(req, res) => {
+    try{
+        const {touristId,itineraryId} = req.body;
+        const itinerary = await Itinerary.findById(itineraryId);
+        itinerary.interstedIn.push(touristId);
+        await itinerary.save();
+        return res.status(200).json({ success: true,data:itinerary, message: 'you will get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
+
+export const removeInterestedIn = async(req, res) => {
+    try{
+        const {touristId,itineraryId} = req.body;
+        const itinerary = await Itinerary.findById(itineraryId);
+        itinerary.interstedIn = itinerary.interstedIn.filter(item => item !==touristId);
+        await itinerary.save(); // Save changes to the database
+        return res.status(200).json({ success: true,data:itinerary, message: 'you will not get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
 

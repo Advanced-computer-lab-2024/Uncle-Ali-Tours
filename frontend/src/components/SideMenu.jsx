@@ -29,7 +29,7 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "Itinerary", path: "/touristviewitineraries" },
         { name: "Activity", path: "/touristviewActivities" },
-        { name: "Transportation", path: "/transportationActivity" },
+        { name: "Transportation", path: "/ViewTransportationActivity" },
         { name: "Flight", path: "/bookedFlights" },
         { name: "Hotel", path: "/bookedHotels" },
       ],
