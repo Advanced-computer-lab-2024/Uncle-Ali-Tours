@@ -14,20 +14,61 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const uploadDirectory = path.join(__dirname, "../uploads");
 
+ 
+// Configure multer storage for document uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  }
+});
+
+const uploadDocument = multer({ storage: storage });
+
+export const uploadTourGuideDocument = [uploadDocument.single('document'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No document provided." });
+  }
+
+  const { userName, documentType } = req.body;  // Document type and username
+  const filePath = `/uploads/${req.file.filename}`;
+
+  try {
+    const guide = await TourGuide.findOne({ userName });
+    if (!guide) {
+      fs.unlinkSync(req.file.path);  // Delete the uploaded file if guide not found
+      return res.status(404).json({ message: "Tour guide not found." });
+    }
+
+    // Add the document to the guide's documents array
+    guide.documents.push({
+      documentUrl: filePath,
+      documentType,
+      approved: false, // Initially set as not approved
+    });
+
+    await guide.save();
+
+    return res.status(200).json({
+      message: "Document uploaded successfully",
+      document: { documentUrl: `http://localhost:5000${filePath}`, documentType },
+    });
+  } catch (error) {
+    console.error("Error uploading document:", error);
+    return res.status(500).json({ message: "Document upload failed", error });
+  }
+}];
+
 // Ensure the uploads directory exists
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-// Configure multer storage for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDirectory);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-  },
-});
+
+
+
 
 export const upload = multer({ storage: storage });
 export const uploadMiddleware = upload.single("profilePicture");
@@ -48,12 +89,12 @@ export const uploadProfilePicture = async (req, res) => {
       return res.status(404).json({ message: "Tour guide not found." });
     }
 
-    // Remove old profile picture file if it exists
+   
     if (guide.profilePicture && fs.existsSync(path.join(__dirname, `../${guide.profilePicture}`))) {
       fs.unlinkSync(path.join(__dirname, `../${guide.profilePicture}`));
     }
 
-    // Update guide's profile picture path in the database
+    
     guide.profilePicture = filePath;
     await guide.save();
 

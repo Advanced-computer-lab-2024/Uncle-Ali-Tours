@@ -61,6 +61,7 @@ import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
+import AddAddressPage from './AddAddressPage.jsx';
 import CheckoutPage from './CheckOutPage.jsx';
 
 
@@ -133,6 +134,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/product" element={<Productpage />} />
         <Route path="/TouristProfile" element={<TouristProfile />} />
+        <Route path="/AddAddressPage" element={<AddAddressPage/>} />
         <Route path="/attraction" element={<MuseumsPage/>}/>
         <Route path="/changePassword" element={<ChangePassword/>}/>
         <Route path="/fileComplaint" element={<FileComplaint/>}/>

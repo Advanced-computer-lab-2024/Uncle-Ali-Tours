@@ -226,58 +226,7 @@ const TourGuideProfilePage = () =>{
     
     
 
-    const handleFileUpload = async () => {
-        if (!idFile || !taxationCardFile) {
-          toast.error("Please upload both ID and Taxation Registry Card.");
-          return;
-        }
-      
-        // Form submission logic for file upload
-        const formData = new FormData();
-        formData.append("idFile", idFile);
-        formData.append("taxationCardFile", taxationCardFile);
-        formData.append("username", user.username);
-      
-        try {
-          const response = await fetch('/api/upload-documents', {  // Replace with your backend endpoint
-            method: 'POST',
-            body: formData,
-          });
-          const result = await response.json();
-          
-          if (result.success) {
-            toast.success("Documents uploaded successfully.");
-          } else {
-            toast.error(result.message || "Failed to upload documents.");
-          }
-        } catch (error) {
-          toast.error("An error occurred during the upload.");
-        }
-      };
-
-    const [isDeleteVisible, setIsDeleteVisible] = useState(false);
-    const { createRequest } = useRequestStore();
-    const handleDeleteClick = () => {
-        setIsDeleteVisible(!isDeleteVisible);
-    };
-    const handleDeleteAccountRequest = async () => {
-        const deleteRequest = {
-          userName: user.userName,
-          userType: user.type,
-          userID: user._id,
-          type: 'delete',
-        };
-        const { success, message } = await createRequest(deleteRequest);
-        console.log(deleteRequest);
-        if (success) {
-          toast.success('Account deletion request submitted successfully.');
-          setIsDeleteVisible(false); // Close the delete dialog
-        } else {
-          toast.error(message);
-        }
-      };
-
-      if(!guide.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;      
+   
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">

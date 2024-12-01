@@ -6,6 +6,7 @@ import Activity from "../models/activity.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import Promo from "../models/promo.model.js"
 import Product from "../models/product.model.js";
+import DeliveryAddress from "../models/deliveryAddress.model.js";
 //import Order from "../models/order.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
@@ -874,6 +875,80 @@ export const markNotificationAsRead = async (req, res) => {
 		console.error("Error marking notification as read:", error);
 		res.status(500).json({ success: false, message: "Server error marking notification as read" });
 	}
+};
+
+
+
+export const addDeliveryAddress = async (req, res) => {
+
+    console.log('Request body:', req.body); 
+  try {
+    const { userName, addressLine1, addressLine2, city, state, zipCode, country, isDefault } = req.body;
+
+    if (!userName || !addressLine1 || !city || !state || !zipCode || !country) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const newAddress = new DeliveryAddress({
+      userName,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zipCode,
+      country,
+      isDefault: isDefault || false,
+    });
+
+    await newAddress.save();
+    return res.status(201).json({ message: 'Delivery address added successfully', address: newAddress });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error adding address', error });
+  }
+};
+
+
+export const getAllAddresses = async (req, res) => {
+  try {
+    const addresses = await DeliveryAddress.find({ userName: req.params.userName });
+    return res.status(200).json(addresses);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error retrieving addresses', error });
+  }
+};
+
+
+export const setActiveAddress = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+
+  
+    await DeliveryAddress.updateMany({ userName: req.body.userName }, { $set: { isDefault: false } });
+
+   
+    const updatedAddress = await DeliveryAddress.findByIdAndUpdate(addressId, { isDefault: true }, { new: true });
+
+    return res.status(200).json({ message: 'Default address set successfully', address: updatedAddress });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error setting active address', error });
+  }
+};
+
+
+export const deleteAddress = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+
+    const deletedAddress = await DeliveryAddress.findByIdAndDelete(addressId);
+
+    if (!deletedAddress) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
+
+    return res.status(200).json({ message: 'Address deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error deleting address', error });
+  }
 };
 
 
