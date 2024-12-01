@@ -28,6 +28,13 @@ import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
 import notificationroutes from './routes/notifications.route.js'
 import path from "path";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+
+
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,11 +45,13 @@ import transportaionActivity from './routes/transportationActivity.route.js';
 // Initialize dotenv to load environment variables
 dotenv.config();
 const app = express();
+
+app.use(cors());
+app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+
 
 
 
@@ -56,6 +65,9 @@ app.use("/api/attraction", attractionRoute);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/advertiser", advertiserRoute);
 app.use("/api/tourist",touristRoutes);
+app.use("/api/tourist", touristRoutes);
+console.log("Tourist Routes are loaded correctly!");
+
 app.use("/api/prefrenceTag",preferencetagRoute);
 app.use("/api/attractions", attractionsRoute)
 app.use("/api/complaint", complaintRoutes);
@@ -86,14 +98,15 @@ connectDB().then(() => {
     app.use("/api/attraction", attractionRoute);
     app.use("/api/seller", sellerRoutes);
     app.use("/api/advertiser", advertiserRoute);
-    app.use("/api/tourist", touristRoutes);
+    
     app.use("/api/preferenceTag", preferencetagRoute);
     app.use("/api/attractions", attractionsRoute);
     app.use("/api/complaint", complaintRoutes);
     app.use("/api/otp", optRoutes);
 
 
-
+   
+     
 
     // Start the server after routes are set up
     app.listen(PORT, () => {

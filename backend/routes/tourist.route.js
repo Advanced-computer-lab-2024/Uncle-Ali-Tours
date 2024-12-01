@@ -1,5 +1,5 @@
 import express from "express";
-import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook, markNotificationAsRead ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , addProductWishlist,removeProductWishlist, getWishlistedProducts,getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities} from "../controllers/tourist.controller.js";
+import { createTourist, deleteTourist, getTourist, updateTourist , badgeLevel , updateMyPoints ,bookActivity, getMyPromos, unBook, markNotificationAsRead ,bookRealActivity,bookitineraryActivity,unBookRealActivity , unItiniraryBook , addProductWishlist,removeProductWishlist, getWishlistedProducts,getMyUpcomingItineraries, getMyPastItineraries ,getMyUpcomingActivities,getMyPastActivities,addDeliveryAddress} from "../controllers/tourist.controller.js";
 import { redeemPoints } from '../controllers/tourist.controller.js';  // Import the redeemPoints controller function
 import { checkPurchaseStatusByUsername } from "../controllers/tourist.controller.js";
 
@@ -28,4 +28,7 @@ router.get("/pastItineraries",getMyPastItineraries);
 router.get("/upcomingActivities",getMyUpcomingActivities);
 router.get("/pastActivities",getMyPastActivities);
 router.put("/notifications",markNotificationAsRead);
+router.post("/addDeliveryAddress", addDeliveryAddress);
+router.post("/test", (req, res) => res.send("Test route is working!"));
+
 export default router;

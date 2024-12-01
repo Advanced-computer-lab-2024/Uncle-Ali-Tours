@@ -60,6 +60,7 @@ import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
 import WishlistPage from "./WishlistPage";
+import AddAddressPage from './AddAddressPage.jsx';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 
@@ -130,6 +131,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/product" element={<Productpage />} />
         <Route path="/TouristProfile" element={<TouristProfile />} />
+        <Route path="/AddAddressPage" element={<AddAddressPage/>} />
         <Route path="/attraction" element={<MuseumsPage/>}/>
         <Route path="/changePassword" element={<ChangePassword/>}/>
         <Route path="/fileComplaint" element={<FileComplaint/>}/>
@@ -146,6 +148,7 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
+        
 
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
