@@ -4,7 +4,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createCheckoutSession = async (req, res) => {
     try{
-        const { items , currentCurrency , currencyRate } = req.body;
+        const { items , currentCurrency , currencyRate , type } = req.body;
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -21,8 +21,8 @@ export const createCheckoutSession = async (req, res) => {
                     quantity: item.quantity,
                 }
             }),
-            success_url: `http://localhost:5000/success`,
-            cancel_url: `http://localhost:5000/cancel`,
+            success_url: `http://localhost:5000/success/${type}`,
+            cancel_url: `http://localhost:5000/cancel/${type}`,
         });
         res.json({ url : session.url });
     }
@@ -31,19 +31,3 @@ export const createCheckoutSession = async (req, res) => {
         console.log(error.message);
     }
 }
-
-    // const session = await stripe.checkout.sessions.create({
-    //     line_items: [
-    //       {
-    //         // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-    //         price: '{{PRICE_ID}}',
-    //         quantity: 1,
-    //       },
-    //     ],
-    //     mode: 'payment',
-    //     success_url: `http://localhost:5000/checkout?success=true`,
-    //     cancel_url: `http://localhost:5000/checkout?canceled=true`,
-    // });
-    
-    //   res.redirect(303, session.url);
-    // };

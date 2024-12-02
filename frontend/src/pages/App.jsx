@@ -18,6 +18,7 @@ import AdminItineraryPage from './AdminItineraryPage';
 import AdvertiserProfile from "./AdvertiserProfilePage";
 import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
+import CancelledPaymentPage from './CancelledPayment';
 import ChangeCurrency from "./ChangeCurrency";
 import ChangePassword from "./ChangePassword";
 import Complaints from "./Complaints";
@@ -39,6 +40,7 @@ import Productpage from "./Productpage";
 import RegisterPage from "./RegisterPage";
 import Security from './Security.jsx';
 import SellerProfilePage from "./SellerProfilePage";
+import SuccessfulPaymentPage from './SuccessfulPayment';
 import TourGuideProfilePage from "./TourGuideProfilePage";
 import TourGuideReviews from "./TourGuideReviews";
 import TouristProfile from './TouristProfile';
@@ -180,6 +182,8 @@ function App() {
          <Route path="/Cart" element={<CartPage user={user}/>} />
         <Route path="/wishlist" element={<WishlistPage user={user}/>} />
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
+        <Route path="/cancel/:type" element={<CancelledPaymentPage/>} />
+        <Route path="/success/:type" element={<SuccessfulPaymentPage/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

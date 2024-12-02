@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import {useUserStore} from '../store/user.js';
-import { useTouristStore } from '../store/tourist.js';
-import { Link } from 'react-router-dom';
-import { FaRegHeart, FaHeart } from 'react-icons/fa'; 
-import { FaShoppingCart } from 'react-icons/fa';
-import QuantitySelector from './QuantitySelector.jsx';
+import React, { useEffect, useState } from 'react';
 import { Modal } from "react-bootstrap";
+import toast from 'react-hot-toast';
+import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
+import { useTouristStore } from '../store/tourist.js';
+import { useUserStore } from '../store/user.js';
+import QuantitySelector from './QuantitySelector.jsx';
 import avatar from "/avatar.png";
 function ProductContainer({ product, productChanger, tourist }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

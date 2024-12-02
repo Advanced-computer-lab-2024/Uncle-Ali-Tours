@@ -7,6 +7,7 @@ export const usePaymentStore = create((set, get) => ({
             profilePicture : "",
             price : 0,
         },
+        itemDetails : {},
         quantity : 1,
     }],
     currency : "",
@@ -28,6 +29,7 @@ export const usePaymentStore = create((set, get) => ({
                     name: selectedItems.name,
                     price: selectedItems.data.price.total,
                 },
+                itemDetails: selectedItems.data,
                 quantity: 1, // Default quantity, you can customize this as needed
             }] });
             console.log("items: ", get().items);
@@ -39,6 +41,7 @@ export const usePaymentStore = create((set, get) => ({
                     name: 'Flight Ticket',
                     price: selectedItems.data.price.raw,
                 },
+                itemDetails: selectedItems.data,
                 quantity: 1, // Default quantity, you can customize this as needed
             }] });
             break;
@@ -77,8 +80,11 @@ export const usePaymentStore = create((set, get) => ({
 
 
       // Create a checkout session
-    createCheckoutSession: async (items , currencyRate, currency) => {
+    createCheckoutSession: async (items , currencyRate, currency , type) => {
         try {
+            // Store the items in session storage
+        sessionStorage.setItem("paymentItems", JSON.stringify(items));
+
         const session = await fetch("/api/payment/create-checkout-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -86,6 +92,7 @@ export const usePaymentStore = create((set, get) => ({
             items: items,
             currentCurrency: currency,
             currencyRate: currencyRate,
+            type: type,
             }),
         });
         const body = await session.json();

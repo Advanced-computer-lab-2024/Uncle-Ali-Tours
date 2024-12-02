@@ -1,7 +1,6 @@
-import {create} from 'zustand';
-import { addProductToCart, addProductWishlist, badgeLevel, deleteTourist, getCartProducts, getTourist, removeProductCart, removeProductWishlist, updateTourist } from '../../../backend/controllers/tourist.controller';
+import toast from 'react-hot-toast';
+import { create } from 'zustand';
 import { useUserStore } from './user';
-import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
     tourist:{},
     wishlistedProducts: [],
@@ -469,5 +468,34 @@ export const useTouristStore = create((set) => ({
             return []; // Return an empty array on error
         }
     },
+
+    handleSuccessfulPaymentForTourist: async (username, items, type) => {
+        try {
+            let amountPaid = 0;
+            items.forEach(item => {
+                amountPaid += item.itemData.price;
+            });
+
+            const response =  await fetch(`/api/tourist/handleSuccessfulPayment`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: username,
+                     items: items,
+                      type: type,
+                       amountPaid: amountPaid })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success(data.message);
+            } else {
+                toast.error(data.message);
+                console.error("Error handling successful payment:", data.message);
+            }
+        } catch (error) {
+            console.error("Error handling successful payment:", error);
+            toast.error("Failed to handle successful payment.");
+        }
+    }
 
     }));
