@@ -25,7 +25,7 @@ function QuantitySelector({ onChange }) {
     };
 
     return (
-        <div className="flex items-center justify-between w-32 h-12 bg-gray-100 rounded-lg overflow-hidden">
+        <div className="flex items-center text-black justify-between w-32 h-12 bg-gray-100 rounded-lg overflow-hidden">
             <button
                 onClick={decrement}
                 className="w-10 h-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition-colors"

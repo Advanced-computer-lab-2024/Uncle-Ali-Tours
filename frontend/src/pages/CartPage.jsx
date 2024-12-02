@@ -7,12 +7,7 @@ const CartPage = ({ user }) => {
     const { cartProducts, errorMessage, getCartProducts, checkoutProducts, removeProductCart } = useTouristStore();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user.userName) {
-            console.log("User", user);
-            getCartProducts(user.userName); // Fetch cart from the backend
-        }
-    }, [user, getCartProducts]);
+    getCartProducts(user.userName); 
 
     const handleCheckout = () => {
         if (cartProducts.length === 0) {

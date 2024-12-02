@@ -63,7 +63,7 @@ import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
 import CheckoutPage from './CheckOutPage.jsx';
-
+import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 
@@ -114,6 +114,7 @@ function App() {
     <div >
     <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] overflow-x-hidden">
       <Navbar />
+      <Toaster />
       {!loading ? 
       <Routes>
         <Route path="/security" element={<Security />} />
