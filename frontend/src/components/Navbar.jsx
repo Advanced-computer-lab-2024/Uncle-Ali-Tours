@@ -39,11 +39,7 @@ function Navbar() {
           <Link to="/" className="mx-2">
             <MdHome size="25" />
           </Link>
-          {user?.type === "seller" && sell?.verified && (
-            <Link to="/product" className="mx-2">
-              Products
-            </Link>
-          )}
+ 
 {!!user.userName &&
 					<Link to="/notifications" className="mx-2 relative">
 							{	 {...tourist, ...guide, ...advertiser}?.notifications?.filter((n)=> !n.read).length > 0 &&
@@ -63,6 +59,24 @@ function Navbar() {
             </button>
           )}
            {user?.type === "admin" && (
+            <button
+              onClick={toggleSideMenu}
+              className="mx-2 focus:outline-none"
+              aria-label={isSideMenuOpen ? "Close menu" : "Open menu"}
+            >
+              <IoMenu size="25" className="mx-2"/>
+            </button>
+          )}
+            {user?.type === "tour guide" && (
+            <button
+              onClick={toggleSideMenu}
+              className="mx-2 focus:outline-none"
+              aria-label={isSideMenuOpen ? "Close menu" : "Open menu"}
+            >
+              <IoMenu size="25" className="mx-2"/>
+            </button>
+          )}
+            {user?.type === "seller" && sell?.verified && (
             <button
               onClick={toggleSideMenu}
               className="mx-2 focus:outline-none"

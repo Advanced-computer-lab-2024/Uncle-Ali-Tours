@@ -26,7 +26,7 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "Itinerary", path: "/touristviewitineraries" },
         { name: "Activity", path: "/touristviewActivities" },
-        { name: "Transportation", path: "/transportationActivity" },
+        { name: "Transportation", path: "/ViewTransportationActivity" },
         { name: "Flight", path: "/bookedFlights" },
         { name: "Hotel", path: "/bookedHotels" },
       ],
@@ -69,7 +69,41 @@ const SideMenu = ({ isOpen, onClose }) => {
       ],
     },
   ];
+  const menuItemsTourGuide = [
+    {
+      title: "Itinerary",
+      subItems: [
+        { name: "View Itineraries", path: "/itineraryPage" },
+      ],
+    },
+    {
+      title: "Reports",
+      subItems: [
+        { name: "Tourists Report", path: "/TourGuideTouristReport" },
+        { name: "Sales Report", path: "/TourGuideSalesReport" },
 
+      ],
+    },
+    
+ 
+  ];
+  const menuItemsSeller = [
+    {
+      title: "Products",
+      subItems: [
+        { name: "View Products", path: "/product" },
+      ],
+    },
+    {
+      title: "Reports",
+      subItems: [
+        { name: "Sales Report", path: "/SellerSalesReport" },
+
+      ],
+    },
+    
+ 
+  ];
   const menuItemsAdmin = [
     {
       title: "Tags & Categories",
@@ -113,32 +147,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
-        {user.type === "tourist" &&
-             menuItemsTourist 
-.map((item, index) => (
-            <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
-              <h2
-                onClick={() => toggleMenu(index)}
-                className={`${expandedIndex === index ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
-              >
-                {item.title}
-                <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === index ? "rotate-180" : ""}`} />
-              </h2>
-              <ul className={`transition-all duration-500 ${expandedIndex === index ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
-                {item.subItems.map((subItem, subIndex) => (
-                  <li key={subIndex}>
-                    <Link
-                      to={subItem.path} // Use Link to navigate to different pages
-                      className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded`}
-                    >
-                      {subItem.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        {(user.type === "tourist" ? menuItemsTourist : menuItemsAdmin).map((item, index) => (
+        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : menuItemsTourGuide).map((item, index) => (
           <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
             <h2
               onClick={() => toggleMenu(index)}

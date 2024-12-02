@@ -1,12 +1,11 @@
-import Tourist from "../models/tourist.model.js";
-import Notification from "../models/notification.model.js";
-import User from "../models/user.model.js";
-import Itinerary from "../models/itinerary.model.js";
 import Activity from "../models/activity.model.js";
-import transportationActivity from "../models/transportationActivity.model.js";
-import Promo from "../models/promo.model.js"
-import Product from "../models/product.model.js";
 import DeliveryAddress from "../models/deliveryAddress.model.js";
+import Itinerary from "../models/itinerary.model.js";
+import Notification from "../models/notification.model.js";
+import Product from "../models/product.model.js";
+import Tourist from "../models/tourist.model.js";
+import transportationActivity from "../models/transportationActivity.model.js";
+import User from "../models/user.model.js";
 //import Order from "../models/order.js";
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
@@ -579,7 +578,7 @@ export const getWishlistedProducts = async (req, res) => {
     }
 };
 export const addProductToCart = async (req, res) => {
-    const { userName, _id } = req.body;
+    const { userName, _id  , quantity} = req.body;
     try {
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
@@ -592,7 +591,7 @@ export const addProductToCart = async (req, res) => {
         }
 
         // Add product to Cart
-        tourist.productsCart.push(_id);
+        tourist.productsCart.push({ productId: _id, quantity: quantity });
         await tourist.save(); // Save changes to the database
 
         // Send the updated cart back in the response
@@ -606,53 +605,59 @@ export const addProductToCart = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during Add to Cart" });
     }
 };
-export const removeProductCart = async(req,res) => {
-    const {userName , _id} = req.body;
-    try{
+export const removeProductCart = async (req, res) => {
+    const { userName, productId } = req.body; // Change `_id` to `productId` as per the new schema
+    try {
+        // Find tourist by username
         const tourist = await Tourist.findOne({ userName });
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
-        console.log(_id)
-        if(!tourist.productsCart.includes(_id)){
-            return res.status(404).json({ success: false, message: "not in Cart" });
+
+        // Find the product in the cart and check if it exists
+        const productIndex = tourist.productsCart.findIndex(item => item.productId.toString() === productId);
+
+        if (productIndex === -1) {
+            return res.status(404).json({ success: false, message: "Product not found in cart" });
         }
-        const product = await Product.findById(_id);
-        console.log(product)
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
-        }
-        tourist.productsCart = tourist.productsCart.filter(item => item !==_id);
-        await tourist.save();
-        return res.status(200).json({ success: true, data: tourist.myPreferences, message: 'removed successfully' });
+
+        // Remove the product from the cart
+        tourist.productsCart.splice(productIndex, 1);
         
-    }catch (error) {
-        console.error("Error Adding to Cart:", error);
-        res.status(500).json({ success: false, message: "Server error during Removing from Cart" });
+        // Save the tourist with the updated cart
+        await tourist.save();
+        return res.status(200).json({ success: true, data: tourist.productsCart, message: 'Product removed successfully' });
+    } catch (error) {
+        console.error("Error removing from cart:", error);
+        res.status(500).json({ success: false, message: "Server error during removing product from cart" });
     }
-}
+};
 
 export const getCartProducts = async (req, res) => {
     const { userName } = req.params; // Get userName from request parameters
 
     try {
-        // Find tourist by username and populate productsCart
-        const tourist = await Tourist.findOne({ userName }).populate('productsCart');
+        // Find tourist by username and include productsCart
+        const tourist = await Tourist.findOne({ userName }).populate('productsCart.productId'); // Populate productId
         
         if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist not found" });
         }
 
-        // Find the products in the Cart
-        const AddedToCartProducts = await Product.find({ _id: { $in: tourist.productsCart } });
+        // Map over productsCart to include both productId and quantity
+        const cartProducts = tourist.productsCart.map(item => ({
+            productId: item.productId,  // The populated product data
+            quantity: item.quantity      // The quantity from the cart
+        }));
 
-        // Return success response with AddedToCart products
-        return res.status(200).json({ success: true, data: AddedToCartProducts });
+        // Return success response with cartProducts
+        return res.status(200).json({ success: true, data: cartProducts });
     } catch (error) {
-        console.error("Error Fetching AddedToCart Products:", error);
-        res.status(500).json({ success: false, message: "Server error during fetching AddedToCart products" });
+        console.error("Error Fetching Cart Products:", error);
+        res.status(500).json({ success: false, message: "Server error during fetching cart products" });
     }
 };
+
 export const getMyUpcomingItineraries = async (req,res) => {
     const {userName} = req.query;
     try{
@@ -877,20 +882,83 @@ export const markNotificationAsRead = async (req, res) => {
 	}
 };
 
+// Handle successful payment
+export const handleSuccessfulPaymentForTourist = async (req, res) => {
+    try {
+        const { username, items, type , amountPaid } = req.body;
+        console.log("before checking fields","username:",username,"items:",items,"amount:" ,amountPaid);
+      // Validate request body
+        if (!username || !items || !type ) {
+        return res.status(400).json({ message: "Missing required fields." });
+        }
+
+        if (isNaN(amountPaid) || amountPaid <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid amount paid" });
+        }
+
+      // Find the tourist by username
+        const tourist = await Tourist.findOne({ userName: username });
+        if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found." });
+        }
+
+      // Ensure items is an array
+        const itemsArray = Array.isArray(items) ? items : [items];
+
+      // Add each item to the touristItems array
+        itemsArray.forEach(item => {
+            // console.log(item);
+            tourist.touristItems.push({ itemData: item.itemData ,quantity:item.quantity ,itemDetails:item.itemDetails, type });
+        });
+
+        let value = 0;
+
+        // Validate the badge before proceeding
+        switch (tourist.badge) {
+            case 'level 1':
+                value = amountPaid * 0.5;
+                break;
+            case 'level 2':
+                value = amountPaid * 1;
+                break;
+            case 'level 3':
+                value = amountPaid * 1.5;
+                break;
+            default:
+                return res.status(400).json({ success: false, message: "Invalid badge level" });
+        }
+
+        // Ensure value is a valid number before adding to points
+        if (isNaN(value)) {
+            return res.status(400).json({ success: false, message: "Calculated value is invalid" });
+        }
+
+        tourist.myPoints += value;
+
+      // Save the updated tourist document
+        await tourist.save();
+        // console.log(tourist);
+        res.status(200).json({ message: "Item successfully added to tourist items.", tourist });
+    } catch (error) {
+        console.error("Error handling successful payment:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
 
 
 export const addDeliveryAddress = async (req, res) => {
 
     console.log('Request body:', req.body); 
   try {
-    const { userName, addressLine1, addressLine2, city, state, zipCode, country, isDefault } = req.body;
+    const {  addressLine1, addressLine2, city, state, zipCode, country, isDefault } = req.body;
 
-    if (!userName || !addressLine1 || !city || !state || !zipCode || !country) {
+    if (!addressLine1 || !city || !state || !zipCode || !country) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const newAddress = new DeliveryAddress({
-      userName,
+      
       addressLine1,
       addressLine2,
       city,

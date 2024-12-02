@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { create } from 'zustand';
 
+
 export const useItineraryStore = create((set, get) => ({
   currentItinerary: {},
   setCurrentItinerary: (itinerary) => set({ currentItinerary: itinerary }),
@@ -255,6 +256,46 @@ export const useItineraryStore = create((set, get) => ({
       console.error('Error flagging itinerary:', error);
       return { success: false, message: 'Error flagging itinerary' };
     }
-  },
+  },interestedIn: async(touristId,itineraryId) =>{
+    try {
+      const res = await fetch(`/api/itinerary/intrestedIn`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ touristId,itineraryId}),
+      });
+      const body = await res.json();
+      if (!body.success) return body;
+
+      set((state) => ({
+        itineraries: state.itineraries.map((itinerary) =>
+          itinerary._id === itineraryId ? body.data : itinerary
+        ),
+      }));
+      return { success: true, message: body.message };
+    } catch (error) {
+      // console.error("Error updating itinerary:", error);
+      return { success: false, message: body.message };
+    }
+  },removeInterestedIn: async(touristId,itineraryId) =>{
+    try {
+      const res = await fetch(`/api/itinerary/notIntrestedIn`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ touristId,itineraryId}),
+      });
+      const body = await res.json();
+      if (!body.success) return body;
+
+      set((state) => ({
+        itineraries: state.itineraries.map((itinerary) =>
+          itinerary._id === itineraryId ? body.data : itinerary
+        ),
+      }));
+      return { success: true, message: body.message };
+    } catch (error) {
+      // console.error("Error updating itinerary:", error);
+      return { success: false, message: body.message };
+    }
+  }
 
 }));

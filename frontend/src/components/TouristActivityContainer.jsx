@@ -9,11 +9,15 @@ import { useActivityStore } from '../store/activity.js';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { GoBell , GoBellFill } from "react-icons/go";
+import { useTouristStore } from '../store/tourist.js';
+
+
 
 
 function TouristActivityContainer({ activity, activityChanger,onBookmarkToggle,isBookmarked }) {
   const [email, setEmail] = useState("");
-  const { createActivityReview, bookmarkActivity, removeBookmark } = useActivityStore();
+  const { createActivityReview, bookmarkActivity, removeBookmark,interestedIn,removeInterestedIn } = useActivityStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
@@ -21,6 +25,25 @@ function TouristActivityContainer({ activity, activityChanger,onBookmarkToggle,i
   const [comment, setComment] = useState('');
   const [ setIsBookmarked] = useState(false);
   const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
+  const { tourist } = useTouristStore();
+
+
+  const handleIntersted = async (id) =>{
+    const { success, message } = await interestedIn(tourist._id,id);
+    if(success) 
+      toast.success(message, {className: "text-white bg-gray-800"}) 
+    else 
+      toast.error(message, {className: "text-white bg-gray-800"})
+}
+
+const handleNotIntersted = async (id) =>{
+    const { success, message } = await removeInterestedIn(tourist._id,id);
+    if(success) 
+      toast.success(message, {className: "text-white bg-gray-800"}) 
+    else 
+      toast.error(message, {className: "text-white bg-gray-800"})
+}
+
 
 
   const handleShare = (id) => {
@@ -112,6 +135,11 @@ const handleToggleBookmark = async () => {
    
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
+      {!activity.bookingOpen && (activity.interstedIn.includes(tourist._id)?
+         <GoBellFill size={20} onClick={() => (handleNotIntersted(activity._id))}/>:     
+         <GoBell size={20} onClick={() => (handleIntersted(activity._id))}/>     
+         )} 
+       
          <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-bold"></h3>
                 <button

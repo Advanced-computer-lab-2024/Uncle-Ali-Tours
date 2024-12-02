@@ -1,7 +1,6 @@
-import {create} from 'zustand';
-import { addProductToCart, addProductWishlist, badgeLevel, deleteTourist, getCartProducts, getTourist, removeProductCart, removeProductWishlist, updateTourist } from '../../../backend/controllers/tourist.controller';
+import toast from 'react-hot-toast';
+import { create } from 'zustand';
 import { useUserStore } from './user';
-import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
     tourist:{},
     wishlistedProducts: [],
@@ -295,13 +294,13 @@ export const useTouristStore = create((set) => ({
           set({ errorMessage: error.message || "Unable to fetch wishlisted products" });
         }
       },
-      addProductToCart: async (name, _id) => {
+      addProductToCart: async (name, _id, quantity) => {
         const res = await fetch('/api/tourist/addProductToCart', {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ userName: name, _id })
+            body: JSON.stringify({ userName: name, _id, quantity }) // Include quantity in the payload
         });
     
         const data = await res.json();
@@ -311,31 +310,48 @@ export const useTouristStore = create((set) => ({
             return { success: false, message: data.message };
         }
     
-        // Use the updated ProductsCart from the response
+        // Safeguard against undefined ProductsCart
         set((state) => ({
             tourist: {
                 ...state.tourist,
-                ProductsCart: data.data // Update with the actual updated cart from the server
+                ProductsCart: [
+                    ...(state.tourist.ProductsCart || []), // Fallback to an empty array if undefined
+                    { productId: _id, quantity: quantity }
+                ]
             }
         }));
     
         return { success: true, message: "Added successfully." };
     },
-    removeProductCart: async(name,_id)=>{
-        const res = await fetch('/api/tourist/removeProductCart',{
-            method : "PUT",
-            headers:{
-                "Content-Type":"application/json"
+    
+    removeProductCart: async (name, productId) => {
+        const res = await fetch('/api/tourist/removeProductCart', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({userName:name, _id})
+            body: JSON.stringify({ userName: name, productId }) // Pass productId, not _id
         });
-            const data = await res.json();
-            console.log("data remove", data);
-            if (!data.success) return {success: false, message: data.message};
-          
-            set((state) => ({tourist: {...state.tourist,ProductsCart:state.tourist.ProductsCart?.filter(item => item !==_id)}}))
-            return{success: true, message: "Removed successfully."};
+    
+        const data = await res.json();
+        console.log("API Response:", data);
+    
+        if (!data.success) return { success: false, message: data.message };
+    
+        // Safe check for ProductsCart
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsCart: Array.isArray(state.tourist.ProductsCart) // Check if it's an array
+                    ? state.tourist.ProductsCart.filter(item => item.productId !== productId)
+                    : [] // If not an array, reset to an empty array
+            }
+        }));
+    
+        return { success: true, message: "Removed successfully." };
     },
+   
+    
     getCartProducts: async (userName) => {
         try {
           const response = await fetch(`/api/tourist/getCartProducts/${userName}`);
@@ -452,5 +468,34 @@ export const useTouristStore = create((set) => ({
             return []; // Return an empty array on error
         }
     },
+
+    handleSuccessfulPaymentForTourist: async (username, items, type) => {
+        try {
+            let amountPaid = 0;
+            items.forEach(item => {
+                amountPaid += item.itemData.price;
+            });
+
+            const response =  await fetch(`/api/tourist/handleSuccessfulPayment`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: username,
+                     items: items,
+                      type: type,
+                       amountPaid: amountPaid })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success(data.message);
+            } else {
+                toast.error(data.message);
+                console.error("Error handling successful payment:", data.message);
+            }
+        } catch (error) {
+            console.error("Error handling successful payment:", error);
+            toast.error("Failed to handle successful payment.");
+        }
+    }
 
     }));

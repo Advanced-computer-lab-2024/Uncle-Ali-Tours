@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useTouristStore } from "../store/tourist";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import QuantitySelector from "../components/QuantitySelector";
+import toast, { Toaster } from 'react-hot-toast';
 
 const WishlistPage = ({ user }) => {
     const {
@@ -16,6 +18,8 @@ const WishlistPage = ({ user }) => {
     const [localWishlistProducts, setLocalWishlistProducts] = useState([]);
     const [cartStatus, setCartStatus] = useState({});
     const navigate = useNavigate();
+    const [quantity, setQuantity] = useState(1);
+    const [isAddedToCart, setIsAddedToCart] = useState(false);
 
     // Fetch wishlist products
     useEffect(() => {
@@ -54,15 +58,25 @@ const WishlistPage = ({ user }) => {
         }
     };
 
-    const handleCart = async (productId) => {
-        const { success, message } = await addProductToCart(user.userName, productId);
+    const handleQuantityChange = (newQuantity) => {
+        setQuantity(newQuantity);
+    };
+
+    const handleCart = async (id) => {
+        if (user.type !== "tourist") {
+            return toast.error("You are not allowed to add products to the Cart", { className: 'text-white bg-gray-800' });
+        }
+        
+        const { success, message } = await addProductToCart(user.userName, id, quantity);
         if (success) {
-            setCartStatus((prevStatus) => ({ ...prevStatus, [productId]: true }));
+            // Optionally update the state immediately
+            setIsAddedToCart(true);
             toast.success(message, { className: "text-white bg-gray-800" });
         } else {
             toast.error(message, { className: "text-white bg-gray-800" });
         }
     };
+    
 
     const handleRemoveFromCart = async (productId) => {
         const { success, message } = await removeProductCart(user.userName, productId);
@@ -119,6 +133,7 @@ const WishlistPage = ({ user }) => {
                             >
                                 Remove from Wishlist
                             </button>
+                            <QuantitySelector onChange={handleQuantityChange} />
                             <button
                                 onClick={() =>
                                     cartStatus[product._id]

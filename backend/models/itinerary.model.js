@@ -75,7 +75,11 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: true,
     required: false,
-  },
+  },bookingOpen: {
+    type: Boolean,
+    default: false,
+    required: true
+},
   isBooked: {
     type: Boolean,
     default: false,
@@ -92,6 +96,9 @@ const itinerarySchema = new mongoose.Schema({
        default: 0,
      },
      tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
+     interstedIn:{
+      type:[String]
+  }
 });
 
 const Itinerary = mongoose.model("Itinerary", itinerarySchema);

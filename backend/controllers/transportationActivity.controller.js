@@ -62,6 +62,17 @@ export const getActivity = async(req, res) => {
     }
 }
 
+export const getActivityById = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const activity = await transportationActivity.findById(id);
+        res.status(200).json({success:true, data: activity});
+    } catch (error) {
+        res.status(404).json({success:false, message: error.message });
+    }
+}
+
 export const deleteActivity = async(req, res) => {
     const { _id } = req.body;
     try {

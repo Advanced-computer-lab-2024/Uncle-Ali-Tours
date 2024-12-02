@@ -18,6 +18,7 @@ import AdminItineraryPage from './AdminItineraryPage';
 import AdvertiserProfile from "./AdvertiserProfilePage";
 import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
+import CancelledPaymentPage from './CancelledPayment';
 import ChangeCurrency from "./ChangeCurrency";
 import ChangePassword from "./ChangePassword";
 import Complaints from "./Complaints";
@@ -39,6 +40,7 @@ import Productpage from "./Productpage";
 import RegisterPage from "./RegisterPage";
 import Security from './Security.jsx';
 import SellerProfilePage from "./SellerProfilePage";
+import SuccessfulPaymentPage from './SuccessfulPayment';
 import TourGuideProfilePage from "./TourGuideProfilePage";
 import TourGuideReviews from "./TourGuideReviews";
 import TouristProfile from './TouristProfile';
@@ -63,7 +65,10 @@ import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
 import CheckoutPage from './CheckOutPage.jsx';
-
+import TourGuideSalesReport from './TourGuideSalesReport.jsx';
+import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+import SellerSalesReport from './SellerSalesReport.jsx';
+import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 
@@ -114,6 +119,7 @@ function App() {
     <div >
     <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] overflow-x-hidden">
       <Navbar />
+      <Toaster />
       {!loading ? 
       <Routes>
         <Route path="/security" element={<Security />} />
@@ -152,8 +158,9 @@ function App() {
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
         <Route path="/checkoutPage" element={<CheckoutPage />} />
-            
-
+        <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
+        <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
+        <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
@@ -179,6 +186,8 @@ function App() {
          <Route path="/Cart" element={<CartPage user={user}/>} />
         <Route path="/wishlist" element={<WishlistPage user={user}/>} />
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
+        <Route path="/cancel/:type" element={<CancelledPaymentPage/>} />
+        <Route path="/success/:type" element={<SuccessfulPaymentPage/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

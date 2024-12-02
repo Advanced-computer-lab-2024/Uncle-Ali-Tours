@@ -1,9 +1,11 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 
 export const useTransportationActivityStore = create((set,get) => ({
     transportationActivities: [],
+    transportationActivity: null,
     setTransportationActivities: (activities) => set({activities}),
+    setTransportationActivity: (activity) => set({activity}),
     
     getTransportationActivities: async (filter = {} , sort = {}) => {
        let minPrice = 0
@@ -35,6 +37,22 @@ export const useTransportationActivityStore = create((set,get) => ({
         set({transportationActivities : body.data})
         return {success: true, message: "fetched transportation activities"};
     },
+
+    getTransportationActivityById: async (id) => {
+        const res = await fetch(`/api/transportaionActivity/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const body = await res.json();
+        if (!body.success){
+            return (body)
+        }
+        set({transportationActivity : body.data})
+        return {success: true, message: "fetched transportation activity"};
+    },
+
     createTransportationActivity: async (newTransportationActivity) => {
       //  console.log(newProduct)
         try {

@@ -7,9 +7,9 @@ function FlightBookingPage() {
     const [originCity, setOriginCity] = useState('');
     const [destinationCity, setDestinationCity] = useState('');
     const [flightDate, setDate] = useState('');
-    const [flightCabinClass, setCabinClass] = useState('');
-    const [flightAdults, setAdults] = useState('');
-    const [flightChildrens, setChildrens] = useState('');
+    const [flightCabinClass, setCabinClass] = useState('economy');
+    const [flightAdults, setAdults] = useState('1');
+    const [flightChildrens, setChildrens] = useState('0');
     const [loading, setLoading] = useState(false);
     const [viewingOffers, setViewingOffers] = useState(false);
     const [bookedFlight, setBookedFlight] = useState({data : {}, creator : ''});

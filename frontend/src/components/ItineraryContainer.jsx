@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+  import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
@@ -15,7 +15,7 @@ import Rating from './Rating';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary} = useItineraryStore();
+  const {currentItinerary, setCurrentItinerary , updateItinerary} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -192,6 +192,15 @@ const handleBookClick = async () => {
   }
 };
 
+const handleBookingOpen = async (id,newItinerary)=>{
+    const {success,message} = await updateItinerary(id,newItinerary);
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+    } else{
+      toast.error(message, { className: "text-white bg-gray-800" });  
+    }   
+}
+
 
 
 const activate = async () => {
@@ -210,45 +219,32 @@ const deactivate = async () => {
       <Toaster/>
         <div className='grid p-2'>
        
-      <h2>{itinerary.name}</h2>
-      <p>Preference Tag: {itinerary.preferenceTag}</p>
+      <p>Name: {itinerary.name}</p>
+      <p>Tags: {itinerary.tags?.join(', ') || "No tags"}</p>
       <p>Language: {itinerary.language}</p>
-      <p>Price: {displayPrice} {user.chosenCurrency}</p>
-      <h3>Activities:</h3>
+      <p>Price: {displayPrice} {user.chosenCurrency}</p>&nbsp; 
+      <p>Activities: </p>
+
       <ul>
         {itinerary.activities.map((activity, index) => (
           <li key={index+1}>
-            <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
+            <p>{index+1}: {activity.name} </p>   
+             <p> Duration: {activity.duration} hours</p> 
             
           </li>
         ))}
-      </ul>
-      <p>pickup location: {itinerary.pickupLocation}</p>
-      <p>dropoff location: {itinerary.dropoffLocation}</p>
+      </ul>&nbsp; 
+      <p>Pickup location: {itinerary.pickupLocation}</p>
+      <p>Dropoff location: {itinerary.dropoffLocation}</p>
       <h3>Locations:</h3>
-      <ul>
-        {itinerary.tourLocations.map((loc, index) => (
-          <li key={index}>
-            <p>{loc}</p>
-          </li>
-        ))}
-      </ul>
+  <p>{itinerary.tourLocations.join(", ")}</p>
+
       <h3>Available Dates:</h3>
-      <ul>
-        {itinerary.availableDates.map((date, index) => (
-          <li key={index}>
-            <p>{date}</p>
-          </li>
-        ))}
-      </ul>
+      <p>{itinerary.availableDates.map((date) => new Date(date).toLocaleDateString()).join(", ")}</p>
+
       <h3>Available Times:</h3>
-      <ul>
-        {itinerary.availableTimes.map((time, index) => (
-          <li key={index}>
-            <p>{time}</p>
-          </li>
-        ))}
-      </ul>
+      <p>{itinerary.availableTimes.join(", ")}</p>
+
       <p>Accessibility: {itinerary.accessibility}</p>
       <p>Number Of Bookings: {itinerary.numberOfBookings}</p>
       <p>Status: {status}</p>
@@ -326,6 +322,7 @@ const deactivate = async () => {
          <button onClick={() => (handleBook(itinerary._id))} className="p-2 bg-blue-500 text-white">book</button>  :   
          <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
          }
+         <button onClick={()=>handleBookingOpen(itinerary._id,{bookingOpen:!itinerary.bookingOpen})}>{itinerary.bookingOpen?"close":"open"}</button>
         {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
           <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
