@@ -8,6 +8,7 @@ const AddAddressPage = () => {
   const navigate = useNavigate();
 
   const [newAddress, setNewAddress] = useState({
+    
     addressLine1: "",
     addressLine2: "",
     city: "",
@@ -33,7 +34,7 @@ const AddAddressPage = () => {
   
       if (response.status === 201) {
         toast.success("Address added successfully!");
-        navigate("/choose-address");
+        
       }
     } catch (error) {
       console.error("Error details:", error);  // Log the error details for better debugging
@@ -47,6 +48,7 @@ const AddAddressPage = () => {
       <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Add New Address</h2>
       
       <form onSubmit={handleAddAddress} className="space-y-4">
+         
         {/* Address Line 1 */}
         <div>
           <label htmlFor="addressLine1" className="text-gray-700">Address Line 1</label>

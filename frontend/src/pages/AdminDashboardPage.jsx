@@ -13,8 +13,12 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState(0);
   const [newUsers, setNewUsers] = useState(0);
   const [accountUsername, setAccountUsername] = useState("");
+
+
   const [accountType, setAccountType] = useState("");
   const [adminData, setAdminData] = useState({ userName: "", password: "", email: "" });
+  const [governordata, setGovernorData] = useState({ userName: "", password: "", email: "" });
+
   const [salesReport, setSalesReport] = useState([]);
   const [filteredReport, setFilteredReport] = useState([]);
   const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "", searchName: "" });
@@ -28,7 +32,7 @@ const AdminDashboard = () => {
     };
     fetchData();
   }, [user]);
-
+  
   const fetchSalesReport = async () => {
     await getProducts();
     const giftShopSales = products
@@ -41,7 +45,7 @@ const AdminDashboard = () => {
         appRevenue: ((product.sales || 0) * product.price) * 0.1,
         date: product.date || "2024-11-01",
       }));
-
+  
     // Example static event and itinerary data
     const data = [
       { category: "Event", name: "Event 1", revenue: 1000, appRate: 10, appRevenue: 100, date: "2024-11-01" },
@@ -52,7 +56,18 @@ const AdminDashboard = () => {
     setSalesReport(data);
     setFilteredReport(data);
   };
-
+  const handleAddGovernor = async (e) => {
+    e.preventDefault(); 
+    const payload = { ...governordata, type: "governor" };
+    const { success, message } = await createUser(payload);
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+      setGovernorData({ userName: "", password: "", email: "" }); // Reset fields
+    } else {
+      toast.error(message, { className: "text-white bg-gray-800" });
+    }
+  };
+  
   const handleDeleteAccount = async () => {
     if (!accountUsername || !accountType) {
       toast.error("Username and Account Type cannot be empty.", { className: "text-white bg-red-600" });
@@ -117,8 +132,14 @@ const AdminDashboard = () => {
         {/* Add Admin / Delete User - Side by Side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-3">
           {/* Add New Admin */}
-          <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-            <h3 className="text-xl mb-4">Add New Admin</h3>
+            <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
+          <h3 className="text-xl mb-4">Add New Admin</h3>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddUser(adminData, "admin");
+            }}
+          >
             <input
               type="text"
               placeholder="Username"
@@ -131,56 +152,95 @@ const AdminDashboard = () => {
               placeholder="Password"
               value={adminData.password}
               onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2"
+              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
             />
             <input
-              type="text"
+              type="email"
               placeholder="Email"
               value={adminData.email}
               onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
               className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
             />
             <button
-              onClick={() => handleAddUser(adminData, "admin")}
+              type="submit"
               className="w-full mt-4 bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
             >
               Add New Admin
             </button>
-          </div>
-
-          {/* Delete Account */}
+          </form>
+        </div>
           <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-            <h3 className="text-xl mb-4">Delete Account</h3>
-            <input
-              type="text"
-              placeholder="Username"
-              value={accountUsername}
-              onChange={(e) => setAccountUsername(e.target.value)}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
-            />
-            <input
-              type="text"
-              placeholder="Account Type"
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value)}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2"
-            />
-            <button
-              onClick={handleDeleteAccount}
-              className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-            >
-              Delete Account
-            </button>
-          </div>
-        </div>
+  <h3 className="text-xl mb-4">Add New Governor</h3>
+  <form onSubmit={handleAddGovernor}>
+    <input
+      type="text"
+      value={governordata.userName}
+      onChange={(e) => setGovernorData({ ...governordata, userName: e.target.value })}
+      placeholder="Username"
+      className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
+    />
+    <input
+      type="password"
+      value={governordata.password}
+      onChange={(e) => setGovernorData({ ...governordata, password: e.target.value })}
+      placeholder="Password"
+      className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
+    />
+    <input
+      type="email"
+      value={governordata.email}
+      onChange={(e) => setGovernorData({ ...governordata, email: e.target.value })}
+      placeholder="Email"
+      className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
+    />
+    <button
+      type="submit"
+      className="w-full mt-4 bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
+    >
+      Add Tourism Governor
+    </button>
+  </form>
+</div>
 
-        {/* Promo Codes */}
-        <div className="col-span-1 lg:col-span-3 p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-          <h3 className="text-xl mb-4">Promo Codes</h3>
-          <Promo />
-        </div>
+
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-3">
+      {/* Delete Account */}
+      <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
+        <h3 className="text-xl mb-4">Delete Account</h3>
+        <input
+          type="text"
+          placeholder="Username"
+          value={accountUsername}
+          onChange={(e) => setAccountUsername(e.target.value)}
+          className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
+        />
+        <input
+          type="text"
+          placeholder="Account Type"
+          value={accountType}
+          onChange={(e) => setAccountType(e.target.value)}
+          className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2"
+        />
+        <button
+          onClick={handleDeleteAccount}
+          className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+        >
+          Delete Account
+        </button>
       </div>
 
+      {/* Promo Codes */}
+      <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
+        <h3 className="text-xl mb-4">Promo Codes</h3>
+        <Promo />
+      </div>
+    </div>
+  </div>
+
+  {/* Sales Report Section */}
+  
+</div>
       {/* Sales Report Section */}
       <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white col-span-1 lg:col-span-3 mt-6">
         <h3 className="text-2xl text-center mb-4">Sales Report</h3>

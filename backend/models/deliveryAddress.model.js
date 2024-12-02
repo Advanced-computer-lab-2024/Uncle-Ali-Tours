@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 
 const deliveryAddressSchema = new mongoose.Schema({
-  userName: { type: String, required: true },  // to associate address with the user
+ 
   addressLine1: { type: String, required: true },
   addressLine2: { type: String },
   city: { type: String, required: true },

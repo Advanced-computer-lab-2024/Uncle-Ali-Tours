@@ -951,14 +951,14 @@ export const addDeliveryAddress = async (req, res) => {
 
     console.log('Request body:', req.body); 
   try {
-    const { userName, addressLine1, addressLine2, city, state, zipCode, country, isDefault } = req.body;
+    const {  addressLine1, addressLine2, city, state, zipCode, country, isDefault } = req.body;
 
-    if (!userName || !addressLine1 || !city || !state || !zipCode || !country) {
+    if (!addressLine1 || !city || !state || !zipCode || !country) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const newAddress = new DeliveryAddress({
-      userName,
+      
       addressLine1,
       addressLine2,
       city,
