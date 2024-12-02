@@ -4,6 +4,7 @@ const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 import Advertiser from "../models/advertiser.model.js"
 import Notification from "../models/notification.model.js";
+import Tourist from "../models/tourist.model.js";
 
 export const addBookmark = async (req, res) => {
     const { userName, activityId } = req.body;
@@ -229,15 +230,37 @@ export const getActivityById = async (req, res) => {
     }
 };
 
+const notifyIntrest = async(touristId,bookingOpen,activityId)=> {
+    const tourist = await Tourist.findById(touristId);
+    if (!tourist.notifications) {
+        tourist.notifications = [];
+    }
+    const link = `http://localhost:5000/activityDetail/${activityId}`
+    const notification = new Notification({
+        userName: tourist.userName,
+        title: `this activity ${bookingOpen?"is open":"is colsed"}`,
+        message: `your intrested activity booking has been marked as ${bookingOpen?"open":"colsed"} by creator`,
+        link: link // link to promo page
+    });
+    await notification.save();
+    tourist.notifications.push(notification._id);
+    await tourist.save()
+}
 // Update Activity (including isAppropriate flag)
 export const updateActivity = async (req, res) => {
     const { id, newActivity } = req.body;
     try {
         const activityExists = await Activity.exists({ _id: id });
+        
 
         if (!activityExists) {
             return res.status(404).json({ success: false, message: "Activity not found" });
         }
+        const activity = await Activity.findById(id);
+        if((activity.bookingOpen && !newActivity.bookingOpen) || (!activity.bookingOpen && newActivity.bookingOpen)){
+            activity.interstedIn.map((touristId)=>{notifyIntrest(touristId,newActivity.bookingOpen,activity._id)})
+        }
+
 
         const updatedActivity = await Activity.findByIdAndUpdate(
             { _id: id },

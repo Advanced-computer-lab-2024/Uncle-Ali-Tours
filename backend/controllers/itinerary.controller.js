@@ -126,6 +126,24 @@ export const deleteItinerary = async (req, res) => {
     }
 };
 
+const notifyIntrest = async(touristId,bookingOpen,itineraryId)=> {
+    const tourist = await Tourist.findById(touristId);
+    console.log(tourist)
+    if (!tourist.notifications) {
+        tourist.notifications = [];
+    }
+    const link = `http://localhost:5000/itineraryDetail/${itineraryId}`
+    const notification = new Notification({
+        userName: tourist.userName,
+        title: `this itinerary ${bookingOpen?"is open":"is colsed"}`,
+        message: `your intrested itinerary booking has been marked as ${bookingOpen?"open":"colsed"} by creator`,
+        link: link // link to promo page
+    });
+    await notification.save();
+    tourist.notifications.push(notification._id);
+    await tourist.save()
+}
+
 // Update an itinerary
 export const updateItinerary = async (req, res) => {
     const { id, newItinerary } = req.body;
@@ -134,6 +152,12 @@ export const updateItinerary = async (req, res) => {
 
         if (!itineraryExists) {
             return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+        const itinerary = await Itinerary.findById(id);
+        console.log(itinerary._id)
+        if((itinerary.bookingOpen && !newItinerary.bookingOpen) || (!itinerary.bookingOpen && newItinerary.bookingOpen)){
+            console.log(itinerary);
+            itinerary.interstedIn.map((touristId)=>{notifyIntrest(touristId,newItinerary.bookingOpen,itinerary._id)})
         }
 
         const updatedItinerary = await Itinerary.findByIdAndUpdate(id, newItinerary, { new: true, runValidators: true });

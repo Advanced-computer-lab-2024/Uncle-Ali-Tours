@@ -285,7 +285,7 @@ const TourGuideProfilePage = () =>{
            <button className='bg-black text-white m-6 p-2 rounded' onClick={handleRedirect}>itinerary</button>
            <div>
            <Dialog msg={"Are you sure you want to delete your account?"} accept={() => (console.log("deleted"))} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
-            <button className='bg-red-600 text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button>
+            {/* <button className='bg-red-600 text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> */}
            </div>
            {isEditing && (
             <>
@@ -333,14 +333,14 @@ const TourGuideProfilePage = () =>{
         
        
            <br />
-          <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> 
-           {isDeleteVisible && (
+          {/* <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button>  */}
+           {/* {isDeleteVisible && (
             <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
             <p>Are you sure you want to request to delete your account?</p>
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
             <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
             </div>
-           )}         
+           )}          */}
            {/* Report Section */}
 
       <div className="mt-6 bg-gray-700 p-4 rounded-md">

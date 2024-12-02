@@ -15,7 +15,7 @@ import Rating from './Rating';
 
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary} = useItineraryStore();
+  const {currentItinerary, setCurrentItinerary , updateItinerary} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -192,6 +192,15 @@ const handleBookClick = async () => {
   }
 };
 
+const handleBookingOpen = async (id,newItinerary)=>{
+    const {success,message} = await updateItinerary(id,newItinerary);
+    if (success) {
+      toast.success(message, { className: "text-white bg-gray-800" });
+    } else{
+      toast.error(message, { className: "text-white bg-gray-800" });  
+    }   
+}
+
 
 
 const activate = async () => {
@@ -326,6 +335,7 @@ const deactivate = async () => {
          <button onClick={() => (handleBook(itinerary._id))} className="p-2 bg-blue-500 text-white">book</button>  :   
          <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
          }
+         <button onClick={()=>handleBookingOpen(itinerary._id,{bookingOpen:!itinerary.bookingOpen})}>{itinerary.bookingOpen?"close":"open"}</button>
         {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
           <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
