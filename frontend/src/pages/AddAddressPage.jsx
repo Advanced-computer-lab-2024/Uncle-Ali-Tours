@@ -3,7 +3,6 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-// A more modern form with additional styling
 const AddAddressPage = () => {
   const navigate = useNavigate();
 
@@ -26,11 +25,11 @@ const AddAddressPage = () => {
   };
 
   const handleAddAddress = async (e) => {
-    e.preventDefault();
-  
+    e.preventDefault();  // Prevent the default form submit behavior
+
     try {
       const response = await axios.post("/api/tourist/addDeliveryAddress", newAddress);
-  
+
       if (response.status === 201) {
         toast.success("Address added successfully!");
         navigate("/choose-address");
@@ -40,7 +39,6 @@ const AddAddressPage = () => {
       toast.error("Error adding address");
     }
   };
-  
 
   return (
     <div className="container mx-auto p-4 bg-gray-50 shadow-lg rounded-lg w-full sm:w-3/4 md:w-1/2">
@@ -143,7 +141,7 @@ const AddAddressPage = () => {
             name="isDefault"
             id="isDefault"
             checked={newAddress.isDefault}
-            onChange={(e) => setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }))}
+            onChange={(e) => setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }))} 
             className="mr-2"
           />
           <label htmlFor="isDefault" className="text-gray-700">Set as Default Address</label>
@@ -152,9 +150,8 @@ const AddAddressPage = () => {
         {/* Submit Button */}
         <div className="text-center">
           <button
-            type="button"  // Prevent the form's default submit action
+            type="submit"  // Correct button type
             className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-            onClick={handleAddAddress}  // Directly trigger the addAddress method
           >
             Add Address
           </button>

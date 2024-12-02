@@ -114,7 +114,8 @@ const SideMenu = ({ isOpen, onClose }) => {
       </button>
       <nav className="mt-16">
         {user.type === "tourist" &&
-          menuItems.map((item, index) => (
+             menuItemsTourist 
+.map((item, index) => (
             <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
               <h2
                 onClick={() => toggleMenu(index)}

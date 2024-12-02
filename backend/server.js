@@ -32,6 +32,32 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
+import nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // or smtp server like 'smtp.mailtrap.io'
+    auth: {
+        user: process.env.EMAIL_USER, // Your email address
+        pass: process.env.EMAIL_PASS, // Your email password
+    },
+});
+
+const mailOptions = {
+    from: process.env.EMAIL_USER,  // sender address
+    to: 'ahmedguc101@gmail.com.com',   // list of receivers
+    subject: 'Test Email',         // Subject line
+    text: 'This is a test email',  // plain text body
+    html: '<b>This is a test email</b>' // html body
+};
+
+// Sending email
+transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+        console.log('Error: ', error);
+    } else {
+        console.log('Email sent: ' + info.response);
+    }
+});
 
 
 
