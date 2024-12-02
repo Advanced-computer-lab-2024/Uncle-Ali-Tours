@@ -4,6 +4,7 @@ import TourGuide from "../models/tourGuide.model.js"
 const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 import Notification from "../models/notification.model.js";
+import Tourist from "../models/tourist.model.js";
 
 
 // Create a new itinerary
@@ -125,6 +126,24 @@ export const deleteItinerary = async (req, res) => {
     }
 };
 
+const notifyIntrest = async(touristId,bookingOpen,itineraryId)=> {
+    const tourist = await Tourist.findById(touristId);
+    console.log(tourist)
+    if (!tourist.notifications) {
+        tourist.notifications = [];
+    }
+    const link = `http://localhost:5000/itineraryDetail/${itineraryId}`
+    const notification = new Notification({
+        userName: tourist.userName,
+        title: `this itinerary ${bookingOpen?"is open":"is colsed"}`,
+        message: `your intrested itinerary booking has been marked as ${bookingOpen?"open":"colsed"} by creator`,
+        link: link // link to promo page
+    });
+    await notification.save();
+    tourist.notifications.push(notification._id);
+    await tourist.save()
+}
+
 // Update an itinerary
 export const updateItinerary = async (req, res) => {
     const { id, newItinerary } = req.body;
@@ -133,6 +152,12 @@ export const updateItinerary = async (req, res) => {
 
         if (!itineraryExists) {
             return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+        const itinerary = await Itinerary.findById(id);
+        console.log(itinerary._id)
+        if((itinerary.bookingOpen && !newItinerary.bookingOpen) || (!itinerary.bookingOpen && newItinerary.bookingOpen)){
+            console.log(itinerary);
+            itinerary.interstedIn.map((touristId)=>{notifyIntrest(touristId,newItinerary.bookingOpen,itinerary._id)})
         }
 
         const updatedItinerary = await Itinerary.findByIdAndUpdate(id, newItinerary, { new: true, runValidators: true });
@@ -296,4 +321,28 @@ export const flagItinerary = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const interestedIn = async(req, res) => {
+    try{
+        const {touristId,itineraryId} = req.body;
+        const itinerary = await Itinerary.findById(itineraryId);
+        itinerary.interstedIn.push(touristId);
+        await itinerary.save();
+        return res.status(200).json({ success: true,data:itinerary, message: 'you will get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
+
+export const removeInterestedIn = async(req, res) => {
+    try{
+        const {touristId,itineraryId} = req.body;
+        const itinerary = await Itinerary.findById(itineraryId);
+        itinerary.interstedIn = itinerary.interstedIn.filter(item => item !==touristId);
+        await itinerary.save(); // Save changes to the database
+        return res.status(200).json({ success: true,data:itinerary, message: 'you will not get notified when booking is open' });
+    }catch(error){
+        return res.status(200).json({ success: false, message: error.message });
+    }
+}
 

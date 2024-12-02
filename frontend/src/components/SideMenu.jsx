@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IoCloseSharp } from "react-icons/io5";
-import { FaAngleDown, FaCheck } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa";
 import { useTagStore } from "../store/tag";
 import { useTouristStore } from "../store/tourist";
 import { toast } from "react-hot-toast";
-
+import AddAddressPage from "../pages/AddAddressPage";
 const SideMenu = ({ isOpen, onClose }) => {
   const { updateTourist } = useTouristStore();
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -15,13 +15,10 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     getTags();
-  }, [getTags]);
-
-  useEffect(() => {
     if (user.myPreferences && user.myPreferences.length > 0) {
       setPreferences(user.myPreferences);
     }
-  }, [user]);
+  }, [getTags, user]);
 
   const menuItemsTourist = [
     {
@@ -29,7 +26,7 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "Itinerary", path: "/touristviewitineraries" },
         { name: "Activity", path: "/touristviewActivities" },
-        { name: "Transportation", path: "/transportationActivity" },
+        { name: "Transportation", path: "/ViewTransportationActivity" },
         { name: "Flight", path: "/bookedFlights" },
         { name: "Hotel", path: "/bookedHotels" },
       ],
@@ -62,6 +59,13 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "New Complaint", path: "/fileComplaint" },
         { name: "My Complaints", path: "/viewMyComplaints" },
+      ],
+    },
+    {
+      title: "Delivery Addresses", // New section
+      subItems: [
+        { name: "Add New Address", path: "/AddAddressPage" }, 
+      
       ],
     },
   ];
@@ -99,21 +103,6 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   const toggleMenu = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
-  };
-
-  const handlePreferenceToggle = async (tagName) => {
-    const updatedPreferences = preferences.includes(tagName)
-      ? preferences.filter((pref) => pref !== tagName)
-      : [...preferences, tagName];
-
-    setPreferences(updatedPreferences);
-
-    const { success, message } = await updateTourist(user.userName, { myPreferences: updatedPreferences });
-    if (success) {
-      toast.success('Preferences updated successfully!', { className: 'text-white bg-gray-800' });
-    } else {
-      toast.error(message, { className: 'text-white bg-gray-800' });
-    }
   };
 
   return (

@@ -55,7 +55,7 @@ const activitySchema = new mongoose.Schema({
     },
     bookingOpen: {
         type: Boolean,
-        required: true
+        default: false,
     },
     numberOfBookings: {
         type:Number,
@@ -92,6 +92,9 @@ const activitySchema = new mongoose.Schema({
        default: 0,
      },
      tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' , default: []}],
+     interstedIn:{
+        type:[String]
+    }
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

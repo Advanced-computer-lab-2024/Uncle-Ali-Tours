@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import ItineraryContainer from '../components/ItineraryContainer';
 import { useItineraryStore } from '../store/itinerary';
 import { FiLoader } from "react-icons/fi";
-
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
 
 
 function ItineraryDetail() {
@@ -24,7 +24,7 @@ function ItineraryDetail() {
 
   return (
     <div>ItineraryDetail  
-            <ItineraryContainer  itinerary={itineraries[0]}/>   
+            <TouristItineraryContainer  itinerary={itineraries[0]}/>   
     </div>
   )
 }

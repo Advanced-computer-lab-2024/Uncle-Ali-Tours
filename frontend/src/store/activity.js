@@ -371,6 +371,45 @@ getBookmarkedActivities: async (userName) => {
         return { success: false, message: data.message || 'Could not add review' };
     }
 
+},interestedIn: async(touristId,activityId) =>{
+  try {
+    const res = await fetch(`/api/activity/intrestedIn`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ touristId,activityId}),
+    });
+    const body = await res.json();
+    if (!body.success) return body;
+
+    set((state) => ({
+      activities: state.activities.map((currentActivity) =>
+        currentActivity._id === activityId ? body.data : currentActivity
+      ),
+    }));
+    return { success: true, message: body.message };
+  } catch (error) {
+    return { success: false, message: body.message };
+  }
+},removeInterestedIn: async(touristId,activityId) =>{
+  try {
+    const res = await fetch(`/api/activity/notIntrestedIn`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ touristId,activityId}),
+    });
+    const body = await res.json();
+    if (!body.success) return body;
+
+    set((state) => ({
+      activities: state.activities.map((currentActivity) =>
+        currentActivity._id === activityId ? body.data : currentActivity
+      ),
+    }));
+    return { success: true, message: body.message };
+  } catch (error) {
+    // console.error("Error updating itinerary:", error);
+    return { success: false, message: body.message };
+  }
 }
 
 }));

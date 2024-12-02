@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { dialog } from '../components/Dialog.jsx';
-import { formdialog } from './FormDialog.jsx'; 
-import { FiLoader } from 'react-icons/fi'; 
-import { useUserStore } from '../store/user.js';
 import toast, { Toaster } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { FiLoader } from 'react-icons/fi';
+import { MdDelete } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+import { dialog } from '../components/Dialog.jsx';
 import { useTouristStore } from '../store/tourist.js';
+import { formdialog } from './FormDialog.jsx';
 
 function TransportationActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
@@ -16,7 +15,7 @@ function TransportationActivityContainer({ activity, activityChanger }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const {tourist, updateBookings,unBook} = useTouristStore();
-  
+  const navigate = useNavigate();
 
 
   const handleShare = (id) => {
@@ -77,6 +76,15 @@ function TransportationActivityContainer({ activity, activityChanger }) {
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
 
+  const handleBookClick = async (activityID) => {
+    try{
+      navigate(`/payment/tActivity/${activityID}`);
+    }
+    catch(error){
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
       <Toaster />
@@ -95,10 +103,12 @@ function TransportationActivityContainer({ activity, activityChanger }) {
         <button className="p-2 bg-blue-500 text-white mt-2" onClick={() => setIsModalOpen(true)}>Share via Email</button>
         <div>   
          <button onClick={() => (handleClick())} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
-         {   !tourist?.myBookings?.includes(activity._id) ?
+         {/* {   !tourist?.myBookings?.includes(activity._id) ?
          <button onClick={() => (handleBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
          <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
-         }
+         } */}
+                  <button onClick={() => (handleBookClick(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>
+
          </div>
 
     

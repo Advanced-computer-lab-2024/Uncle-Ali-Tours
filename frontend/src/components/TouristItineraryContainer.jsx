@@ -8,10 +8,11 @@ import { useGuideStore } from '../store/tourGuide.js';
 import { useTouristStore } from '../store/tourist.js';
 import { useUserStore } from '../store/user.js';
 import Rating from './Rating';
+import { GoBell , GoBellFill } from "react-icons/go";
 
 
 function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary} = useItineraryStore();
+  const {currentItinerary, setCurrentItinerary,interestedIn,removeInterestedIn} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -96,6 +97,22 @@ const { tourist } = useTouristStore();
     }
 };
 
+const handleIntersted = async (id) =>{
+      const { success, message } = await interestedIn(tourist._id,id);
+      if(success) 
+        toast.success(message, {className: "text-white bg-gray-800"}) 
+      else 
+        toast.error(message, {className: "text-white bg-gray-800"})
+}
+
+const handleNotIntersted = async (id) =>{
+      const { success, message } = await removeInterestedIn(tourist._id,id);
+      if(success) 
+        toast.success(message, {className: "text-white bg-gray-800"}) 
+      else 
+        toast.error(message, {className: "text-white bg-gray-800"})
+}
+
 const handleSubmitTourGuideReview = async (e) => {
   e.preventDefault();
   const tourGuideName = itinerary.creator;  
@@ -130,6 +147,10 @@ const handleBookClick = async (itineraryID) => {
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
         <div className='grid p-2'>
+        {!itinerary.bookingOpen && (itinerary.interstedIn.includes(tourist._id)?
+         <GoBellFill size={20} onClick={() => (handleNotIntersted(itinerary._id))}/>:     
+         <GoBell size={20} onClick={() => (handleIntersted(itinerary._id))}/>     
+         )} 
        
       <h2>{itinerary.name}</h2>
       <p>Preference Tag: {itinerary.preferenceTag}</p>

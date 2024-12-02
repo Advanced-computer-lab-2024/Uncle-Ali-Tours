@@ -53,12 +53,36 @@ const touristModel = new mongoose.Schema({
         ref: 'Itinerary',
         required:false
     },
+    touristItems:{
+        type : [{
+            itemData:{
+                type: Object,
+                required:false
+            },
+            quantity:{
+                type: Number,
+                required:false
+            },
+            itemDetails:{
+                type: Object,
+                required:false
+            },
+            type:{
+                type: String,
+                required:false
+        }
+    }],
+    required:false
+    },
     productsWishlist:{
         type:[String],
         required:false
     },
     productsCart:{
-        type:[String],
+        type: [{
+            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+            quantity: { type: Number, required: true, default: 1 }
+        }],
         required:false
     },
     promoCodes:{
