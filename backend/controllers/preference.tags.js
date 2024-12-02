@@ -35,17 +35,39 @@ export const deleteTag = async (req, res) => {
 };
 
 export const updateTag = async (req, res) => {
-    const tagName = req.body.name;
-    const newTag = req.body.newTag;
+  const { name, newTag } = req.body;  // Extract 'name' and 'newTag' from request body
   
-    try {
-      const updatedTag = await PreferenceTags.findOneAndUpdate({name: tagName}, newTag, { new: true });
-      return res.json({ success: true, data: updatedTag });
-    } catch (error) {
-      console.error("Error in updating tag", error.message);
-      return res.status(500).json({ success: false, message: 'Error in updating tag' });
+  try {
+    // Validate that both 'name' and 'newTag' are present
+    if (!name || !newTag) {
+      return res.status(400).json({ success: false, message: 'Both name and newTag are required' });
     }
-  };
+
+    // Check if the newTag already exists
+    const duplicateTag = await PreferenceTags.findOne({ name: newTag });
+    if (duplicateTag) {
+      return res.status(400).json({ success: false, message: 'Tag name already exists' });
+    }
+
+    // Perform the tag update
+    const updatedTag = await PreferenceTags.findOneAndUpdate(
+      { name },           // Find tag by the old name
+      { name: newTag },   // Update the name field with the new tag name
+      { new: true }       // Return the updated document
+    );
+
+    if (!updatedTag) {
+      return res.status(404).json({ success: false, message: 'Tag not found' });
+    }
+
+    return res.json({ success: true, data: updatedTag });
+  } catch (error) {
+    console.error("Error in updating tag", error.message);
+    return res.status(500).json({ success: false, message: 'Error in updating tag' });
+  }
+};
+
+
 
   export const getTags = async (req, res) => {
     const { filter, sort } = req.query;

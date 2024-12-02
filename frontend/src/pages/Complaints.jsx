@@ -17,8 +17,6 @@ const Complaints = () => {
   const [sort, setSort] = useState({});
   const [sortVisibility, setSortVisibility] = useState(false);
   const [filterVisibility, setFilterVisibility] = useState(false);
-
-  // Fetch complaints whenever filter or sort changes
   const [replyText, setReplyText] = useState({}); // Track replies for each complaint
 
   useEffect(() => {
@@ -92,7 +90,7 @@ const Complaints = () => {
       toast.error("Reply cannot be empty", { className: "text-white bg-gray-800" });
     }
   };
-  
+
   return (
     <div className="container mx-auto p-4">
       <Toaster />
@@ -105,18 +103,18 @@ const Complaints = () => {
       <br />
 
       <div className="flex space-x-4 my-4">
-  {/* Sorting Options */}
-  <div className={`${sortVisibility ? '' : 'hidden'} flex space-x-2`}>
-    <div><button onClick={() => handleSortChange({ createdAt: -1 })}>Date New to Old</button></div>
-    <div><button onClick={() => handleSortChange({ createdAt: 1 })}>Date Old to New</button></div>
-  </div>
+        {/* Sorting Options */}
+        <div className={`${sortVisibility ? '' : 'hidden'} flex space-x-2`}>
+          <div><button onClick={() => handleSortChange({ createdAt: -1 })}>Date New to Old</button></div>
+          <div><button onClick={() => handleSortChange({ createdAt: 1 })}>Date Old to New</button></div>
+        </div>
 
-  {/* Filtering Options */}
-  <div className={`${filterVisibility ? '' : 'hidden'} flex space-x-2`}>
-    <div><button onClick={() => handleFilterChange({ status: 'pending' })}>Status: Pending</button></div>
-    <div><button onClick={() => handleFilterChange({ status: 'resolved' })}>Status: Resolved</button></div>
-  </div>
-</div>
+        {/* Filtering Options */}
+        <div className={`${filterVisibility ? '' : 'hidden'} flex space-x-2`}>
+          <div><button onClick={() => handleFilterChange({ status: 'pending' })}>Status: Pending</button></div>
+          <div><button onClick={() => handleFilterChange({ status: 'resolved' })}>Status: Resolved</button></div>
+        </div>
+      </div>
 
       {/* Complaints List */}
       <div className="mb-8">

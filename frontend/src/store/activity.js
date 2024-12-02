@@ -46,6 +46,78 @@ export const useActivityStore = create((set, get) => ({
     }
   },
 
+  // Add a new category
+  addCategory: async (newCategory) => {
+    try {
+      const res = await fetch("/api/activityCategory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newCategory }),
+      });
+      const body = await res.json();
+      if (body.success) {
+        set((state) => ({ categories: [...state.categories, newCategory] }));
+        return { success: true, message: 'Category added successfully!' };
+      } else {
+        return { success: false, message: body.message };
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
+  // Delete category
+  deleteCategory: async (categoryName) => {
+    try {
+      const res = await fetch("/api/activityCategory", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: categoryName }),
+      });
+      const body = await res.json();
+      if (body.success) {
+        set((state) => ({
+          categories: state.categories.filter((category) => category !== categoryName),
+        }));
+        return { success: true, message: 'Category deleted successfully' };
+      } else {
+        return { success: false, message: body.message };
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
+  // Update category
+  updateCategory: async (oldCategoryName, newCategoryName) => {
+    try {
+      const res = await fetch("/api/activityCategory", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: oldCategoryName,
+          newCategory: { name: newCategoryName },
+        }),
+      });
+      const body = await res.json();
+      if (body.success) {
+        set((state) => ({
+          categories: state.categories.map((category) =>
+            category === oldCategoryName ? newCategoryName : category
+          ),
+        }));
+        return { success: true, message: 'Category updated successfully' };
+      } else {
+        return { success: false, message: body.message };
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
   // Fetch activities, show only appropriate ones unless admin
   getActivities: async (filter = {}, sort = {}) => {
     const userIsAdmin = get().userIsAdmin; // Retrieve admin status

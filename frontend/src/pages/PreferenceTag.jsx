@@ -1,66 +1,123 @@
-import React from 'react'
-import TagContainer from '../components/TagContainer.jsx'
-import { useState, useEffect } from 'react'
-import Dialog from '../components/Dialog.jsx'
-import FormDialog from '../components/FormDialog.jsx'
+import React, { useState, useEffect } from 'react';
+import { useTagStore } from '../store/tag.js';
+import Dialog, { dialog } from '../components/Dialog.jsx';
+import TagContainer from '../components/TagContainer.jsx';
 import toast, { Toaster } from 'react-hot-toast';
-import { useTagStore } from '../store/tag.js'
+
 function PreferenceTag() {
-    const [curTag, setCurTag] = useState("");
-    const [newTag, setNewTag] = useState({
-        name: "",
-    });
-    
-    const {tags, addTag, getTags, deleteTag, updateTag} = useTagStore();
+  const [curTag, setCurTag] = useState(""); // Holds the current tag to delete
+  const [newTag, setNewTag] = useState(""); // Holds the new tag name
+  const { tags, addTag, getTags, deleteTag, updateTag } = useTagStore();
 
-    useEffect(() => {
-        getTags()
-    }, [])
+  // Dialog functions
+  const { showDialog } = dialog(); // For showing the delete confirmation dialog
 
-    const del = async () => {
-        const {success, message} = await deleteTag(curTag)
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+  // Fetch tags on component mount
+  useEffect(() => {
+    getTags();
+  }, [getTags]);
 
-}
+  // Handle tag update
+  const handleUpdateTag = async (tagName, newTagName) => {
+    const { success, message } = await updateTag(tagName, newTagName);
+    success
+      ? toast.success(message, { className: 'text-white bg-gray-800' })
+      : toast.error(message, { className: 'text-white bg-gray-800' });
+  };
 
-    const changeTag = (name) => {
-        setCurTag(name)
+  // Handle tag deletion
+  const handleDeleteTag = async (tagName) => {
+    const { success, message } = await deleteTag(tagName);
+    if (success) {
+      toast.success(message, { className: 'text-white bg-gray-800' });
+    } else {
+      toast.error(message, { className: 'text-white bg-gray-800' });
+    }
+    return { success, message };
+  };
 
+  // Handle adding a tag
+  const handleAddTag = () => {
+    // Input validation for empty tag name
+    if (!newTag.trim()) {
+      toast.error('Tag name cannot be empty!', { className: 'text-white bg-gray-800' });
+      return;
     }
 
-    const handleUpdate = async (updatedTag) => {
-        const {success, message} = await updateTag(curTag, updatedTag)
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+    // Check for duplicate tags
+    if (tags.some(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
+      toast.error('Tag name already exists!', { className: 'text-white bg-gray-800' });
+      return;
     }
 
+    // Proceed with adding the tag if no errors
+    addTag({ name: newTag });
+    setNewTag("");  // Clear input after adding
+  };
 
-    const handleAddTag = async() => {
-        console.log(newTag.name)
-        const {success, message} = await addTag(newTag);
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-    }
+  // Handle deleting tag after confirmation
+  const confirmDeleteTag = () => {
+    handleDeleteTag(curTag);
+    setCurTag("");  // Reset current tag after deletion
+  };
 
   return (
-    <div>
-        <div className='mt-4 text-xl'>Create New Tag</div>
-        <div className='text-black'>
-        <input className='rounded' name={"newTag"} placeholder='New Tag' onChange={(e) => setNewTag({ name: e.target.value})}/>
-        <button className='bg-black text-white m-6 p-2 rounded-xl transform transition-transform duration-300 hover:scale-105' onClick={()=>(handleAddTag())}>Add Tag</button>
+    <div className="flex w-full justify-center mt-12">
+      <div className="flex flex-col gap-6 justify-start w-full max-w-3xl p-6 backdrop-blur-lg bg-[#161821f0] rounded-lg shadow-lg text-white">
+        <h2 className="text-2xl text-center">Manage Preferences</h2>
+
+        {/* Add New Tag Section */}
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <input
+              className="bg-transparent text-white border border-gray-600 rounded-md px-4 py-2 w-[70%]"
+              name="newTag"
+              placeholder="New Tag"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+            />
+            <button
+              className="bg-black text-white px-4 py-2 rounded"
+              onClick={handleAddTag}
+            >
+              Add
+            </button>
+          </div>
         </div>
-        <div className='mb-4 text-xl'>
-            Available Preference Tags   
-        </div>
-        {
-            tags.map((tag, index)=> (
-                <TagContainer key={index} tagChanger={changeTag} tagName={tag.name}/>   
+
+        {/* List of Tags */}
+        <div className="space-y-4">
+          {tags.length > 0 ? (
+            tags.map((tag) => (
+              <TagContainer
+                key={tag.name}
+                tagName={tag.name}
+                tagChanger={setCurTag}
+                handleUpdateTag={handleUpdateTag}
+                handleDeleteTag={() => {
+                  setCurTag(tag.name); // Set the current tag for deletion
+                  showDialog(); // Show confirmation dialog
+                }}
+              />
             ))
-        }
-        <Dialog msg={"Are you sure you want to delete this preference tag?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
-        <FormDialog msg={"Update values"} accept={handleUpdate} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name"]}/>
-        <Toaster/>
+          ) : (
+            <p>No tags available. Add one to get started!</p>
+          )}
+        </div>
+      </div>
+
+      {/* Dialog for confirming tag deletion */}
+      <Dialog
+        msg={`Are you sure you want to delete the tag "${curTag}"?`}
+        accept={confirmDeleteTag}  // Call confirmDeleteTag when confirmed
+        reject={() => setCurTag("")}  // Reset current tag if canceled
+        acceptButtonText="Yes, Delete"
+        rejectButtonText="Cancel"
+      />
+
+      <Toaster />
     </div>
-    
-  )
+  );
 }
 
-export default PreferenceTag
+export default PreferenceTag;
