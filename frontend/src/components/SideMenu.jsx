@@ -69,7 +69,41 @@ const SideMenu = ({ isOpen, onClose }) => {
       ],
     },
   ];
+  const menuItemsTourGuide = [
+    {
+      title: "Itinerary",
+      subItems: [
+        { name: "View Itineraries", path: "/itineraryPage" },
+      ],
+    },
+    {
+      title: "Reports",
+      subItems: [
+        { name: "Tourists Report", path: "/TourGuideTouristReport" },
+        { name: "Sales Report", path: "/TourGuideSalesReport" },
 
+      ],
+    },
+    
+ 
+  ];
+  const menuItemsSeller = [
+    {
+      title: "Products",
+      subItems: [
+        { name: "View Products", path: "/product" },
+      ],
+    },
+    {
+      title: "Reports",
+      subItems: [
+        { name: "Sales Report", path: "/SellerSalesReport" },
+
+      ],
+    },
+    
+ 
+  ];
   const menuItemsAdmin = [
     {
       title: "Tags & Categories",
@@ -113,7 +147,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
-        {(user.type === "tourist" ? menuItemsTourist : menuItemsAdmin).map((item, index) => (
+        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : menuItemsTourGuide).map((item, index) => (
           <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
             <h2
               onClick={() => toggleMenu(index)}

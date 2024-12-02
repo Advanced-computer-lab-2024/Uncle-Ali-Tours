@@ -65,6 +65,9 @@ import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
 import CheckoutPage from './CheckOutPage.jsx';
+import TourGuideSalesReport from './TourGuideSalesReport.jsx';
+import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+import SellerSalesReport from './SellerSalesReport.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
@@ -155,8 +158,9 @@ function App() {
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
         <Route path="/checkoutPage" element={<CheckoutPage />} />
-            
-
+        <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
+        <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
+        <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
