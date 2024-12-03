@@ -1,4 +1,4 @@
-import Order from "../models/order.model";
+import Order from "../models/order.model.js";
 export const createOrder = async (req, res) => {
     const orderData = req.body;
     if (!orderData.creator) {
@@ -43,11 +43,56 @@ export const updateOrderStatus = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const getOrders = async (req, res) => {
+    try {
+        const orders = await Order.find();
+        return res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const getOrdersByUsername = async (req, res) => {
     const { username } = req.params;
 
     try {
         const orders = await Order.find({ creator: username });
+
+        if (orders.length === 0) {
+            return res.status(404).json({ success: false, message: 'No orders found' });
+        }
+
+        return res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getCurrentOrders = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const orders = await Order.find({ creator: username , status: "shipping" }).populate('Product');
+        console.log(orders)
+
+        if (orders.length === 0) {
+            return res.status(404).json({ success: false, message: 'No orders found' });
+        }
+
+        return res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        console.log(error.message)
+
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getPastOrders = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const orders = await Order.find({ creator: username , status: "shipped" }).populate('Product');
 
         if (orders.length === 0) {
             return res.status(404).json({ success: false, message: 'No orders found' });

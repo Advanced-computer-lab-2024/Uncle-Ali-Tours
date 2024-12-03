@@ -37,7 +37,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         { name: "Purchase Products", path: "/viewProducts" },
         { name: "My Wishlist", path: "/wishlist" },
         { name: "My Cart", path: "/cart" },
-        { name: "My Orders", path: "/orders" },
+        { name: "My Orders", path: "/viewMyOrders" },
       ],
     },
     {

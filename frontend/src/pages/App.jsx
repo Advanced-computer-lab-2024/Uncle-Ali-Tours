@@ -73,7 +73,7 @@ import SellerSalesReport from './SellerSalesReport.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
-
+import ViewMyOrders from './ViewMyOrders.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -186,6 +186,7 @@ function App() {
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
+        <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
 
