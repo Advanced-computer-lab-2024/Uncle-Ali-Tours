@@ -288,7 +288,7 @@ const SellerProfile = () => {
 				<div className="absolute top-10 shadow-md bg-[#FEFDED]/90 rounded-full right-[20%] translate-x-1/2">
 					
 					{
-						[...Array(maxPages)].map((_, index) => (<button onClick={() => setPage(index+1)} className={`${index !== page-1 ? " hover:scale-[0.95] shadow-lg  bg-[#FEFDED]" : "scale-[0.85]  bg-[#FAF0E0] shadow-md"} focus:outline-none text-1xl m-1 transition-all py-2 px-4 rounded-full text-pink-800 `}
+						[...Array(maxPages)].map((_, index) => (<button onClick={() => setPage(index+1)} className={`${index !== page-1 ? "my-2 hover:scale-[0.95] shadow-md  bg-[#FEFDED]" : "scale-[0.9]  bg-[#FEFDED]"} focus:outline-none text-1xl m-1 transition-all py-2 px-4 rounded-full text-pink-800 `}
 >
 							{index + 1}
 						</button  >))

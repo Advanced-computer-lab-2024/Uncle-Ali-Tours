@@ -30,7 +30,7 @@ function ProductContainerForSeller({ product }) {
   };
 
   return (
-    <div className="relative justify-around items-center p-1 w-[95%] h-[450px] content-center flex backdrop-blur-lg bg-[#FEFDED]/75 mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
+    <div className="relative justify-around items-center p-1 w-[95%] min-h-[450px] max-h-[450px] content-center flex backdrop-blur-lg bg-[#FEFDED]/75 mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
       <img
                     src={
                       product?.profilePicture
