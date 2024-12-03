@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import umbrella from "../images/umbrella.png";
+import { FaSun } from "react-icons/fa6";
 import { FiLoader } from 'react-icons/fi';
 import { Route, Routes } from "react-router-dom";
 import BookMark from '../components/BookMark';
@@ -64,9 +66,9 @@ import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
-import CheckoutPage from './CheckOutPage.jsx';
+//import CheckoutPage from './CheckOutPage.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
-import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+//import TourGuideTouristReport from './tourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
 import { Toaster } from 'react-hot-toast';
 
@@ -117,7 +119,11 @@ function App() {
 
   return (
     <div >
-    <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] overflow-x-hidden">
+    <div className="text-center relative text-white font-black h-[100vh] overflow-x-hidden">
+				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
+				<FaSun size={90} className="animate-spin-slow" />
+				</div>
+					<img src={umbrella} alt="umbrella" className="w-20 h-20 z-[1] fixed bottom-0 right-0 rotate-[-30deg] translate-y-[13px] translate-x-[13px]" />
       <Navbar />
       <Toaster />
       {!loading ? 
@@ -157,10 +163,11 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
-        <Route path="/checkoutPage" element={<CheckoutPage />} />
+						{/*       <Route path="/checkoutPage" element={<CheckoutPage />} />
         <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
         <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
         <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
+						*/}
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>

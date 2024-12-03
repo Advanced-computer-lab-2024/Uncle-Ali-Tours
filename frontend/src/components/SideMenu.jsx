@@ -156,27 +156,27 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-[7vh] rounded-lg right-0 h-[65vh] mr-[0.8vw] w-64 bg-[#161821f0] text-white transform ${isOpen ? "translate-x-0" : "translate-x-[calc(100%+0.8vw)]"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
+      className={`fixed top-0 rounded-lg left-0 h-[100vh] mr-[0.8vw] w-64 bg-white text-white transform ${isOpen ? "translate-x-0" : "translate-x-[calc(-100%-0.8vw)]"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
     >
-      <button onClick={onClose} className="absolute top-4 right-4 text-white">
+      <button onClick={onClose} className="absolute hover:text-red-500 transition-colors top-4 right-4 text-black">
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
         {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : menuItemsTourGuide).map((item, index) => (
-          <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "bg-gray-900" : ""}`}>
+          <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "" : ""}`}>
             <h2
               onClick={() => toggleMenu(index)}
-              className={`${expandedIndex === index ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
+              className={`${expandedIndex === index ? "" : ""} text-black text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-[#C6EBC5]/70 flex justify-between items-center`}
             >
               {item.title}
               <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === index ? "rotate-180" : ""}`} />
             </h2>
-            <ul className={`transition-all duration-500 ${expandedIndex === index ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
+            <ul className={`transition-all bg-[#FEFDED] duration-500 ${expandedIndex === index ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
               {item.subItems.map((subItem, subIndex) => (
                 <li key={subIndex}>
                   <Link
                     to={subItem.path}
-                    className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === index ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded`}
+                    className={`hover:text-[#FA7070] text-black transition-all duration-500 ${expandedIndex === index ? "h-[3ch]  px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded`}
                     onClick={onClose}
                   >
                     {subItem.name}
@@ -203,7 +203,7 @@ const SideMenu = ({ isOpen, onClose }) => {
                   <li key={tag._id || tag.name}>
                     <button
                       onClick={() => handlePreferenceToggle(tag.name)}
-                      className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
+                      className={`hover:text-[#C6EBC5] transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
                     >
                       {tag.name}
                       {preferences.includes(tag.name) && <FaCheck className="text-green-500" />}

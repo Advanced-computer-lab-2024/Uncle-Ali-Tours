@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+			transitionDuration: {
+        '2000': '6000ms',
+      },
+animation: {
+        'spin-slow': 'spin 14s linear infinite',
+      },
+		},
   },
   plugins: [],
 }
