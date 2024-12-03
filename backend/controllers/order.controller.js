@@ -1,19 +1,19 @@
 import Order from "../models/order.model";
-export const addOrder = async (req, res) => {
-    const requestData = req.body;
-    if (!requestData.creator) {
+export const createOrder = async (req, res) => {
+    const orderData = req.body;
+    if (!orderData.creator) {
         return res.status(400).json({ success: false, message: 'Username is required' });
     }
-    if (!requestData.products) {
+    if (!orderData.products) {
         return res.status(400).json({ success: false, message: 'Products are required' });
     }
-    if (!requestData.deliveryAddress) {
+    if (!orderData.deliveryAddress) {
         return res.status(400).json({ success: false, message: 'Delivery address is required' });
     }
-    if (!requestData.paymentMethod) {
+    if (!orderData.paymentMethod) {
         return res.status(400).json({ success: false, message: 'Payment method is required' });
     }
-    const newOrder = new Order(requestData);
+    const newOrder = new Order(orderData);
 
     try {
         await newOrder.save();
