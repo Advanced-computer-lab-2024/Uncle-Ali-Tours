@@ -43,6 +43,8 @@ import { set } from "mongoose";
 import UnVerified from "../components/UnVerified.jsx";
 
 const SellerProfile = () => {
+	const [page, setPage] = useState(1);
+	const [maxPages, setMaxPages] = useState(1);
 	const [archivedButton, setArchivedButton] = useState(false);
 	const navigate = useNavigate();
 	const { user } = useUserStore();
@@ -57,6 +59,11 @@ const SellerProfile = () => {
 		handlePress();
 		setPreviewFile(sell.profilePicture);
 	}, [sell, user]);
+
+	useEffect(() => {
+		setPage(1);
+		setMaxPages(Math.ceil(products.filter((p) => p.archive === archivedButton).length / 4));
+	}, [products, archivedButton]);
 
 	const [updatedSeller, setUpdatedSeller] = useState({});
 	const [profilePic, setProfilePic] = useState(null);
@@ -263,7 +270,7 @@ const SellerProfile = () => {
 				</div>
 			</div>
 
-			<div className="bg-gradient-to-b shadow-xl relative fro-100% from-[#FA7070] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
+			<div className="bg-gradient-to-b shadow-xl relative  from-[#FA7070] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
 				<div className="absolute top-8 shadow-md bg-[#FEFDED]/90 rounded-full left-1/2 translate-x-[-50%]">
 					<button
 						className={`${archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800 `}
@@ -278,10 +285,19 @@ const SellerProfile = () => {
 						Archived
 					</button>
 				</div>
+				<div className="absolute top-10 shadow-md bg-[#FEFDED]/90 rounded-full right-[20%] translate-x-1/2">
+					
+					{
+						[...Array(maxPages)].map((_, index) => (<button onClick={() => setPage(index+1)} className={`${index !== page-1 ? "hover:scale-[0.98] " : "shadow-md scale-[0.9]"} focus:outline-none text-1xl m-1 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800 `}
+>
+							{index + 1}
+						</button  >))
+					}
+				</div>
 				<div className="grid w-full grid-cols-2 mt-28">
-					{products.map(
+					{products.filter((p)=> p.archive === archivedButton).map(
 						(product, index) =>
-							product.archive === archivedButton && (
+							index >= 4 * (page-1) && index < 4 * page && (
 								<ProductContainerForSeller key={index} product={product} />
 							),
 					)}
