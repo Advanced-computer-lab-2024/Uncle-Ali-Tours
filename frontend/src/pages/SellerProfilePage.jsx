@@ -320,12 +320,6 @@ const SellerProfile = () => {
 								className="slider bg-gray-700 w-[10vw] accent-black focus:outline-none border-none"
 							/>
 							<p className="text-center h-fit my-auto ml-2 ">+ </p>
-  return (
-    <div className="flex w-full mt-12 justify-around">
-            <Toaster />
-      <div className="flex flex-col gap-[6vh] justify-start">
-        <div className="flex gap-[6vw] justify-around">
-          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821c3] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
 
 							<button
 								className="bg-white text-black ml-6 focus:outline-none p-2 rounded-full"
