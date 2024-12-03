@@ -214,7 +214,7 @@ const SellerProfile = () => {
             <Toaster />
       <div className="flex flex-col gap-[6vh] justify-start">
         <div className="flex gap-[6vw] justify-around">
-          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
+          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821c3] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
 
             <div
               className="flex mb-6 relative w-fit mx-auto"
