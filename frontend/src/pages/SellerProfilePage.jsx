@@ -211,7 +211,7 @@ const SellerProfile = () => {
 
 	return (
 		<div className="w-full mt-24 flex">
-			<div className="bg-gradient-to-b shadow-xl relative fro-100% from-[#FA7070] h-[60vh] w-[24vw] mx-auto rounded-lg">
+			<div className="bg-gradient-to-b shadow-xl relative fro-100% from-[#C1BAA1] h-[60vh] w-[24vw] mx-auto rounded-lg">
 				<div className="absolute top-0 left-1/2 translate-x-[-50%] translate-y-[-35%]">
 					<label
 						for="pic-upload"
@@ -226,7 +226,7 @@ const SellerProfile = () => {
 						/>
 
 						<IoIosAddCircle
-							className={`pointer-events-none absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2 text-[20.2vh] text-[#ffffff25] hover:cursor-pointer rounded-full mx-auto ${isEditing ? "opacity-1" : "opacity-0"} transition-all duration-300`}
+							className={`pointer-events-none absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2 text-[20.2vh]  hover:cursor-pointer rounded-full mx-auto ${isEditing ? "opacity-1" : "opacity-0"} transition-all duration-300`}
 						/>
 					</label>
 					<input
@@ -237,20 +237,20 @@ const SellerProfile = () => {
 						onChange={handleFileChange}
 					/>
 				</div>
-				<p className="lg:text-3xl md:text-2xl text-[#FEFDED] absolute top-32 left-1/2 translate-x-[-50%]">
+				<p className="lg:text-3xl md:text-2xl  absolute top-32 left-1/2 translate-x-[-50%]">
 					{"Esm el seller"}
 				</p>
-				<p className="lg:text-xl md:text-lg font-thin text-[#FEFDED] absolute top-[220px] left-1/2 translate-x-[-50%]">
+				<p className="lg:text-xl md:text-lg font-thin  absolute top-[220px] left-1/2 translate-x-[-50%]">
 					{"email el seller@gamil.com"}
 				</p>
-				<p className="lg:text-xl md:text-lg font-thin text-[#FEFDED] absolute top-[180px] left-1/2 translate-x-[-50%]">
+				<p className="lg:text-xl md:text-lg font-thin  absolute top-[180px] left-1/2 translate-x-[-50%]">
 					{"+201823793346"}
 				</p>
 				<Link to="/" className="absolute top-5 left-8">
 					Edit
 				</Link>
 
-				<div className="absolute flex justify-center align-center top-1/2 right-1/2 translate-y-[6vh] translate-x-1/2 relative">
+				<div className="absolute flex justify-center align-center  top-1/2 right-1/2 translate-y-[6vh] translate-x-1/2 relative">
 					<p className="absolute top-1/2 right-1/2 translate-x-1/2 translate-y-[-60px]">
 						Products
 					</p>
@@ -260,7 +260,7 @@ const SellerProfile = () => {
 						</p>
 						<p> visible</p>
 					</div>
-					<hr className="w-1 h-[7vh] bg-white" />
+					<hr className="w-1 h-[7vh] bg-[#1F4529]" />
 					<div>
 						<p className="text-5xl mx-12">
 							{products.filter((p) => p.archive).length}
@@ -270,25 +270,25 @@ const SellerProfile = () => {
 				</div>
 			</div>
 
-			<div className="bg-gradient-to-b shadow-xl relative mb-6 from-[#FA7070] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
-				<div className="absolute top-8 shadow-md bg-[#FEFDED]/90 rounded-full left-1/2 translate-x-[-50%]">
+			<div className="bg-gradient-to-t shadow-xl relative mb-6 from-100% from-[#C1BAA1] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
+				<div className="absolute top-8 shadow-md bg-[#D7D3BF]/90 rounded-full left-1/2 translate-x-[-50%]">
 					<button
-						className={`${archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800 `}
+						className={`${archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full`} 
 						onClick={() => setArchivedButton(false)}
 					>
 						Visible
 					</button>
 					<button
-						className={`${!archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800 `}
+						className={`${!archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full`}
 						onClick={() => setArchivedButton(true)}
 					>
 						Archived
 					</button>
 				</div>
-				<div className="absolute top-10 shadow-md bg-[#FEFDED]/90 rounded-full right-[20%] translate-x-1/2">
+				<div className="absolute top-10 shadow-md bg-[#D7D3BF]/90 rounded-full right-[20%] translate-x-1/2">
 					
 					{
-						[...Array(maxPages)].map((_, index) => (<button onClick={() => setPage(index+1)} className={`${index !== page-1 ? " hover:scale-[0.95] shadow-lg  bg-[#FEFDED]" : "scale-[0.85]  bg-[#FAF0E0] shadow-md"} focus:outline-none text-1xl m-1 transition-all py-2 px-4 rounded-full text-pink-800 `}
+						[...Array(maxPages)].map((_, index) => (<button onClick={() => setPage(index+1)} className={`${index !== page-1 ? " hover:scale-[0.95] shadow-lg  bg-[#FEFDED]" : "scale-[0.85]  bg-[#FAF0E0] shadow-md"} focus:outline-none text-1xl m-1 transition-all py-2 px-4 rounded-full`}
 >
 							{index + 1}
 						</button  >))

@@ -122,12 +122,12 @@ function App() {
 
   return (
     <div >
-    <div className="text-center relative text-white font-black h-[100vh] overflow-x-hidden">
+    <div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
 				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
 					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
 				</div>
 					<img src={umbrella} alt="umbrella" className="w-10 h-10 z-[1] fixed bottom-0 right-0 rotate-[-30deg] translate-y-[13px] translate-x-[-150px]" />
-					<img src={plane} alt="plane" className="w-8 h-8 z-[1] z-[-1] fixed top-0 right-36 rotate-[30deg] translate-y-[-10px] translate-x-[-400px]" />
+					<img src={plane} alt="plane" className="w-8 h-8 z-[1] z-[-1] absolute top-0 right-36 rotate-[30deg] translate-y-[-10px] translate-x-[-400px]" />
 					<img src={pyramid} alt="pyramid" className="w-10 h-10 z-[1] fixed bottom-0 left-2 translate-y-[8px]" />
 					<img src={pyramid} alt="pyramid" className="w-8 h-8 z-[1] fixed bottom-0 left-6 translate-y-[7px]" />
 					<img src={pyramid} alt="pyramid" className="w-6 h-6 z-[1] fixed bottom-0 left-10 translate-y-[7px]" />
