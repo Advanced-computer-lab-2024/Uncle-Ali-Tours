@@ -27,7 +27,7 @@ function Navbar() {
 	return (
 		<div>
 			<nav
-				className="flex rounded-lg justify-between items-center mx-[1.5vh] text-black mt-[1.5vh] h-16 bg-[#C6EBC5] text-lg relative shadow-md font-mono"
+				className="flex rounded-lg justify-between items-center mx-[1.5vh] text-black mt-[1.5vh] h-16 bg-white text-lg relative shadow-md font-mono"
 				role="navigation"
 			>
 				<div className="flex content-center">
