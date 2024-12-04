@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
+import sun from "../images/sun.png";
 import umbrella from "../images/umbrella.png";
+import pyramid from "../images/pyramid.png";
+import plane from "../images/plane.png";
 import { FaSun } from "react-icons/fa6";
 import { FiLoader } from 'react-icons/fi';
 import { Route, Routes } from "react-router-dom";
@@ -121,9 +124,13 @@ function App() {
     <div >
     <div className="text-center relative text-white font-black h-[100vh] overflow-x-hidden">
 				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
-				<FaSun size={90} className="animate-spin-slow" />
+					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
 				</div>
-					<img src={umbrella} alt="umbrella" className="w-20 h-20 z-[1] fixed bottom-0 right-0 rotate-[-30deg] translate-y-[13px] translate-x-[13px]" />
+					<img src={umbrella} alt="umbrella" className="w-10 h-10 z-[1] fixed bottom-0 right-0 rotate-[-30deg] translate-y-[13px] translate-x-[-150px]" />
+					<img src={plane} alt="plane" className="w-8 h-8 z-[1] z-[-1] fixed top-0 right-36 rotate-[30deg] translate-y-[-10px] translate-x-[-400px]" />
+					<img src={pyramid} alt="pyramid" className="w-10 h-10 z-[1] fixed bottom-0 left-2 translate-y-[8px]" />
+					<img src={pyramid} alt="pyramid" className="w-8 h-8 z-[1] fixed bottom-0 left-6 translate-y-[7px]" />
+					<img src={pyramid} alt="pyramid" className="w-6 h-6 z-[1] fixed bottom-0 left-10 translate-y-[7px]" />
       <Navbar />
       <Toaster />
       {!loading ? 
