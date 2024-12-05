@@ -1,5 +1,5 @@
 import express from "express";
-import { addDeliveryAddress, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItineraries, getTourist, getWishlistedProducts, handleSuccessfulPaymentForTourist, markNotificationAsRead, redeemPoints, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist,addProductToCart,removeProductCart,addDeliveryAddress } from "../controllers/tourist.controller.js";
+import {  addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItineraries, getTourist, getWishlistedProducts, handleSuccessfulPaymentForTourist, markNotificationAsRead, redeemPoints, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist,addProductToCart,removeProductCart,addDeliveryAddress,checkUpcomingItineraryNotifications } from "../controllers/tourist.controller.js";
 
 const router = express.Router();
 
@@ -31,6 +31,6 @@ router.get("/pastActivities",getMyPastActivities);
 router.put("/notifications",markNotificationAsRead);
 router.post("/addDeliveryAddress", addDeliveryAddress);
 router.post("/test", (req, res) => res.send("Test route is working!"));
-
+router.get('/:userName/check-upcoming-itinerary', checkUpcomingItineraryNotifications);
 router.put("/handleSuccessfulPayment",handleSuccessfulPaymentForTourist);
 export default router;

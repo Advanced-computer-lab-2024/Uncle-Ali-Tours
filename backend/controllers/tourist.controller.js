@@ -7,6 +7,7 @@ import Tourist from "../models/tourist.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import User from "../models/user.model.js";
 //import Order from "../models/order.js";
+import { checkAndNotifyUpcomingItinerary } from './notification.controller.js';
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -1018,6 +1019,27 @@ export const deleteAddress = async (req, res) => {
     return res.status(500).json({ message: 'Error deleting address', error });
   }
 };
+
+
+
+export const checkUpcomingItineraryNotifications = async (req, res) => {
+    try {
+        const { userName } = req.params;
+
+    
+        const result = await checkAndNotifyUpcomingItinerary(userName);
+
+        if (result.success) {
+            return res.status(200).json({ success: true, message: result.message });
+        } else {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+    } catch (error) {
+        console.error("Error checking upcoming itinerary notifications:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
 
 
 

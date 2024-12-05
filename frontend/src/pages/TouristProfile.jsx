@@ -15,7 +15,7 @@ import BronzeBadge from '../images/bronze.png';
 import SilverBadge from '../images/silver.png';
 import GoldBadge from '../images/gold.png';
 
-const TouristProfile = () => {
+const TouristProfile = ({ userName }) => {
   const {user} = useUserStore();
   const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel ,fetchUpcomingActivities, fetchUpcomingItineraries} = useTouristStore();
   const [isRequired, setIsRequired] = useState(true);
@@ -36,6 +36,76 @@ const TouristProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [upcomingItineraries,setUpcomingItineraries]= useState(0);
   const [upcomingActivities,setUpcomingActivities]= useState(0);
+  
+
+  useEffect(() => {
+    // Trigger the check when the profile page loads
+    const checkNotifications = async () => {
+        try {
+            // Make GET request to check for upcoming itineraries
+            const response = await axios.get(`/api/tourist/${userName}/check-upcoming-itinerary`);
+
+            // If the server responds with success
+            if (response.data.success) {
+                console.log(response.data.message);  // Notification sent successfully
+            } else {
+                console.log(response.data.message);  // No notification needed
+            }
+        } catch (error) {
+            console.error("Error checking upcoming itinerary notifications:", error);
+        }
+    };
+
+    // Call the function to check for notifications when the component mounts
+    checkNotifications();
+}, [userName]);  // The effect will rerun if userName changes
+
+
+  // Function to check if an event is within the next 2 days
+  const isEventStartingInTwoDays = (eventDate) => {
+    const now = new Date();
+    const twoDaysLater = new Date(now);
+    twoDaysLater.setDate(now.getDate() + 2);
+
+   
+    return eventDate >= now && eventDate <= twoDaysLater;
+  };
+
+  
+  const checkForUpcomingEvents = () => {
+    upcomingItineraries.forEach((itinerary) => {
+      const itineraryDate = new Date(itinerary.startDate);
+      if (isEventStartingInTwoDays(itineraryDate)) {
+        toast(`Your upcoming itinerary "${itinerary.title}" starts in 2 days!`);
+      }
+    });
+
+    upcomingActivities.forEach((activity) => {
+      const activityDate = new Date(activity.startDate);
+      if (isEventStartingInTwoDays(activityDate)) {
+        toast(`Your upcoming activity "${activity.title}" starts in 2 days!`);
+      }
+    });
+  };
+
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const itineraries = await fetchUpcomingItineraries(user.userName);
+      const activities = await fetchUpcomingActivities(user.userName);
+      setUpcomingItineraries(itineraries);
+      setUpcomingActivities(activities);
+    };
+
+    fetchData();
+  }, []);
+
+  
+  useEffect(() => {
+    if (upcomingItineraries.length || upcomingActivities.length) {
+      checkForUpcomingEvents();
+    }
+  }, [upcomingItineraries, upcomingActivities]);
 
   
   
@@ -44,7 +114,7 @@ const TouristProfile = () => {
 }, []);
 
 useEffect(() => {
-    fetchBadge(); // Ensure the badge level is fetched when the component mounts
+    fetchBadge(); 
 }, []);
 
 const fetchBadge = async () => {
@@ -403,10 +473,43 @@ const getBadgeImage = () => {
             </div>
           </div>
         </div>
-
+        <div className="flex w-full mt-12 justify-around">
+      <Toaster />
+      <div className="flex flex-col gap-[6vh] justify-start">
+        <div className="relative py-4 px-10 w-[45vw] h-[25vh] backdrop-blur-lg bg-[#161821f0] mb-12 h-fit rounded-lg shadow-lg text-white left-[25%] transform -translate-y-[125%] flex">
+          <div className="flex-1 flex items-center justify-center relative">
+            <div className="text-center">
+              <p className="text-lg font-bold">Upcoming Itineraries</p>
+              <p className="text-xl mt-2">{upcomingItineraries.length}</p>
+              <button
+                onClick={() => navigate('/touristviewitineraries')}
+                className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2"
+              >
+                View
+              </button>
+            </div>
+          </div>
+          <div className="absolute right-0 h-[80%] w-[1px] bg-white"></div>
+          <div className="flex-1 flex items-center justify-center relative">
+            <div className="text-center">
+              <p className="text-lg font-bold">Upcoming Activities</p>
+              <p className="text-xl mt-2">{upcomingActivities.length}</p>
+              <button
+                onClick={() => navigate('/touristviewactivities')}
+                className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
       </div>
     </div>
+
+    
   );
 };    
 
