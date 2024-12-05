@@ -27,6 +27,7 @@ import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
 import notificationroutes from './routes/notifications.route.js'
+import orderRoutes from './routes/order.route.js'
 import path from "path";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -106,6 +107,7 @@ app.use("/api/transportaionActivity",transportaionActivity);
 app.use("/api/promo", promoRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/notifications", notificationroutes);
+app.use("/api/orders", orderRoutes);
 
 
 

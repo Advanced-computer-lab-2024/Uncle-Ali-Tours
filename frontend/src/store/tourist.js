@@ -363,6 +363,7 @@ export const useTouristStore = create((set) => ({
     
           const data = await response.json();
           set({ cartProducts: data.data, errorMessage: "" }); // Update store state with products
+          console.log("Cart Products", data.data);
         } catch (error) {
           console.error("Error fetching Cart products:", error);
           set({ errorMessage: error.message || "Unable to fetch Cart products" });
@@ -371,7 +372,7 @@ export const useTouristStore = create((set) => ({
       checkoutProducts: () => {
         set((state) => ({
             checkoutList: [...state.cartProducts], // Move all cart products to checkout
-            cartProducts: [], // Clear the cart
+            // cartProducts: [], // Clear the cart
         }));
     },
 
@@ -466,35 +467,6 @@ export const useTouristStore = create((set) => ({
             console.error("Error fetching past activities:", error);
             toast.error("Failed to fetch past activities.");
             return []; // Return an empty array on error
-        }
-    },
-
-    handleSuccessfulPaymentForTourist: async (username, items, type) => {
-        try {
-            let amountPaid = 0;
-            items.forEach(item => {
-                amountPaid += item.itemData.price;
-            });
-
-            const response =  await fetch(`/api/tourist/handleSuccessfulPayment`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    username: username,
-                     items: items,
-                      type: type,
-                       amountPaid: amountPaid })
-            });
-            const data = await response.json();
-            if (data.success) {
-                toast.success(data.message);
-            } else {
-                toast.error(data.message);
-                console.error("Error handling successful payment:", data.message);
-            }
-        } catch (error) {
-            console.error("Error handling successful payment:", error);
-            toast.error("Failed to handle successful payment.");
         }
     }
 

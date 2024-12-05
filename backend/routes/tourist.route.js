@@ -1,6 +1,6 @@
 import express from "express";
 import {  addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItineraries, getTourist, getWishlistedProducts, handleSuccessfulPaymentForTourist, markNotificationAsRead, redeemPoints, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist,addProductToCart,removeProductCart,addDeliveryAddress,checkUpcomingItineraryNotifications } from "../controllers/tourist.controller.js";
-
+'?/'
 const router = express.Router();
 
 router.post("/",createTourist);

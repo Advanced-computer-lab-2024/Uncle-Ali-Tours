@@ -40,11 +40,14 @@ function ViewProducts() {
       <div className='mb-4 text-xl'>
             Available Products   
         </div>
+        
+        <div className='bg-gradient-to-b shadow-xl rounded-xl relative fro-100% from-[#FA7070] w-[95vw] p-8 grid grid-cols-2'>
         {
             products.map((product, index)=> (
                 !product.archive && <ProductContainer key={index} tourist={tourist}  product={product}/>   
             ))
         }
+        </div>
         <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
         <FormDialog msg={"Update values"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name","value"]}/>
    
@@ -62,6 +65,7 @@ function ViewProducts() {
           </div>
         </div>
         </div>
+        
   )
 }
 

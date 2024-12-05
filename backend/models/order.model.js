@@ -23,9 +23,14 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required:true,
     },
+    total: {
+        type: Number,
+        required:false,
+    },
     },
     {
-        timestamps: true
+        timestamps: true,
+        strictPopulate: false
     });
 
 const Order = mongoose.model('Order', orderSchema);
