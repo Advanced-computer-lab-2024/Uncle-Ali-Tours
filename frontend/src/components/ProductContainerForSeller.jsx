@@ -30,7 +30,7 @@ function ProductContainerForSeller({ product }) {
   };
 
   return (
-    <div className="relative p-1 w-fit backdrop-blur-lg bg-[#0e0e2281] mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
+    <div className="relative justify-around items-center p-1 w-[95%] min-h-[450px] max-h-[450px] content-center flex backdrop-blur-lg bg-[#ECEBDE]/75 mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
       <img
                     src={
                       product?.profilePicture
@@ -38,26 +38,27 @@ function ProductContainerForSeller({ product }) {
                         : avatar
                     }
                     alt="Profile Preview"
-                    className="w-[4vh] rounded-full mx-auto hover:cursor-pointer"
+                    className="w-[30%] rounded-full  hover:cursor-pointer"
                     onClick={() => setShowPreview(true)}
                   />
-      <div className="grid p-2">
+			<hr className="h-[200px] w-[1px] bg-black text-black"/>
+      <div className="grid p-2 w-[50%]">
         {keys.map((key, index) => (
-            <div key={index} className="flex my-1  bg-[#00000012] p-2 rounded-sm">
-            <p className="min-w-[10ch] text-left">{key === "Available_quantity" ? "quantity" : key}: </p>
+            <div key={index} className="flex my-1 text-black p-2 rounded-sm">
+            <p className=" text-left">{key === "Available_quantity" ? "quantity" : key}: </p>
           <p className="text-left pl-4 ">{"" + product[key]}</p>
             </div>
         ))}
         <div className="w-fit">
         <button onClick={handleArchiveClick} className="mr-2 transform w-fit transition-transform duration-300 hover:scale-125">
           { !product.archive ?
-            <BiSolidArchiveIn size="18" color="white" />
+            <BiSolidArchiveIn size="18" className="text-pink-950" />
             :
-            <BiSolidArchiveOut size="18" color="white" />
+            <BiSolidArchiveOut size="18" className="text-pink-950" />
             }
         </button>
         <button onClick={() => handleEdit(product)} className="mr-2 transform w-fit transition-transform duration-300 hover:scale-125">
-          <FaEdit size="18" color="white" />
+          <FaEdit size="18" className="text-pink-950" />
         </button>
         </div>
       </div>

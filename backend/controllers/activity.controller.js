@@ -1,10 +1,10 @@
 import Activity from "../models/activity.model.js";
+import Advertiser from "../models/advertiser.model.js";
 import Bookmark from "../models/bookmark.model.js";
-const { EMAIL } = process.env;
-import { sendEmail } from "../util/email.js";
-import Advertiser from "../models/advertiser.model.js"
 import Notification from "../models/notification.model.js";
 import Tourist from "../models/tourist.model.js";
+import { sendEmail } from "../util/email.js";
+const { EMAIL } = process.env;
 
 export const addBookmark = async (req, res) => {
     const { userName, activityId } = req.body;
@@ -27,12 +27,18 @@ export const addBookmark = async (req, res) => {
     }
 };
 
-export const getBookmarkedActivities = async (req, res) => {
+export const getBookmarkedActivitiesForUser = async (req, res) => {
+    const { userName } = req.params;
+
+    if (!userName) {
+        return res.status(400).json({ message: "User name is required" });
+    }
+
     try {
-        const bookmarkedActivities = await Activity.find({ isBookmarked: true });
-        res.status(200).json({ success: true, data: bookmarkedActivities });
+        const bookmarks = await Bookmark.find({ userName }).populate("activityId");
+        res.status(200).json({ bookmarks });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 

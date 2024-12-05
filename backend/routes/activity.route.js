@@ -1,5 +1,5 @@
 import express from "express";
-import { addBookmark, createActivity, createActivityReview, deleteActivity, getActivity, getActivityById, getAllActivities, getBookmarkedActivities, removeBookmark, toggleActivityAppropriateness, toggleBookmark, updateActivity ,removeInterestedIn,interestedIn} from "../controllers/activity.controller.js";
+import { addBookmark, createActivity, createActivityReview, deleteActivity, getActivity, getActivityById, getAllActivities, getBookmarkedActivitiesForUser, interestedIn, removeBookmark, removeInterestedIn, toggleActivityAppropriateness, toggleBookmark, updateActivity } from "../controllers/activity.controller.js";
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.post('/:id/reviews', createActivityReview);
 router.get('/all', getAllActivities);
 router.put('/flag/:id', toggleActivityAppropriateness);
 router.post('/bookmark', addBookmark);
-router.get('/bookmarkedActivities', getBookmarkedActivities);
+router.get('/bookmarkedActivities/:userName', getBookmarkedActivitiesForUser);
 router.put('/toggleBookmark', toggleBookmark);
 router.delete('/bookmark', removeBookmark);
 router.put('/intrestedIn',interestedIn);

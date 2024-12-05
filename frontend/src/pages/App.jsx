@@ -1,4 +1,9 @@
 import React, { useEffect } from 'react';
+import sun from "../images/sun.png";
+import umbrella from "../images/umbrella.png";
+import pyramid from "../images/pyramid.png";
+import plane from "../images/plane.png";
+import { FaSun } from "react-icons/fa6";
 import { FiLoader } from 'react-icons/fi';
 import { Route, Routes } from "react-router-dom";
 import BookMark from '../components/BookMark';
@@ -64,14 +69,14 @@ import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
 import WishlistPage from "./WishlistPage";
 import AddAddressPage from './AddAddressPage.jsx';
-import CheckoutPage from './CheckOutPage.jsx';
+//import CheckoutPage from './CheckOutPage.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
-import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+//import TourGuideTouristReport from './tourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
-
+import ViewMyOrders from './ViewMyOrders.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -117,7 +122,15 @@ function App() {
 
   return (
     <div >
-    <div className="rounded-lg shadow-lg text-center text-white min-h-[calc(100vh-3.5vh)] mt-[1vh] w-[calc(100vw-2.51vh)] ml-[1vh] border-2 border-[#23263400] backdrop-blur-xl  font-black bg-[#090711c2] overflow-x-hidden">
+    <div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
+				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
+					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
+				</div>
+					<img src={umbrella} alt="umbrella" className="w-10 h-10 z-[1] fixed bottom-0 right-0 rotate-[-30deg] translate-y-[13px] translate-x-[-150px]" />
+					<img src={plane} alt="plane" className="w-8 h-8 z-[1] z-[-1] absolute top-0 right-36 rotate-[30deg] translate-y-[-10px] translate-x-[-400px]" />
+					<img src={pyramid} alt="pyramid" className="w-10 h-10 z-[1] fixed bottom-0 left-2 translate-y-[8px]" />
+					<img src={pyramid} alt="pyramid" className="w-8 h-8 z-[1] fixed bottom-0 left-6 translate-y-[7px]" />
+					<img src={pyramid} alt="pyramid" className="w-6 h-6 z-[1] fixed bottom-0 left-10 translate-y-[7px]" />
       <Navbar />
       <Toaster />
       {!loading ? 
@@ -157,10 +170,11 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
-        <Route path="/checkoutPage" element={<CheckoutPage />} />
+						{/*       <Route path="/checkoutPage" element={<CheckoutPage />} />
         <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
         <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
         <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
+						*/}
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
@@ -179,6 +193,7 @@ function App() {
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
+        <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
 

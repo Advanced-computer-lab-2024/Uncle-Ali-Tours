@@ -184,7 +184,7 @@ function ProductContainer({ product, productChanger, tourist }) {
 
 
   return (
-        <div className="relative p-1 w-[700px] h-[400px] backdrop-blur-lg bg-[#0e0e2281] mx-auto m-4 rounded-lg shadow-lg text-white">
+        <div className="relative p-1 w-[650px] h-[350px] flex backdrop-blur-lg bg-[#FEFDED]/75 mx-auto m-4 rounded-lg shadow-lg text-white">
         <div className="flex">
         {/* Left half - Product Image */}
         <div className="w-1/2 pr-2 flex items-center justify-center">
@@ -197,9 +197,9 @@ function ProductContainer({ product, productChanger, tourist }) {
             />
           </div>
         </div>
-
+        {/* <hr className="h-[300px] w-[2px] bg-black text-black"/> */}
         {/* Right half - Product Info */}
-        <div className="w-1/2 pl-2 flex flex-col justify-between mt-2">
+        <div className="w-1/2 pl-2 flex flex-col justify-between mt-2 text-black">
           <div>
             <h2 className="font-bold mb-2">{product.name}</h2>
             <p className="mb-1">Description: {product.description}</p>
@@ -222,9 +222,9 @@ function ProductContainer({ product, productChanger, tourist }) {
                     className="transform transition-colors duration-300 hover:text-red-500 focus:outline-none"
                 >
                     {isWishlisted ? (
-                        <FaHeart className="text-red-500" /> // Filled red heart if wishlisted
+                        <FaHeart  size="25" className="text-red-500 ml-4" /> // Filled red heart if wishlisted
                     ) : (
-                        <FaRegHeart className="text-gray-500" /> // Empty heart if not wishlisted
+                        <FaRegHeart size="25" className="text-gray-500 ml-4" /> // Empty heart if not wishlisted
                     )}
                 </button>
               
@@ -233,7 +233,7 @@ function ProductContainer({ product, productChanger, tourist }) {
                 onClick={() => isAddedToCart ? handleRemoveFromCart(product._id) : handleCart(product._id)}
                 className="transform transition-colors duration-300 hover:text-green-500 focus:outline-none"
               >
-                <FaShoppingCart className={isAddedToCart ? "text-green-500" : "text-gray-300"} />
+                <FaShoppingCart size="25" className={isAddedToCart ? "text-green-500 mr-4" : "text-gray-300 mr-4"} />
               </button>
             </div>
             {user?.type === "tourist" && (
