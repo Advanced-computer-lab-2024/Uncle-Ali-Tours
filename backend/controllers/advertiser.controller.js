@@ -200,7 +200,7 @@ export const getAdvertiserReport = async (req, res) => {
           activities: activities.map(activity => ({
             title: activity.name,
             date: activity.date,
-            numberOfTourists: (activity.tourists).length,
+            numberOfTourists: activity.numberOfBookings,
           })),
 
         };

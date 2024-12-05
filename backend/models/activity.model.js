@@ -60,7 +60,7 @@ const activitySchema = new mongoose.Schema({
     numberOfBookings: {
         type:Number,
         required:false,
-        deafult:0,
+        default:0,
     },
     isActivated: {
         type: Boolean,

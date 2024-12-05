@@ -50,7 +50,7 @@ export const useItineraryStore = create((set, get) => ({
       if (!body.success) return body;
 
       set({ itineraries: body.data });
-      console.log(body.data);
+      
       return { success: true, message: "Fetched itineraries" };
     } catch (error) {
       console.error("Error fetching itineraries:", error);

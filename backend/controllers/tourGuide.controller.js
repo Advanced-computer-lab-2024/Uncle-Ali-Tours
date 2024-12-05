@@ -309,7 +309,8 @@ export const getTourGuideReport = async (req, res) => {
         itineraries: itineraries.map(itinerary => ({
           title: itinerary.name,
           language:itinerary.language,
-          numberOfTourists: (itinerary.tourists).length,
+          numberOfTourists: itinerary.numberOfBookings,
+          availableDates:itinerary.availableDates,
         })),
       };
       

@@ -15,21 +15,27 @@ import {useItineraryStore} from "../store/itinerary";
 const TourGuideSalesReport = () => {
  
     const {user} = useUserStore();
- 
+    const [dateFields, setDateFields] = useState(["", ""]);
+
     const { showDialog } = dialog()
  
     const [filter, setFilter] = useState({});
     const { getItineraries, itineraries } = useItineraryStore();
     const [salesReport, setSalesReport] = useState([]);
     const [filteredReport, setFilteredReport] = useState([]);
-    const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
-  
+    const [filters, setFilters] = useState({ itinerary: "", dateRange: { start: "", end: "" }, month: "" });
+    // Helper function to format date in YYYY-MM-DD
+    const formatDate = (date) => {
+      if (!date) return null;
+      const d = new Date(date);
+      return isNaN(d) ? null : d.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+    };
      useEffect(() => {
       fetchSalesReport();
      },[itineraries]);
     const fetchSalesReport = async () => {
       await getItineraries({ ...filter, creator: user.userName }); // Ensure itineraries are fetched
-
+    
     
       const itinerariesSales = itineraries
         .map((itinerary) => ({
@@ -50,58 +56,65 @@ const TourGuideSalesReport = () => {
       setFilters((prev) => ({ ...prev, [field]: value }));
     };
   
-    const applyFilters = () => {
+    
+    
+    useEffect(() => {
       let filtered = salesReport;
   
-  
-  
-      // Filter by date range
       if (filters.dateRange.start && filters.dateRange.end) {
+        const startDate = formatDate(filters.dateRange.start);
+        const endDate = formatDate(filters.dateRange.end);
+  
         filtered = filtered.filter((item) => {
-          const itemDate = new Date(item.date);
-          const startDate = new Date(filters.dateRange.start);
-          const endDate = new Date(filters.dateRange.end);
-          return itemDate >= startDate && itemDate <= endDate;
+          const availableDates = item.availableDates.map(formatDate);
+          return availableDates.some(
+            (availableDate) => availableDate >= startDate && availableDate <= endDate
+          );
         });
       }
   
-      // Filter by month
-      if (filters.month) {
-        filtered = filtered.filter((item) => new Date(item.date).getMonth() + 1 === parseInt(filters.month));
-      }
-  
       setFilteredReport(filtered);
-      
-    };
+    }, [filters, salesReport]);
 
+    
     return (
     <div>{/* Sales Report Section */}
     
     <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
         <h3 className="text-2xl text-center mb-4">Sales Report</h3>
 
-        {/* Filters */}
-        <div className="flex gap-4 mb-4">
+       
+      {/* Dynamic Date Fields */}
+      <div className="flex items-center gap-2 mb-4 text-black mt-4">
+      {dateFields.map((field, index) => (
+          <div key={index} className="mb-4">
+            <input
+              value={field}
+              type="date"  // Changed type to "date" to ensure YYYY-MM-DD format
+              placeholder={`Enter date ${index + 1}`}
+              className="rounded w-[200px] p-2 border border-[#ccc] rounded-md mr-2"
+              onChange={(e) => {
+                const newFields = [...dateFields];
+                newFields[index] = e.target.value; // Set the new date value
+                setDateFields(newFields);
 
-        <input
-        type="date"
-        value={filters.dateRange.start}
-        onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, start: e.target.value })}
-        className="bg-gray-800 text-white rounded-md px-2 py-2"
-        />
-        <input
-        type="date"
-        value={filters.dateRange.end}
-        onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, end: e.target.value })}
-        className="bg-gray-800 text-white rounded-md px-2 py-2"
-        />
-        <button
-        onClick={applyFilters}
-        className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-600"
-        >
-        Apply Filters
-        </button>
-        </div>
+                // Update the available dates in your state
+                setFilters((prev) => ({
+                  ...prev,
+                  dateRange: { ...prev.dateRange, start: newFields[0], end: newFields[1] }, // Automatically update the filter
+                }));
+              }}
+            />
+              {index === 0 ? (
+              <span className="text-white m1-2">Start</span>
+            ) : (
+              <span className="text-white ml-2">End</span>
+            )}
+          </div>
+        ))}
+      </div>
+
+
 
         {/* Report Table */}
         <table className="w-full text-white">
