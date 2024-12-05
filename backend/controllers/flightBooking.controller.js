@@ -5,10 +5,8 @@ export const createFlightBooking = async (req, res) =>{
     const newFlightBooking = new FlightBooking(flightBooking);
     try {
         await newFlightBooking.save();
-        res.status(201).json(newFlightBooking);
     } catch (error) {
         console.error("Error in creating Flight Booking", error.message);
-        res.status(409).json({ message: error.message });
     }
 }
 export const getFlightBookingByCreator = async (req, res) => {

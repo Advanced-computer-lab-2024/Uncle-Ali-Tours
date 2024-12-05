@@ -1,4 +1,6 @@
+import toast from 'react-hot-toast';
 import { create } from "zustand";
+
 
 export const usePaymentStore = create((set, get) => ({
     items: [{
@@ -45,18 +47,34 @@ export const usePaymentStore = create((set, get) => ({
                 quantity: 1, // Default quantity, you can customize this as needed
             }] });
             break;
+        case('product'):
+        console.log(" in product case ");
+            const productsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
+            const mappedProducts = productsArray.map(item => ({
+                itemData: {
+                    name: item.productId.name,
+                    price: item.productId.price,
+                },
+                itemDetails: item.productId,
+                quantity: item.quantity, // Default quantity, you can customize this as needed
+            }));
+            set({ items: mappedProducts });
+            break;
             default:
                 console.log(" in default case ");
                 const itemsArray = Array.isArray(selectedItems) ? selectedItems : [selectedItems];
                 const mappedItems = itemsArray.map(item => ({
-                    itemData: item,
+                    itemData: {
+                        name: item.name,
+                        price: item.price,
+                    },
+                    itemDetails: item,
                     quantity: 1, // Default quantity, you can customize this as needed
                 }));
                 set({ items: mappedItems });
                 break;
         }
         
-       
     },
 
     setCurrency: (currency) => {
@@ -101,6 +119,68 @@ export const usePaymentStore = create((set, get) => ({
         }
         } catch (error) {
         console.error("Error creating checkout session:", error);
+        }
+    },
+
+    handleSuccessfulPaymentForTourist: async (username, items, type) => {
+        try {
+            let amountPaid = 0;
+            items.forEach(item => {
+                amountPaid += (item.itemData.price*item.quantity);
+            });
+            console.log("Amount Paid:", amountPaid);
+
+            const response =  await fetch(`/api/payment/handleSuccessfulPayment`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: username,
+                     items: items,
+                      type: type,
+                       amountPaid: amountPaid })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success(data.message);
+            } else {
+                toast.error(data.message);
+                console.error("Error handling successful payment:", data.message);
+            }
+        } catch (error) {
+            console.error("Error handling successful payment:", error);
+            toast.error("Failed to handle successful payment.");
+        }
+    },
+
+    CheckoutUsingWallet: async (items , username ,type) => {
+        try {
+            let amountPaid = 0;
+            items.forEach(item => {
+                amountPaid += (item.itemData.price*item.quantity);
+            });
+            console.log("Amount Paid:", amountPaid);
+                 // Store the items in session storage
+        sessionStorage.setItem("paymentItems", JSON.stringify(items));
+
+            const response = await fetch(`/api/payment/checkoutUsingWallet`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, amountPaid , type })
+            });
+            const data = await response.json();
+            console.log("data:", data);
+            if (data.success) {
+                toast.success(data.message);
+            } else {
+                toast.error(data.message);
+                console.error("Error processing payment using wallet:", data.message);
+            }
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        } catch (error) {
+            console.error("Error processing payment using wallet:", error);
+            toast.error("Failed to process payment using wallet.");
         }
     }
 

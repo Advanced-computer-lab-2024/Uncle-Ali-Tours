@@ -18,12 +18,13 @@ function PaymentPage() {
   const { currentItinerary, getItineraryById } = useItineraryStore();
   const { currentActivity, getActivityById } = useActivityStore();
   const { getTransportationActivityById, transportationActivity } = useTransportationActivityStore();
-  const { items, setSelectedItems, currency, setCurrency, createCheckoutSession } = usePaymentStore();
+  const { items, setSelectedItems, currency, setCurrency, createCheckoutSession , CheckoutUsingWallet} = usePaymentStore();
   const { user } = useUserStore();
-  const { tourist } = useTouristStore();
+  const { tourist , checkoutList } = useTouristStore();
 
   useEffect(() => {
     console.log(type, id);
+    console.log("products checkoutList", checkoutList);
     const fetchItemDetails = async () => {
       try {
         switch (type) {
@@ -44,23 +45,10 @@ function PaymentPage() {
       }
     };
 
-    if (type === 'hotel') {
-      console.log("bookedHotel", bookedHotel);
-            setItemList(bookedHotel);
-            setPrice(bookedHotel.data.price.total);
-            console.log(bookedHotel.data.price.total);
-    }
-
-    if (type === 'flight') {
-      console.log("bookedFlight", bookedFlight);
-            setItemList(bookedFlight);
-            setPrice(bookedFlight.data.price.raw);
-            console.log(bookedFlight.data.price.raw);
-    }
-
     fetchItemDetails();
 
     setCurrency(user.chosenCurrency);
+
   }, [type, id , user.chosenCurrency]);
 
   useEffect(() => {
@@ -86,9 +74,32 @@ function PaymentPage() {
             console.log(transportationActivity);
             console.log(transportationActivity?.price);
     
+  }if (type === 'hotel') {
+      console.log("bookedHotel", bookedHotel);
+            setItemList(bookedHotel);
+            setPrice(Number(bookedHotel.data.price.total));
+            console.log(bookedHotel.data.price.total);
+    }
+
+    if (type === 'flight') {
+      console.log("bookedFlight", bookedFlight);
+            setItemList(bookedFlight);
+            setPrice(bookedFlight.data.price.raw);
+            console.log(bookedFlight.data.price.raw);
+    }
+
+    if (type === 'product') {
+      console.log("product checkoutList", checkoutList);
+      setItemList(checkoutList);
+      let totalPrice = 0;
+      checkoutList.forEach((product) => {
+        totalPrice += product.productId.price * product.quantity * user.currencyRate;
+      });
+      setPrice(totalPrice);
+    }
+
   }
-  }
-  , [currentItinerary, currentActivity,transportationActivity,itemList]);
+  , [currentItinerary, currentActivity,transportationActivity,itemList , user.chosenCurrency]);
 
   useEffect(() => {
     console.log("itemList last useEffect: ", itemList);
@@ -106,7 +117,7 @@ function PaymentPage() {
     if (selectedPaymentMethod === 'creditCard') {
       createCheckoutSession(items, user.currencyRate, currency, type);
     } else if (selectedPaymentMethod === 'wallet') {
-      // Logic for Wallet Payment
+      CheckoutUsingWallet(items, user.userName , type);
       console.log('Processing payment using wallet...');
     } else if (selectedPaymentMethod === 'cashOnDelivery') {
       // Logic for Cash on Delivery
@@ -121,10 +132,15 @@ function PaymentPage() {
   return (
     <div>
       <h1>Payment Page</h1>
-      <p>Item: {itemList.name}</p>
-      <p>
-        Price: {(price * user.currencyRate).toFixed(2)} {user.chosenCurrency}
-      </p>
+      {items.map((item, index) => (
+        <div key={index}>
+          <p>Item: {item.itemData.name}</p>
+          <p>
+            Price: {(item.itemData.price * user.currencyRate).toFixed(2)} {user.chosenCurrency}
+          </p>
+        </div>
+      ))}
+      <h2>Total price: {(price).toFixed(0)} {user.chosenCurrency}</h2>
 
       {/* Payment Method Selection */}
       <h2>Select Payment Method</h2>
@@ -168,9 +184,9 @@ function PaymentPage() {
       {selectedPaymentMethod === 'wallet' && (
         <div>
           <p>Pay using your wallet balance.</p>
-          <p>Wallet Balance:{tourist.myWallet} {user.chosenCurrency}</p>
-          <p>Price: {(price * user.currencyRate).toFixed(2)} {user.chosenCurrency}</p>
-          <p>Remaining Balance: {(tourist.myWallet - price).toFixed(2)} {user.chosenCurrency}</p>
+          <p>Wallet Balance:{(tourist.myWallet *  user.currencyRate)} {user.chosenCurrency}</p>
+          <p>Price: {(price).toFixed(2)} {user.chosenCurrency}</p>
+          <p>Remaining Balance: {((tourist.myWallet *  user.currencyRate) - price).toFixed(2)} {user.chosenCurrency}</p>
           <p>Do you want to proceed with the payment?</p>
           <button onClick={handlePayment}>Pay</button>
         </div>

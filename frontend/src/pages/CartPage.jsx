@@ -1,4 +1,4 @@
-import React, { useEffect ,useState} from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTouristStore } from "../store/tourist";
 
@@ -7,7 +7,9 @@ const CartPage = ({ user }) => {
     const { cartProducts, errorMessage, getCartProducts, checkoutProducts, removeProductCart } = useTouristStore();
     const navigate = useNavigate();
 
-    getCartProducts(user.userName); 
+    useEffect(() => {
+    getCartProducts(user.userName);
+    }, [getCartProducts, user.userName]);
 
     const handleCheckout = () => {
         if (cartProducts.length === 0) {
@@ -16,7 +18,7 @@ const CartPage = ({ user }) => {
         }
 
         checkoutProducts(); // Move all cart products to checkout
-        navigate("/checkoutPage"); // Redirect to the Checkout Page
+        navigate(`/payment/product/id`); // Redirect to the Checkout Page
     };
 
     const handleRemove = (productId) => {

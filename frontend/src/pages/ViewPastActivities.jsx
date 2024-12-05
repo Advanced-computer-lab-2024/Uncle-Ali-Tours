@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useUserStore } from '../store/user';
-import { useTouristStore } from '../store/tourist';
+import React, { useEffect, useState } from 'react';
 import ActivityContainer from '../components/ActivityContainer';
+import { useTouristStore } from '../store/tourist';
+import { useUserStore } from '../store/user';
 function ViewPastActivities() {
     const { user } = useUserStore();
     const { fetchPastActivities } = useTouristStore();
@@ -12,6 +12,7 @@ function ViewPastActivities() {
         const fetchData = async () => {
             if (user && user.userName) {
                 const data = await fetchPastActivities(user.userName); // Await the asynchronous call
+                console.log('Data:', data); // Log the fetched data
                 setPastActivities(data); // Update state with the fetched data
             }
         };
