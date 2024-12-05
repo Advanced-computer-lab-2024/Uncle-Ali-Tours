@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useTouristStore } from "../store/tourist";
+import { usePaymentStore } from "../store/payment";
 import { useUserStore } from "../store/user";
 
 function SuccessfulPayment() {
     const { type } = useParams();
     const [items, setItems] = useState([]);
     const { user } = useUserStore();
-    const { handleSuccessfulPaymentForTourist } = useTouristStore();
+    const { handleSuccessfulPaymentForTourist } = usePaymentStore();
 
     useEffect(() => {
         const paymentItems = JSON.parse(sessionStorage.getItem("paymentItems"));

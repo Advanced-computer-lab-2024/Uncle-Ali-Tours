@@ -22,10 +22,8 @@ export const createHotelBooking = async (req, res) => {
     const newHotelBooking = new HotelBooking(hotelBooking);
     try {
         await newHotelBooking.save();
-        res.status(201).json(newHotelBooking);
     } catch (error) {
         console.error("Error in creating Hotel Booking", error.message);
-        res.status(409).json({ message: error.message });
     }
 };
 

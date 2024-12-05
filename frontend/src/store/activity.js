@@ -306,10 +306,14 @@ removeBookmark: async (activityId, userName) => {
 
 getBookmarkedActivities: async (userName) => {
     try {
-        const res = await fetch(`/api/activity/bookmarks?userName=${userName}`);
+      const res = await fetch(`/api/activity/bookmarkedActivities/${userName}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
         const data = await res.json();
+        console.log("Bookmarked Activities:", data.bookmarks);
         if (res.ok) {
-            return { success: true, bookmarks: data.bookmarks };
+          return data.bookmarks;
         } else {
             return { success: false, message: data.message };
         }
