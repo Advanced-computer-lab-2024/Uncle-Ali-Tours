@@ -14,6 +14,7 @@ import { useSellerStore } from "../store/seller";
 import { useGuideStore } from "../store/tourGuide";
 import { useTouristStore } from "../store/tourist";
 import { useUserStore } from "../store/user";
+import EditProfile from "./EditProfile";
 import ActivityCategory from "./ActivityCategory";
 import ActivityDetail from "./ActivityDetail";
 import ActivityPage from "./ActivityPage";
@@ -139,6 +140,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+				<Route path="/editProfile" element={<EditProfile />} />
         <Route path="/viewAttractions" element={<ViewAttractions />} />
         <Route path="/viewActivities" element={<ViewActivities />} />
         <Route path="/viewItineraries" element={<ViewItineraries />} />
