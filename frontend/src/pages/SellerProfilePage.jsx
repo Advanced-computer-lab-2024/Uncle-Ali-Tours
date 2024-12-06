@@ -240,15 +240,15 @@ const SellerProfile = () => {
 					/>
 				</div>
 				<p className="lg:text-3xl md:text-2xl  absolute top-32 left-1/2 translate-x-[-50%]">
-					{"Esm el seller"}
+					{sell.userName || ""}
 				</p>
 				<p className="lg:text-xl md:text-lg font-thin  absolute top-[220px] left-1/2 translate-x-[-50%]">
-					{"email el seller@gamil.com"}
+					{sell.email || "email el seller@gamil.com"}
 				</p>
 				<p className="lg:text-xl md:text-lg font-thin  absolute top-[180px] left-1/2 translate-x-[-50%]">
-					{"+201823793346"}
+					{sell.mobileNumber || "+201823793346"}
 				</p>
-				<Link to="/" className="absolute top-5 left-8">
+				<Link to="/editProfile" className="absolute top-5 left-8">
 					Edit
 				</Link>
 
