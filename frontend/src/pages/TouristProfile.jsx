@@ -14,6 +14,7 @@ import { IoSaveOutline } from "react-icons/io5";
 import BronzeBadge from '../images/bronze.png';
 import SilverBadge from '../images/silver.png';
 import GoldBadge from '../images/gold.png';
+import egypt from '../images/egypt.jpg';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -204,6 +205,7 @@ const getBadgeImage = () => {
   return (
     <div className="flex w-full mt-12 justify-around">
     <Toaster />
+      <img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[100vw] h-[100vh] bg-black opacity-200"/>
       <div className="flex flex-col gap-[6vh] justify-start"> 
         <div className="flex gap-[6vw] justify-around"> 
          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[68vh] max-w-3xl rounded-lg shadow-lg text-white left-[-20%]"> 
@@ -408,6 +410,7 @@ const getBadgeImage = () => {
       </div>
     </div>
   );
+  
 };    
 
 export default TouristProfile;
