@@ -228,7 +228,7 @@ function ProductContainer({ product, productChanger, tourist }) {
                     )}
                 </button>
               
-              <QuantitySelector onChange={handleQuantityChange} />
+              <QuantitySelector onChange={handleQuantityChange} maxValue={product.Available_quantity} />
               <button
                 onClick={() => isAddedToCart ? handleRemoveFromCart(product._id) : handleCart(product._id)}
                 className="transform transition-colors duration-300 hover:text-green-500 focus:outline-none"

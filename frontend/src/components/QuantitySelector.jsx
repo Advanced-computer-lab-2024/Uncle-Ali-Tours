@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 
-function QuantitySelector({ onChange }) {
+function QuantitySelector({ onChange ,maxValue}) {
     const [quantity, setQuantity] = useState(1);
 
     const increment = () => {
-        setQuantity((prev) => {
-            const newQuantity = prev + 1;
-            if (onChange) {
-                onChange(newQuantity);
-            }
-            return newQuantity;
-        });
+        if(quantity<maxValue){
+            setQuantity((prev) => {
+                const newQuantity = prev + 1;
+                if (onChange) {
+                    onChange(newQuantity);
+                }
+                return newQuantity;
+            });
+        }
+        
     };
 
     const decrement = () => {

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export const useOrderStore = create((set) => ({
   orders: [],
+  currentOrder:{},
   setOrders: (orders) => set({ orders }),
 
   // Fetch orders with optional filters and sorting
@@ -144,12 +145,13 @@ export const useOrderStore = create((set) => ({
       if (!data.success) {
         return { success: false, message: data.message };
       }
-
+      set({ currentOrder: data.data }); // Set the fetched order in the state
       return { success: true, order: data.data };
     } catch (error) {
       console.error("Error in getOrderById:", error);
       return { success: false, message: error.message };
     }
   },
+  
 
 }));

@@ -5,19 +5,19 @@ import ProductContainerForSeller from "../components/ProductContainerForSeller";
 import { FiLoader } from "react-icons/fi";
 
 function ViewOrderDetails() {
-  const { orders, getOrderById } = useOrderStore();
+  const { currentOrder, getOrderById } = useOrderStore();
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) {
-      navigate("/");
+      navigate("/"); // Redirect if no ID is provided
     } else {
       getOrderById(id); // Fetch the specific order by ID
     }
   }, [id, getOrderById, navigate]);
 
-  if (!orders[0]) {
+  if (!currentOrder) {
     return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
   }
 
@@ -27,11 +27,11 @@ function ViewOrderDetails() {
         <h1 className="justify-center text-2xl">Order Details</h1>
         <br />
         <div className="mt-24">
-          {orders[0].products && orders[0].products.length > 0 ? (
-            orders[0].products.map((productItem) => (
+          {currentOrder.products && currentOrder.products.length > 0 ? (
+            currentOrder.products.map((productItem) => (
               <ProductContainerForSeller
                 key={productItem._id}
-                product={productItem.productId} // Pass the entire product object
+                product={productItem.productId} 
               />
             ))
           ) : (
