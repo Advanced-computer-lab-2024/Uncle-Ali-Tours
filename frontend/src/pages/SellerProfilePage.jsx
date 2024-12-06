@@ -212,8 +212,8 @@ const SellerProfile = () => {
 
 	return (
 		<div className="w-full mt-24 flex">
-			<img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[200vw] h-[100vh] bg-black opacity-600"/>
-			<div className="bg-gradient-to-b shadow-2xl relative fro-100% from-[white] h-[60vh] w-[24vw] mx-auto rounded-lg">
+			<img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[200vw] h-[100vh] bg-black opacity-600 pointer-events-none" />
+				<div className="bg-gradient-to-b shadow-2xl relative fro-100% from-[white] h-[60vh] w-[24vw] mx-auto rounded-lg">
 				<div className="absolute top-0 left-1/2 translate-x-[-50%] translate-y-[-35%]">
 					<label
 						for="pic-upload"

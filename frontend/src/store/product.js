@@ -28,6 +28,49 @@ getProducts: async (filter = {}, sort = {}) => {
       return { success: false, message: error.message };
   }
 },
+  getProducts: async (filter = {}, sort = {}) => {
+  console.log(filter)
+  try {
+      const queryString = new URLSearchParams({
+          filter: JSON.stringify(filter),
+          sort: JSON.stringify(sort),
+      }).toString();
+
+      const res = await axios.get(`http://localhost:3000/api/product?${queryString}`); // Updated to use axios
+
+      const data = res.data;
+      if (!data.success) {
+          return { success: false, message: data.message };
+      }
+      set({ products: data.data });
+      return { success: true, message: "Fetched products" };
+  } catch (error) {
+      console.error("Error in getProducts:", error);
+      return { success: false, message: error.message };
+  }
+},
+
+
+  getProductById: async (id) => {
+    try {
+      const res = await fetch(`/api/product/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
+
+      return { success: true, product: data.data };
+    } catch (error) {
+      console.error("Error in getProductById:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
 
   // Create a new product and add it to state
   createProduct: async (newProduct) => {

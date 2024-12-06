@@ -132,4 +132,24 @@ export const useOrderStore = create((set) => ({
     }
   },
 
+  getOrderById: async (id) => {
+    try {
+      const res = await fetch(`/api/orders/${id}/getByID`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
+
+      return { success: true, order: data.data };
+    } catch (error) {
+      console.error("Error in getOrderById:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
 }));

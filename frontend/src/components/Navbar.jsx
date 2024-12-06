@@ -34,7 +34,7 @@ function Navbar() {
 					<Link to="/" className="pl-8 mt-[6px] tracking-widest text-pink-950">
 						UAT
 					</Link>
-					{!!user && (
+					{!!user.userName && (
 						<button
 							onClick={toggleSideMenu}
 							className="mx-2 focus:outline-none"

@@ -217,3 +217,27 @@ export const addRatingReview =  async (req, res) => {
 //         res.status(500).json({ success: false, message: error.message });
 //     }
 // };
+export const getProductById = async (req, res) => {
+    const { id } = req.params;
+
+    // Validate the provided ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: 'Invalid product ID.' });
+    }
+
+    try {
+        // Find the product by ID
+        const product = await Product.findById(id);
+        
+        // Handle the case where the product does not exist
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found.' });
+        }
+
+        // Respond with the product data
+        res.status(200).json({ success: true, data: product });
+    } catch (error) {
+        console.error("Error fetching product:", error.message);
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+};

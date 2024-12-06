@@ -73,9 +73,16 @@ export const getCurrentOrders = async (req, res) => {
     const { username } = req.params;
 
     try {
-        const orders = await Order.find({ creator: username , status: "shipping" }).populate('Product');
-        console.log(orders)
+        const orders = await Order.find({ creator: username , status: "shipping" }).populate(
+            {
+                path: "products",
+                populate: {
+                    path: "productId",
+                    model: "Product"
+                }
+            }
 
+        );
         if (orders.length === 0) {
             return res.status(404).json({ success: false, message: 'No orders found' });
         }
@@ -92,7 +99,16 @@ export const getPastOrders = async (req, res) => {
     const { username } = req.params;
 
     try {
-        const orders = await Order.find({ creator: username , status: "shipped" }).populate('Product');
+        const orders = await Order.find({ creator: username , status: "shipped" }).populate(
+            {
+                path: "products",
+                populate: {
+                    path: "productId",
+                    model: "Product"
+                }
+            }
+
+        );
 
         if (orders.length === 0) {
             return res.status(404).json({ success: false, message: 'No orders found' });
@@ -101,5 +117,28 @@ export const getPastOrders = async (req, res) => {
         return res.status(200).json({ success: true, data: orders });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getOrderById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const order = await Order.findById(id).populate({
+            path: "products",
+            populate: {
+                path: "productId",
+                model: "Product",
+            },
+        });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found.' });
+        }
+
+        res.status(200).json({ success: true, data: order });
+    } catch (error) {
+        console.error("Error fetching order:", error.message);
+        res.status(500).json({ success: false, message: 'Server error.' });
     }
 };

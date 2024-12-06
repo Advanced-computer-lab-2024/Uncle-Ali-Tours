@@ -181,7 +181,7 @@ function HomePage() {
               <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
                 Find exciting activities to do at your destination!
               </p>
-              <Link to='/activities'>
+              <Link to='/login'>
                 <button
                   style={{
                     marginTop: '1.5rem',
@@ -230,7 +230,7 @@ function HomePage() {
               <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
                 Book your flight for an unforgettable adventure.
               </p>
-              <Link to='/flights'>
+              <Link to='/login'>
                 <button
                   style={{
                     marginTop: '1.5rem',
@@ -279,7 +279,7 @@ function HomePage() {
               <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
                 Booking your stay has never been easier.
               </p>
-              <Link to='/itineraries'>
+              <Link to='/login'>
                 <button
                   style={{
                     marginTop: '1.5rem',
