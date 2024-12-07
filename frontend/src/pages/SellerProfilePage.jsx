@@ -213,7 +213,8 @@ const SellerProfile = () => {
 	return (
 		<div className="w-full mt-24 flex">
 			<img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[200vw] h-[100vh] bg-black opacity-600 pointer-events-none" />
-				<div className="bg-gradient-to-b shadow-2xl relative fro-100% from-[white] h-[60vh] w-[24vw] mx-auto rounded-lg">
+				{/* <div className="bg-gradient-to-b shadow-2xl relative fro-100% from-[white] h-[60vh] w-[24vw] mx-auto rounded-lg"> */}
+				<div className="bg-gradient-to-b from-white via-white/90 to-white/70 shadow-2xl relative h-[60vh] w-[24vw] mx-auto rounded-lg">
 				<div className="absolute top-0 left-1/2 translate-x-[-50%] translate-y-[-35%]">
 					<label
 						for="pic-upload"
@@ -272,7 +273,8 @@ const SellerProfile = () => {
 				</div>
 			</div>
 
-			<div className="bg-gradient-to-b shadow-xl relative mb-6 fro-100% from-[white] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
+			{/* <div className="bg-gradient-to-b shadow-xl relative mb-6 fro-100% from-[white] min-h-[60vh] w-[70vw] mx-auto rounded-lg"> */}
+			<div className="bg-gradient-to-b from-white via-white/90 to-white/70 shadow-xl relative mb-6 min-h-[60vh] w-[70vw] mx-auto rounded-lg">
 				<div className="absolute top-8 shadow-md bg-[#D7D3BF]/90 rounded-full left-1/2 translate-x-[-50%]">
 					<button
 						className={`${archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full`} 

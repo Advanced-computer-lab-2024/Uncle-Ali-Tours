@@ -153,5 +153,32 @@ export const useOrderStore = create((set) => ({
     }
   },
   
+  // Cancel an order
+  cancelOrder: async (id) => {
+    try {
+      const res = await fetch(`/api/orders/${id}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
+
+      // Update the order in the state to reflect the cancellation
+      set((state) => ({
+        orders: state.orders.map((order) =>
+          order._id === id ? { ...order, status: 'cancelled' } : order
+        ),
+      }));
+
+      return { success: true, message: 'Order cancelled and refund issued to your wallet' };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
 
 }));
