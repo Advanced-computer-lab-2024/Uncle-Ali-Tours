@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'; 
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
@@ -12,8 +12,6 @@ import { FaUser, FaEnvelope, FaLock, FaPhone, FaFlag, FaBirthdayCake, FaBriefcas
 import egypt from '../images/egypt.jpg';
 
 function RegisterPage() {
-    const [acceptTerms, setAcceptTerms] = React.useState(false);  // New state for terms acceptance
-    const [activeTab, setActiveTab] = React.useState('user');
     const [selectedType, setSelectedType] = React.useState(""); // No pre-selected value
     const [newUser, setNewUser] = React.useState({
         userName: "",
@@ -29,6 +27,7 @@ function RegisterPage() {
         dateOfBirth: "",
         occupation: "",
     });
+    const [acceptedTerms, setAcceptedTerms] = React.useState(false); // New state for accepting terms
     const navigate = useNavigate();
 
     const { createUser } = useUserStore();
@@ -49,6 +48,11 @@ function RegisterPage() {
     }, []);
 
     const handleRegister = async () => {
+        if (!acceptedTerms) {
+            toast.error("You must accept the terms and conditions to proceed.", { className: "text-white bg-gray-800" });
+            return;
+        }
+
         let userType = selectedType;
         if (selectedType === "") {
             userType = "tour guide"; // Default type when no selection
@@ -158,128 +162,65 @@ function RegisterPage() {
                     </select>
                 </div>
 
-                {activeTab === 'user' && (
-                    <div style={styles.inputContainer}>
-                        <div style={styles.inputWrapper}>
-                            <FaUser style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='userName'
-                                value={newUser.userName}
-                                onChange={(e) => setNewUser({ ...newUser, userName: e.target.value})}
-                                placeholder='Username'
-                                type='text'
-                            />
-                        </div>
-                        <div style={styles.inputWrapper}>
-                            <FaEnvelope style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='email'
-                                value={newUser.email}
-                                onChange={(e) => setNewUser({ ...newUser, email: e.target.value})}
-                                placeholder='Email'
-                                type='email'
-                            />
-                        </div>
-                        <div style={styles.inputWrapper}>
-                            <FaLock style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='password'
-                                value={newUser.password}
-                                onChange={(e) => setNewUser({ ...newUser, password: e.target.value})}
-                                placeholder='Password'
-                                type='password'
-                            />
-                        </div>
-                        <p style={styles.registerAs}>Register as:</p>
-                        <div style={styles.buttonContainer}>
-                            {types.map((type) => (
-                                <motion.button
-                                    key={type}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    style={styles.registerButton}
-                                    onClick={() => handleAddUser(type)}
-                                    disabled={!acceptTerms}  // Disable button if terms are not accepted
-                                >
-                                    {type}
-                                </motion.button>
-                            ))}
-                        </div>
+                {/* Conditionally render input fields based on selectedType */}
+                <div style={styles.inputContainer}>
+                    {selectedType === "tourist" ? (
+                        touristData.map((data) => (
+                            <div key={data.name} style={styles.inputWrapper}>
+                                <data.icon style={styles.icon} />
+                                <input
+                                    style={styles.input}
+                                    name={data.name}
+                                    value={tourist[data.name]}
+                                    onChange={(e) => setTourist({ ...tourist, [e.target.name]: e.target.value })}
+                                    placeholder={data.placeholder}
+                                    type={data.name === 'password' ? 'password' : (data.name === 'dateOfBirth' ? 'date' : 'text')}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        userData.map((data) => (
+                            <div key={data.name} style={styles.inputWrapper}>
+                                <data.icon style={styles.icon} />
+                                <input
+                                    style={styles.input}
+                                    name={data.name}
+                                    value={newUser[data.name]}
+                                    onChange={(e) => setNewUser({ ...newUser, [e.target.name]: e.target.value })}
+                                    placeholder={data.placeholder}
+                                    type={data.name === 'password' ? 'password' : 'text'}
+                                />
+                            </div>
+                        ))
+                    )}
 
-                        {/* Terms Acceptance Section */}
-                        <div style={styles.termsWrapper}>
+                    {/* Terms and Conditions Checkbox */}
+                    <div style={styles.checkboxContainer}>
+                        <label style={styles.checkboxLabel}>
                             <input 
-                                type="checkbox"
-                                checked={acceptTerms}
-                                onChange={() => setAcceptTerms(!acceptTerms)} 
+                                type="checkbox" 
+                                checked={acceptedTerms}
+                                onChange={() => setAcceptedTerms(!acceptedTerms)}
                                 style={styles.checkbox}
                             />
-                            <span style={styles.termsText}>
-                                I accept the 
-                                <a href="/terms-and-conditions" style={styles.termsLink}> Terms and Conditions</a>
-                            </span>
-                        </div>
+                            I accept the <a href="/terms" style={styles.link}>terms and conditions</a>.
+                        </label>
                     </div>
-                )}
 
-{activeTab === 'tourist' ? (
-    <div style={styles.inputContainer}>
-        {touristData.map((data) => (
-            <div key={data.name} style={styles.inputWrapper}>
-                <data.icon style={styles.icon} />
-                <input
-                    style={styles.input}
-                    name={data.name}
-                    value={tourist[data.name]}
-                    onChange={(e) => setTourist({ ...tourist, [e.target.name]: e.target.value })}
-                    placeholder={data.placeholder}
-                    type={data.name === 'password' ? 'password' : (data.name === 'dateOfBirth' ? 'date' : 'text')}
-                />
-            </div>
-        ))}
-        <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={styles.registerButton}
-            onClick={handleAddTourist}
-            disabled={!acceptTerms}  // Disable button if terms are not accepted
-        >
-            Register as Tourist
-        </motion.button>
-    </div>
-) : (
-    userData.map((data) => (
-        <div key={data.name} style={styles.inputWrapper}>
-            <data.icon style={styles.icon} />
-            <input
-                style={styles.input}
-                name={data.name}
-                value={newUser[data.name]}
-                onChange={(e) => setNewUser({ ...newUser, [e.target.name]: e.target.value })}
-                placeholder={data.placeholder}
-                type={data.name === 'password' ? 'password' : 'text'}
-            />
-        </div>
-    ))
-)}
-
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            style={styles.registerButton}
-                            onClick={handleAddTourist}
-                            disabled={!acceptTerms}  // Disable button if terms are not accepted
-                        >
-                            Register as Tourist
-                        </motion.button>
-                    </div>
-                )}
+                    {/* Sign Up Button */}
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        style={styles.registerButton}
+                        onClick={handleRegister}
+                        disabled={!acceptedTerms}  // Disable the button if terms are not accepted
+                    >
+                        {selectedType === "tourist" || selectedType === "" ? "Register" : "Register"}
+                    </motion.button>
+                </div>
             </motion.div>
             <footer style={styles.footer}>
-                <p style={styles.footerText}>© {new Date().getFullYear()} All Rights Reserved</p>
+                <p style={styles.footerText}>©️ {new Date().getFullYear()} U A T. All rights reserved.</p>
             </footer>
         </div>
     )
@@ -386,6 +327,23 @@ const styles = {
         cursor: 'pointer',
         transition: 'background-color 0.3s',
     },
+    checkboxContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '1rem',
+    },
+    checkboxLabel: {
+        color: '#333',
+        fontSize: '1rem',
+    },
+    checkbox: {
+        marginRight: '0.5rem',
+    },
+    link: {
+        color: '#007bff',
+        textDecoration: 'none',
+    },
     footer: {
         position: 'absolute',
         bottom: 0,
@@ -400,23 +358,7 @@ const styles = {
     },
     footerText: {
         margin: 0,
-    },
-    termsWrapper: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '1rem',
-    },
-    checkbox: {
-        marginRight: '0.5rem',
-    },
-    termsText: {
-        fontSize: '0.9rem',
-        color: '#333',
-    },
-    termsLink: {
-        color: '#dc5809',
-        textDecoration: 'underline',
-    },
+    }
 };
 
 export default RegisterPage;
