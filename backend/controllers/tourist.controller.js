@@ -634,6 +634,24 @@ export const removeProductCart = async (req, res) => {
     }
 };
 
+export const removeAllProductsCart = async (req, res) => {
+    const { userName } = req.body; // Get userName from request body
+    try {
+         // Find tourist by username
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        tourist.productsCart = []; // Empty the cart
+        await tourist.save(); // Save changes to the database
+        return res.status(200).json({ success: true, data: [], message: 'All products removed from cart successfully' });
+    } catch (error) {
+        console.log("Error removing all products from cart:", error.message);
+        res.status(500).json({ success: false, message: "Server error during removing all products from cart" });
+    }
+    
+};
+
 export const getCartProducts = async (req, res) => {
     const { userName } = req.params; // Get userName from request parameters
 

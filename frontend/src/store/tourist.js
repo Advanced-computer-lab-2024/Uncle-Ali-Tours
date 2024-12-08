@@ -350,6 +350,31 @@ export const useTouristStore = create((set) => ({
     
         return { success: true, message: "Removed successfully." };
     },
+
+    removeAllProductsCart: async (userName) => {
+        const res = await fetch('/api/tourist/removeAllProductsCart', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName }) // Pass userName
+        });
+
+        const data = await res.json();
+        console.log("API Response:", data);
+
+        if (!data.success) return { success: false, message: data.message };
+
+        // Safe check for ProductsCart
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsCart: [] // Reset to an empty array
+            }
+        }));
+
+        return { success: true, message: "Removed all products successfully." };
+    },
    
     
     getCartProducts: async (userName) => {

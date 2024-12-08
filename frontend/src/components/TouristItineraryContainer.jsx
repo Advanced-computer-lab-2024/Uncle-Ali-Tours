@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
+import { GoBell, GoBellFill } from "react-icons/go";
 import { useNavigate } from 'react-router-dom';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useGuideStore } from '../store/tourGuide.js';
 import { useTouristStore } from '../store/tourist.js';
 import { useUserStore } from '../store/user.js';
+import QuantitySelector from './QuantitySelector.jsx';
 import Rating from './Rating';
-import { GoBell , GoBellFill } from "react-icons/go";
+
 
 
 function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
@@ -30,6 +32,9 @@ const { tourist } = useTouristStore();
 
 
   const { bookItinerary } = useItineraryStore();
+
+  const [quantity, setQuantity] = useState(1);
+
 
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
@@ -135,13 +140,17 @@ if (!itinerary.isBooked) {
     alert('Failed to add review: ' + message);
   }
 };
-const handleBookClick = async (itineraryID) => {
+const handleBookClick = async (itineraryID , quantity) => {
   try{
-    navigate(`/payment/itinerary/${itineraryID}`);
+    navigate(`/payment/itinerary/${itineraryID}` , {state : {quantity:quantity} });
   }
   catch(error){
     console.error('Error:', error);
   }
+};
+
+const handleQuantityChange = (newQuantity) => {
+  setQuantity(newQuantity);
 };
 
   return (
@@ -201,6 +210,7 @@ const handleBookClick = async (itineraryID) => {
       )}
     </div>
 </div>
+<QuantitySelector onChange={handleQuantityChange} maxValue={100} />
 <button 
   onClick={handleRedirectToReviews} 
   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
@@ -234,7 +244,7 @@ const handleBookClick = async (itineraryID) => {
       </div>
       <div className='flex justify-between'>
       {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
-         <button onClick={() => (handleBookClick(itinerary._id))} className="p-2 bg-blue-500 text-white">book</button>  :   
+         <button onClick={() => (handleBookClick(itinerary._id , quantity))} className="p-2 bg-blue-500 text-white">book</button>  :   
          <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
          }
          </div>
