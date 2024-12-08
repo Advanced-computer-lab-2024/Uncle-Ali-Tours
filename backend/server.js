@@ -27,7 +27,6 @@ import tourGuide from './routes/tourGuide.route.js';
 import touristRoutes from './routes/tourist.route.js';
 import userRoutes from './routes/user.route.js';
 import notificationroutes from './routes/notifications.route.js'
-import orderRoutes from './routes/order.route.js'
 import path from "path";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -36,22 +35,20 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // or smtp server like 'smtp.mailtrap.io'
+    service: 'gmail', 
     auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS, 
     },
 });
 
 const mailOptions = {
-    from: process.env.EMAIL_USER,  // sender address
-    to: 'ahmedguc101@gmail.com.com',   // list of receivers
-    subject: 'Test Email',         // Subject line
-    text: 'This is a test email',  // plain text body
-    html: '<b>This is a test email</b>' // html body
+    from: process.env.EMAIL_USER,  
+    to: 'ahmedguc101@gmail.com.com',   
+    text: 'This is a test email',  
+    html: '<b>This is a test email</b>' 
 };
 
-// Sending email
 transporter.sendMail(mailOptions, function(error, info) {
     if (error) {
         console.log('Error: ', error);
@@ -69,7 +66,6 @@ const __dirname = path.dirname(__filename);
 import shareRoutes from './routes/share.route.js';
 import transportaionActivity from './routes/transportationActivity.route.js';
 
-// Initialize dotenv to load environment variables
 dotenv.config();
 const app = express();
 
@@ -77,7 +73,6 @@ app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 
 
 
@@ -107,7 +102,6 @@ app.use("/api/transportaionActivity",transportaionActivity);
 app.use("/api/promo", promoRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/notifications", notificationroutes);
-app.use("/api/orders", orderRoutes);
 
 
 
@@ -132,7 +126,19 @@ connectDB().then(() => {
     app.use("/api/complaint", complaintRoutes);
     app.use("/api/otp", optRoutes);
 
+    
 
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465, // 465 for SSL, 587 for TLS
+        secure: true, // true for 465, false for 587
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+    
    
      
 

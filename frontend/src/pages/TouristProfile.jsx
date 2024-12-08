@@ -41,20 +41,32 @@ const TouristProfile = ({ userName }) => {
   useEffect(() => {
     // Trigger the check when the profile page loads
     const checkNotifications = async () => {
-        try {
-            // Make GET request to check for upcoming itineraries
-            const response = await axios.get(`/api/tourist/${userName}/check-upcoming-itinerary`);
-
-            // If the server responds with success
-            if (response.data.success) {
-                console.log(response.data.message);  // Notification sent successfully
-            } else {
-                console.log(response.data.message);  // No notification needed
-            }
-        } catch (error) {
-            console.error("Error checking upcoming itinerary notifications:", error);
-        }
-    };
+      try {
+          // Make GET request to check for upcoming itineraries
+          const response = await fetch(`/api/tourist/${userName}/check-upcoming-itinerary`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+  
+          // If the response is ok (status 200-299)
+          if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                  console.log(data.message);  // Notification sent successfully
+              } else {
+                  console.log(data.message);  // No notification needed
+              }
+          } else {
+              // Handle the case when the response status is not OK
+              console.error('Error fetching upcoming itinerary:', response.statusText);
+          }
+      } catch (error) {
+          console.error("Error checking upcoming itinerary notifications:", error);
+      }
+  };
+  
 
     // Call the function to check for notifications when the component mounts
     checkNotifications();
@@ -92,9 +104,9 @@ const TouristProfile = ({ userName }) => {
   useEffect(() => {
     const fetchData = async () => {
       const itineraries = await fetchUpcomingItineraries(user.userName);
-      const activities = await fetchUpcomingActivities(user.userName);
+      //const activities = await fetchUpcomingActivities(user.userName);
       setUpcomingItineraries(itineraries);
-      setUpcomingActivities(activities);
+      //setUpcomingActivities(activities);
     };
 
     fetchData();
@@ -129,7 +141,7 @@ useEffect(() => {
   // Fetch itineraries and activities when the component mounts
   const fetchData = async () => {
     const itineraries = await fetchUpcomingItineraries(user.userName);
-    const activities = await fetchUpcomingActivities(user.userName);
+   // const activities = await fetchUpcomingActivities(user.userName);
 
     setUpcomingItineraries(itineraries.length); // Update state with number of itineraries
     setUpcomingActivities(activities.length); // Update state with number of activities
