@@ -241,29 +241,85 @@ const AdvertiserProfile = () => {
   if (!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
   return (
-  
-      
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Toaster />
+      <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-white">Advertiser Profile</h1>
+              <div className="relative">
+                <img
+                  src={`http://localhost:3000${previewFile}`}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white"
+                />
+                <label
+                  htmlFor="profile-upload"
+                  className="absolute bottom-0 right-0 bg-white rounded-full p-2 cursor-pointer"
+                >
+                  <FaEdit className="text-orange-500" />
+                </label>
+                <input
+                  id="profile-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </div>
+            </div>
+          </div>
+          
 
-      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-      
+          
+          <div className="p-6 sm:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Company Information</h2>
+                {['userName', 'email', 'companyName', 'website', 'hotline', 'industry', 'address'].map((field) => (
+                  <div key={field} className="flex items-center justify-between">
+                    <span className="text-gray-600 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                    <input
+                      type="text"
+                      name={field}
+                      defaultValue={advertiser[field] || ''}
+                      className={`${isEditing ? 'bg-gray-100' : 'bg-transparent'} transition-colors focus:outline-none border-b border-gray-300 px-2 py-1 w-2/3 text-right`}
+                      readOnly={!isEditing}
+                      onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, [field]: e.target.value })}
+                    />
+                  </div>
+                ))}
+                {!isEditing ? (
+                  <button className="text-orange-500 hover:text-orange-600 transition-colors" onClick={() => setIsEditing(true)}>
+                    <FaEdit size={20} />
+                  </button>
+                ) : (
+                  <button className="text-green-500 hover:text-green-600 transition-colors" onClick={handleSaveClick}>
+                    <IoSaveOutline size={20} />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-6">
+                
+              </div>
+            </div>
+            
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+              </div>
+              
+            </div>
 
-      <div className="flex items-center justify-center mb-6">
-        {previewFile ? (
-          <img
-            style={{ width: "160px", height: "160px", borderRadius: "50%", objectFit: "cover" }}
-            src={`http://localhost:3000${previewFile}`}
-            alt="Profile Picture"
-          />
-        ) : (
-          <div className="text-gray-500">add logo</div>
-        )}
-        <div className="icon-buttons ml-4">
-          <button onClick={() => setShowPreview(true)}>
-            <FaEye />
-          </button>
-          <button onClick={toggleEdit}>
-            <FaEdit />
-          </button>
+            <div className="mt-10 border-t pt-6">
+              <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+                onClick={handleDeleteClick}
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -387,4 +443,3 @@ const AdvertiserProfile = () => {
 };
 
 export default AdvertiserProfile;
-
