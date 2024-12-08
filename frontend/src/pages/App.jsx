@@ -73,7 +73,7 @@ import AddAddressPage from './AddAddressPage.jsx';
 import ViewOrderDetails from './ViewOrderDetails.jsx';
 //import CheckoutPage from './CheckOutPage.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
-import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+import TourGuideTouristReport from './TourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
 import { Toaster } from 'react-hot-toast';
 
