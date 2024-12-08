@@ -474,6 +474,35 @@ export const useTouristStore = create((set) => ({
             toast.error("Failed to fetch past activities.");
             return []; // Return an empty array on error
         }
+    },
+        hasPurchasedProduct: async (userName, productId) => {
+            try {
+                const response = await fetch(`/api/tourist/${userName}/${productId}/purchased`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    if (data.success) {
+                        toast.success(data.message);
+                        return { purchased: true, message: data.message };
+                    } else {
+                        toast.info(data.message);
+                        return { purchased: false, message: data.message };
+                    }
+                } else {
+                    toast.error(data.message || 'Failed to check purchase status.');
+                    return { purchased: false, message: data.message };
+                }
+            } catch (error) {
+                console.error('Error checking purchase status:', error);
+                toast.error('An error occurred while checking purchase status.');
+                return { purchased: false, message: 'Error checking purchase status.' };
+            }
     }
 
     }));

@@ -87,10 +87,14 @@ const TourGuideTouristReport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-6">
-      <Toaster />
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">Tourist Report</h1>
+    <div>
+       {/* Display toasts for notifications */}
+      {/* Report Section */}
+      {/* <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white"> */}
+        <h2 className="text-xl mb-4">Tourist Report</h2>
+        <p>
+          <strong>Total Tourists:</strong> {report.totalTourists}
+        </p>
 
         {/* Month Selection */}
         <div className="mb-6 flex justify-center space-x-4">
@@ -190,7 +194,7 @@ const TourGuideTouristReport = () => {
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

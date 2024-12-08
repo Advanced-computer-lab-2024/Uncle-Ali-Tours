@@ -43,8 +43,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "My Bookings",
       subItems: [
-        { name: "Upcoming Itineraries", path: "/upcomingItineraries" },
-        { name: "Upcoming Activities", path: "/upcomingActivities" },
+        { name: "Upcoming Itineraries", path: "/viewMyItineraries" },
+        { name: "Upcoming Activities", path: "/viewMyActivities" },
       ],
     },
     {
@@ -153,6 +153,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "Users Settings",
       subItems: [
+        { name: "Manage", path: "/userManagment" },
+
         { name: "Complaints", path: "/complaints" },
         { name: "View Delete Requests", path: "/viewDeleteRequests" },
 

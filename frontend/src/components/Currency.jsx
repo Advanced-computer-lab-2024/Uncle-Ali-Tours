@@ -4,10 +4,10 @@ import { useUserStore } from '../store/user.js';
 
 // List of currencies and their rates to EGP (you can adjust based on your requirements)
 const currencyOptions = [
-    { label: 'Egyptian Pounds', value: 'EGP', rate: 1.0 },
-    { label: 'US Dollars', value: 'USD', rate: 0.021 },  // Sample rate; replace with accurate values
-    { label: 'EUR', value: 'EUR', rate: 0.019 },
-    { label: 'Pond Sterling', value: 'GBP', rate: 0.016 }
+    { label: 'Egyptian Pounds', value: 'EGP', rate: 50.0 },
+    { label: 'US Dollars', value: 'USD', rate: 1.0 },  // Sample rate; replace with accurate values
+    { label: 'EUR', value: 'EUR', rate: 0.95 },
+    { label: 'Pond Sterling', value: 'GBP', rate: 0.79 }
 ];
 
 function Currency() {

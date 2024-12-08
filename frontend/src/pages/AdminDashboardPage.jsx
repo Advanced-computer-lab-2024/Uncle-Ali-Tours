@@ -1,346 +1,284 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
 import { useUserStore } from "../store/user";
 import { useProductStore } from "../store/product";
-import toast, { Toaster } from "react-hot-toast";
-import Promo from "../components/Promo";
+import { useItineraryStore } from "../store/itinerary";
+import { useActivityStore } from "../store/activity";
+import egypt from "../images/egypt.jpg";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Chart.js Registration
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { deleteUser, createUser, getUsersNumber, getNewUsersLastMonth, user } = useUserStore();
+  const { user, getUsersNumber, getNewUsersLastMonth } = useUserStore();
   const { getProducts, products } = useProductStore();
-
-  const [users, setUsers] = useState(0);
+  const { getItineraries, itineraries } = useItineraryStore();
+  const { getActivities, activities } = useActivityStore();
+  
+  // States for statistics and filters
+  const [productTotal, setProductTotal] = useState(0);
+  const [itineraryTotal, setItineraryTotal] = useState(0);
+  const [activityTotal, setActivityTotal] = useState(0);
+  const [productBookings, setProductBookings] = useState(0);
+  const [itineraryBookings, setItineraryBookings] = useState(0);
+  const [activityBookings, setActivityBookings] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [newUsers, setNewUsers] = useState(0);
-  const [accountUsername, setAccountUsername] = useState("");
-  const [accountType, setAccountType] = useState("");
-  const [adminData, setAdminData] = useState({ userName: "", password: "", email: "" });
-  const [salesReport, setSalesReport] = useState([]);
-  const [filteredReport, setFilteredReport] = useState([]);
-  const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "", searchName: "" });
-
-  const [uploadedDocuments, setUploadedDocuments] = useState(null);
-  const [error, setError] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+  const [filteredSales, setFilteredSales] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [searchText, setSearchText] = useState("");
+  const [minDateFilter, setMinDateFilter] = useState("");
+  const [maxDateFilter, setMaxDateFilter] = useState("");
+  const [totalAppRevenue, setTotalAppRevenue] = useState(0);
+  const [totalSalesCount, setTotalSalesCount] = useState(0);
 
   useEffect(() => {
-    if (user.type !== "admin") navigate("/");
-
-    const fetchData = async () => {
-      setUsers(await getUsersNumber());
-      setNewUsers(await getNewUsersLastMonth());
-      fetchSalesReport();
-    };
+    if (user.type !== "admin") {
+      navigate("/");
+    }
     fetchData();
   }, [user]);
 
-  // Fetch Uploaded Documents
-  useEffect(() => {
-    if (user.userName) {
-      fetchDocuments();  // Fetch documents only if userName is available
-    }
-  }, [user.userName]);
-
-  const fetchDocuments = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch(`/api/seller/getAllUploadedDocuments`);
-      const data = await response.json();
-  
-      if (data.success) {
-        setUploadedDocuments(data.documents); // Set the documents state with all seller documents
-      } else {
-        setError(data.message || "Failed to fetch documents.");
-      }
+      setTotalUsers(await getUsersNumber());
+      setNewUsers(await getNewUsersLastMonth());
+
+      await getProducts();
+      await getItineraries();
+      await getActivities();
+
+      // Gift shop data
+      const giftShopSales = products
+        .filter((product) => product.sales > 0)
+        .map((product) => ({
+          category: "Gift Shop",
+          name: product.name,
+          salesOrBookings: product.sales,
+          price: `$${product.price.toFixed(2)}`,
+          revenue: `$${(product.sales * product.price).toFixed(2)}`,
+          appRate: 10,
+          appRevenue: `$${(product.sales * product.price * 0.1).toFixed(2)}`,
+          date: product.date ? new Date(product.date).toISOString().split("T")[0] : "----",
+        }));
+
+      // Itinerary data
+      const itineraryData = itineraries
+        .filter((itinerary) => itinerary.numberOfBookings > 0)
+        .map((itinerary) => ({
+          category: "Itinerary",
+          name: itinerary.name,
+          salesOrBookings: itinerary.numberOfBookings,
+          price: `$${itinerary.price.toFixed(2)}`,
+          revenue: `$${(itinerary.numberOfBookings * itinerary.price).toFixed(2)}`,
+          appRate: 10,
+          appRevenue: `$${(itinerary.numberOfBookings * itinerary.price * 0.1).toFixed(2)}`,
+          date: itinerary.availableDates[0]
+            ? new Date(itinerary.availableDates[0]).toISOString().split("T")[0]
+            : "No Date",
+        }));
+
+      // Activity data
+      const activityData = activities
+        .filter((activity) => activity.numberOfBookings > 0)
+        .map((activity) => ({
+          category: "Activity",
+          name: activity.name,
+          salesOrBookings: activity.numberOfBookings,
+          price: `$${activity.price.toFixed(2)}`,
+          revenue: `$${(activity.numberOfBookings * activity.price).toFixed(2)}`,
+          appRate: 10,
+          appRevenue: `$${(activity.numberOfBookings * activity.price * 0.1).toFixed(2)}`,
+          date: activity.date ? new Date(activity.date).toISOString().split("T")[0] : "No Date",
+        }));
+
+      const combinedSales = [...giftShopSales, ...itineraryData, ...activityData];
+      setSalesData(combinedSales);
+      setFilteredSales(combinedSales);
+
+      const filteredAppRevenue = combinedSales.reduce((sum, item) => sum + parseFloat(item.appRevenue.slice(1)), 0);
+      setTotalAppRevenue(filteredAppRevenue);
+
+      const totalSales = combinedSales.reduce((sum, item) => sum + item.salesOrBookings, 0);
+      setTotalSalesCount(totalSales);
+
+      setProductTotal(giftShopSales.reduce((sum, item) => sum + parseFloat(item.appRevenue.slice(1)), 0));
+      setItineraryTotal(itineraryData.reduce((sum, item) => sum + parseFloat(item.appRevenue.slice(1)), 0));
+      setActivityTotal(activityData.reduce((sum, item) => sum + parseFloat(item.appRevenue.slice(1)), 0));
+
+      setProductBookings(giftShopSales.reduce((sum, item) => sum + item.salesOrBookings, 0));
+      setItineraryBookings(itineraryData.reduce((sum, item) => sum + item.salesOrBookings, 0));
+      setActivityBookings(activityData.reduce((sum, item) => sum + item.salesOrBookings, 0));
     } catch (error) {
-      setError("An error occurred while fetching documents.");
-      console.error(error);
+      toast.error("Failed to fetch data");
     }
-  };
-  
-  
-
-  const fetchSalesReport = async () => {
-    await getProducts();
-    const giftShopSales = products
-      .filter((product) => product.sales > 0)
-      .map((product) => ({
-        category: "Gift Shop",
-        name: product.name,
-        revenue: (product.sales || 0) * product.price,
-        appRate: 10,
-        appRevenue: ((product.sales || 0) * product.price) * 0.1,
-        date: product.date || "2024-11-01",
-      }));
-
-    const data = [
-      { category: "Event", name: "Event 1", revenue: 1000, appRate: 10, appRevenue: 100, date: "2024-11-01" },
-      { category: "Itinerary", name: "Itinerary 1", revenue: 500, appRate: 10, appRevenue: 50, date: "2024-11-02" },
-      ...giftShopSales,
-    ];
-
-    setSalesReport(data);
-    setFilteredReport(data);
-  };
-
-  const handleDeleteAccount = async () => {
-    if (!accountUsername || !accountType) {
-      toast.error("Username and Account Type cannot be empty.", { className: "text-white bg-red-600" });
-      return;
-    }
-    const { success, message } = await deleteUser(accountUsername, accountType);
-    success
-      ? toast.success(message, { className: "text-white bg-gray-800" })
-      : toast.error(message, { className: "text-white bg-gray-800" });
-  };
-
-  const handleAddUser = async (data, type) => {
-    const payload = { ...data, type };
-    const { success, message } = await createUser(payload);
-    success
-      ? toast.success(message, { className: "text-white bg-gray-800" })
-      : toast.error(message, { className: "text-white bg-gray-800" });
   };
 
   useEffect(() => {
-    let filtered = salesReport;
+    let filtered = salesData;
 
-    if (filters.product) {
-      filtered = filtered.filter((item) => item.category === filters.product);
+    if (categoryFilter !== "All") {
+      filtered = filtered.filter(item => item.category === categoryFilter);
     }
 
-    if (filters.dateRange.start && filters.dateRange.end) {
-      filtered = filtered.filter(
-        (item) =>
-          new Date(item.date) >= new Date(filters.dateRange.start) && new Date(item.date) <= new Date(filters.dateRange.end)
-      );
+    if (searchText) {
+      filtered = filtered.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()));
     }
 
-    if (filters.month) {
-      const currentMonth = new Date().getMonth();
-      filtered = filtered.filter((item) => new Date(item.date).getMonth() === currentMonth);
-    }
-    if (filters.searchName) {
-      filtered = filtered.filter((item) =>
-        item.name.toLowerCase().includes(filters.searchName.toLowerCase())
-      );
+    if (minDateFilter) {
+      filtered = filtered.filter(item => new Date(item.date) >= new Date(minDateFilter));
     }
 
-    setFilteredReport(filtered);
-  }, [filters, salesReport]);
+    if (maxDateFilter) {
+      filtered = filtered.filter(item => new Date(item.date) <= new Date(maxDateFilter));
+    }
 
+    setFilteredSales(filtered);
+  }, [categoryFilter, searchText, salesData, minDateFilter, maxDateFilter]);
+
+  const getRevenueTableRows = () => {
+    return filteredSales.map((item, index) => (
+      <tr key={index} className="hover:bg-gray-100">
+        <td className="px-4 py-2">{item.category}</td>
+        <td className="px-4 py-2">{item.name}</td>
+        <td className="px-4 py-2">{item.salesOrBookings}</td>
+        <td className="px-4 py-2">{item.price}</td>
+        <td className="px-4 py-2">{item.revenue}</td>
+        <td className="px-4 py-2">{item.appRevenue}</td>
+        <td className="px-4 py-2">{item.date}</td>
+      </tr>
+    ));
+  };
   return (
-    <div className="container mx-auto mt-12">
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative">
       <Toaster />
-      <h1 className="text-3xl font-bold mb-6 text-center">Admin Dashboard</h1>
+      <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" alt="Background" />
 
-      {/* Admin Stats */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-        <div className="col-span-1 lg:col-span-3 p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-          <h3 className="text-xl text-center mb-4">Admin Stats</h3>
-          <p>Users: {users}</p>
-          <p>New Users this Month: {newUsers}</p>
-        </div>
-
-        {/* Add Admin / Delete User */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-3">
-          {/* Add New Admin */}
-          <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-            <h3 className="text-xl mb-4">Add New Admin</h3>
-            <input
-              type="text"
-              placeholder="Username"
-              value={adminData.userName}
-              onChange={(e) => setAdminData({ ...adminData, userName: e.target.value })}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={adminData.password}
-              onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2"
-            />
-            <input
-              type="text"
-              placeholder="Email"
-              value={adminData.email}
-              onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
-            />
-            <button
-              onClick={() => handleAddUser(adminData, "admin")}
-              className="w-full mt-4 bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
-            >
-              Add New Admin
-            </button>
-          </div>
-
-          {/* Delete User */}
-          <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-            <h3 className="text-xl mb-4">Delete Account</h3>
-            <input
-              type="text"
-              placeholder="Username"
-              value={accountUsername}
-              onChange={(e) => setAccountUsername(e.target.value)}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2 mb-3"
-            />
-            <input
-              type="text"
-              placeholder="Account Type"
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value)}
-              className="w-full bg-transparent border border-gray-600 rounded-md px-2 py-2"
-            />
-            <button
-              onClick={handleDeleteAccount}
-              className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-            >
-              Delete Account
-            </button>
+      <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+          <div className="text-white">
+            <p className="text-lg">Logged in as: <span className="font-semibold">{user.userName}</span></p>
           </div>
         </div>
 
-        {/* Promo Codes */}
-        <div className="col-span-1 lg:col-span-3 p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-          <h3 className="text-xl mb-4">Promo Codes</h3>
-          <Promo />
-        </div>
-      </div>
-
-      {/* Uploaded Documents Section */}
-      <div className="col-span-1 lg:col-span-3 p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
-  <h3 className="text-xl text-center mb-4">Uploaded Documents</h3>
-
-  {error && <p className="text-red-500">{error}</p>} {/* Show error if any */}
-
-  {uploadedDocuments ? (
-    uploadedDocuments.length > 0 ? (
-      uploadedDocuments.map((doc, index) => (
-        <div key={index} className="mb-4">
-          <h4 className="text-lg mt-4">Seller: {doc.userName}</h4>
-
-          <h5 className="text-md mt-2">Seller ID:</h5>
-          {doc.sellerID ? (
-            <a
-              href={`http://localhost:5000${doc.sellerID}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Seller ID
-            </a>
-          ) : (
-            <p>No Seller ID uploaded</p>
-          )}
-
-          <h5 className="text-md mt-2">Taxation Registry Card:</h5>
-          {doc.taxationRegistryCard ? (
-            <a
-              href={`http://localhost:5000${doc.taxationRegistryCard}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Taxation Registry Card
-            </a>
-          ) : (
-            <p>No Taxation Registry Card uploaded</p>
-          )}
-        </div>
-      ))
-    ) : (
-      <p>No documents found.</p>
-    )
-  ) : (
-    <p>Loading documents...</p> // Show loading message if documents are still being fetched
-  )}
-</div>
-
-
-      {/* Sales Report Section */}
-      <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white mt-6">
-        <h3 className="text-2xl text-center mb-4">Sales Report</h3>
-        {/* Sales Report Filters */}
-        <div className="flex gap-4 mb-4">
-          <select
-            value={filters.product}
-            onChange={(e) => setFilters({ ...filters, product: e.target.value })}
-            className="bg-gray-800 text-white rounded-md px-2 py-2"
-          >
-            <option value="">All Categories</option>
-            <option value="Event">Event</option>
-            <option value="Itinerary">Itinerary</option>
-            <option value="Gift Shop">Gift Shop</option>
-          </select>
-          <input
-            type="text"
-            value={filters.searchName}
-            onChange={(e) => setFilters({ ...filters, searchName: e.target.value })}
-            placeholder="Search ..."
-            className="bg-gray-800 text-white rounded-md px-2 py-2"
-          />
-          <input
-            type="date"
-            value={filters.dateRange.start}
-            onChange={(e) => setFilters({ ...filters, dateRange: { ...filters.dateRange, start: e.target.value } })}
-            className="bg-gray-800 text-white rounded-md px-2 py-2"
-          />
-          <input
-            type="date"
-            value={filters.dateRange.end}
-            onChange={(e) => setFilters({ ...filters, dateRange: { ...filters.dateRange, end: e.target.value } })}
-            className="bg-gray-800 text-white rounded-md px-2 py-2"
-          />
+        {/* User Statistics and Summary */}
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Total Users</h3>
+            <p className="text-3xl font-bold">{totalUsers}</p>
+          </div>
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">New Users (Last Month)</h3>
+            <p className="text-3xl font-bold">{newUsers}</p>
+          </div>
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Total App Revenue</h3>
+            <p className="text-3xl font-bold">${totalAppRevenue.toFixed(2)}</p>
+          </div>
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Total Sales/Bookings</h3>
+            <p className="text-3xl font-bold">{totalSalesCount}</p>
+          </div>
         </div>
 
-        {/* Sales Report Table */}
-        <table className="w-full table-auto mt-4 text-white">
-          <thead>
-            <tr>
-              <th className="py-2">Category</th>
-              <th className="py-2">Name</th>
-              <th className="py-2">Revenue</th>
-              <th className="py-2">App Rate</th>
-              <th className="py-2">App Revenue</th>
-              <th className="py-2">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReport.map((report, index) => (
-              <tr key={index} className="bg-gray-800 hover:bg-gray-700">
-                <td className="py-2">{report.category}</td>
-                <td className="py-2">{report.name}</td>
-                <td className="py-2">{report.revenue}</td>
-                <td className="py-2">{report.appRate}%</td>
-                <td className="py-2">{report.appRevenue}</td>
-                <td className="py-2">{report.date}</td>
+        {/* Category Totals */}
+        <div className="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Gift Shop Revenue</h3>
+            <p className="text-3xl font-bold">${productTotal.toFixed(2)}</p>
+            <p className="text-lg">Total Bookings: {productBookings}</p>
+          </div>
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Itinerary Revenue</h3>
+            <p className="text-3xl font-bold">${itineraryTotal.toFixed(2)}</p>
+            <p className="text-lg">Total Bookings: {itineraryBookings}</p>
+          </div>
+          <div className="bg-[#161821f0] p-6 rounded-lg shadow-lg text-white">
+            <h3 className="text-xl">Activity Revenue</h3>
+            <p className="text-3xl font-bold">${activityTotal.toFixed(2)}</p>
+            <p className="text-lg">Total Bookings: {activityBookings}</p>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="p-6 bg-gray-50 rounded-lg shadow mb-6">
+          <h2 className="text-xl font-semibold mb-4">Filters</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="All">All Categories</option>
+                <option value="Gift Shop">Gift Shop</option>
+                <option value="Itinerary">Itinerary</option>
+                <option value="Activity">Activity</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Search</label>
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Min Date</label>
+              <input
+                type="date"
+                value={minDateFilter}
+                onChange={(e) => setMinDateFilter(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Max Date</label>
+              <input
+                type="date"
+                value={maxDateFilter}
+                onChange={(e) => setMaxDateFilter(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Sales Table */}
+        <div className="p-6 bg-gray-50 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Sales Report</h2>
+          <table className="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+              <tr className="border-b">
+                <th className="px-4 py-2 text-left">Category</th>
+                <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Sales / Bookings</th>
+                <th className="px-4 py-2 text-left">Price</th>
+                <th className="px-4 py-2 text-left">Revenue</th>
+                <th className="px-4 py-2 text-left">App Revenue</th>
+                <th className="px-4 py-2 text-left">Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* View All Products Section */}
-      <div className="p-6 bg-[#161821f0] rounded-lg shadow-lg text-white mt-6">
-        <h3 className="text-2xl text-center mb-4">View All Products</h3>
-        <table className="w-full table-auto mt-4 text-white">
-          <thead>
-            <tr>
-              <th className="py-2">Product Name</th>
-              <th className="py-2">Price</th>
-              <th className="py-2">Quantity</th>
-              <th className="py-2">Sales</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="bg-gray-800 hover:bg-gray-700">
-                <td className="py-2">{product.name}</td>
-                <td className="py-2">${product.price}</td>
-                <td className="py-2">{product.Available_quantity}</td>
-                <td className="py-2">{product.sales}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>{getRevenueTableRows()}</tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

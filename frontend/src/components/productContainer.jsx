@@ -188,59 +188,28 @@ function ProductContainer({ product, tourist }) {
         </div>
       )}
 
-      {/* Image Preview Modal */}
       <Modal
         show={showPreview}
-        className="absolute focus:outline-none rounded-xl top-1/2 left-1/2 h-[90vh] w-[90vw] -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg"
         onHide={() => setShowPreview(false)}
         centered
+        className="fixed inset-0 flex items-center justify-center z-50"
       >
-        <button
-          className="mt-4 ml-4"
-          onClick={() => setShowPreview(false)}
-        >
-          <IoClose size={40} className="text-red-500" />
-        </button>
-        <Modal.Body className="text-center">
+        <div className="bg-white p-4 rounded-lg max-w-3xl max-h-[90vh] overflow-auto">
+          <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            onClick={() => setShowPreview(false)}
+          >
+            <IoClose size={24} />
+          </button>
           <img
             src={product?.profilePicture ? `http://localhost:3000${product.profilePicture}` : avatar}
             alt="Product Preview"
-            className="img-fluid m-auto h-[60vh]"
+            className="max-w-full max-h-[80vh] object-contain mx-auto"
           />
-        </Modal.Body>
+        </div>
       </Modal>
 
-      <Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-        <DialogHeader>
-          <DialogTitle>{dialogType === 'rate' ? 'Rate the Product' : 'Write a Review'}</DialogTitle>
-        </DialogHeader>
-        <DialogContent>
-          {dialogType === 'rate' && (
-            <div className="flex items-center space-x-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FaStar
-                  key={star}
-                  className={`cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                  onClick={() => setRating(star)}
-                />
-              ))}
-            </div>
-          )}
-          {dialogType === 'review' && (
-            <textarea
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              className="w-full p-2 border rounded"
-              rows="4"
-              placeholder="Write your review here..."
-            />
-          )}
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+	
     </Card>
   );
 }

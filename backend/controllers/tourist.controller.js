@@ -6,6 +6,8 @@ import Product from "../models/product.model.js";
 import Tourist from "../models/tourist.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import User from "../models/user.model.js";
+import Order from "../models/order.model.js";
+
 //import Order from "../models/order.js";
 import { checkAndNotifyUpcomingItinerary } from './notification.controller.js';
 export const createTourist = async(req,res)=>{
@@ -973,8 +975,33 @@ export const deleteAddress = async (req, res) => {
   }
 };
 
+// Function to check if a tourist has purchased a product
+export const hasPurchasedProduct = async (req, res) => {
+    try {
+        const { userName, productId } = req.params; // Extract parameters from the request
 
+        // Check if the tourist exists
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: 'Tourist not found.' });
+        }
 
+        // Search for an order with the specified conditions
+        const order = await Order.findOne({
+            creator: userName,
+            status: 'shipped',
+            'products.productId': productId, // Check if products array contains the productId
+        });
+        if (order) {
+            return res.status(200).json({ success: true, message: 'Product has been purchased.' });
+        } else {
+            return res.status(200).json({ success: false, message: 'Product has not been purchased.' });
+        }
+    } catch (error) {
+        console.error('Error checking product purchase:', error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};
 export const checkUpcomingItineraryNotifications = async (req, res) => {
     try {
         const { userName } = req.params;
@@ -1057,3 +1084,4 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
 
 
 
+       

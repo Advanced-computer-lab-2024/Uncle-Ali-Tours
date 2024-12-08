@@ -215,12 +215,12 @@ function RegisterPage() {
                         onClick={handleRegister}
                         disabled={!acceptedTerms}  // Disable the button if terms are not accepted
                     >
-                        {selectedType === "tourist" || selectedType === "" ? "Register" : "Register"}
+                        {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
                     </motion.button>
                 </div>
             </motion.div>
             <footer style={styles.footer}>
-                <p style={styles.footerText}>©️ {new Date().getFullYear()} U A T. All rights reserved.</p>
+                <p style={styles.footerText}>© {new Date().getFullYear()} U A T. All rights reserved.</p>
             </footer>
         </div>
     )
