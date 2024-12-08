@@ -664,3 +664,10 @@ describe('POST /api/users/register', () => {
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
+
+
+## Screenshots
+
+![Screenshot 1](screenshots/IMG-20241208-WA0001.jpg)
+![Screenshot 2](screenshots/IMG-20241208-WA0002.jpg)
+![Screenshot 3](screenshots/IMG-20241208-WA0003.jpg)
