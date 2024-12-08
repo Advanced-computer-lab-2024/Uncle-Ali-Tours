@@ -183,10 +183,10 @@ export const badgeLevel = async (req, res) => {
         }
 
         let level = "level 1";
-        if(tourist.myPoints>500000){
+        if(tourist.accumulatedPoints>500000){
             level="level 3";
         }
-        else if(tourist.myPoints>100000){
+        else if(tourist.accumulatedPoints>100000){
             level="level 2";
         }
         else{

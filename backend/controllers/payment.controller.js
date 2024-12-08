@@ -127,6 +127,7 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
         }
 
         tourist.myPoints += value;
+        tourist.accumulatedPoints += value;
 
         switch(type){
             case 'activity':
