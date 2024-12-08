@@ -104,6 +104,31 @@ const SideMenu = ({ isOpen, onClose }) => {
     
  
   ];
+  const menuItemsAdvertiser = [
+    {
+      title: "Reports",
+      subItems: [
+        { name: "View Sales Report", path: "/salesreport" },
+        { name: "Tourist Report", path: "/touristreport" },
+      ],
+    },
+    {
+      title: "Transportation Activities",
+      subItems: [
+        { name: "Create Tranportation Activities", path: "/CreateTransportationActivity" },
+        { name: "View Tranportation Activities", path: "/ViewTransportationActivity" },
+      ],
+    },
+    {
+      title: "Activities",
+      subItems: [
+        { name: "View Activities", path: "/viewActivities" },
+        { name: "Create Activities", path: "/createActivity" },
+      ],
+    },
+    
+ 
+  ];
   const menuItemsAdmin = [
     {
       title: "Tags & Categories",
@@ -128,6 +153,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "Users Settings",
       subItems: [
+        { name: "Manage", path: "/userManagment" },
+
         { name: "Complaints", path: "/complaints" },
         { name: "View Delete Requests", path: "/viewDeleteRequests" },
 
@@ -161,7 +188,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
-        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : menuItemsTourGuide).map((item, index) => (
+        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : user.type==="advertiser"? menuItemsAdvertiser: menuItemsTourGuide ).map((item, index) => (
           <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "" : ""}`}>
             <h2
               onClick={() => toggleMenu(index)}

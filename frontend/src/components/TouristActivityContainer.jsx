@@ -170,7 +170,7 @@ const handleBookClick = async (activityID , quantity) => {
                     )}
                 </button>
             </div>
-      <Toaster />
+      
       <div className='grid p-2'>
         <p>Name: {activity.name}</p>
         <p>Date: {new Date(activity.date).toLocaleDateString()}</p>

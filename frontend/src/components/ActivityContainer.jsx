@@ -104,7 +104,7 @@ function ActivityContainer({ activity, activityChanger }) {
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
-      <Toaster />
+      
       <div className='grid p-2'>
         <p>Name: {activity.name}</p>
         <p>Date: {new Date(activity.date).toLocaleDateString()}</p>

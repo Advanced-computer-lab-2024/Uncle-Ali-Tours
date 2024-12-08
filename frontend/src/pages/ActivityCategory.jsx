@@ -80,7 +80,7 @@ function ActivityCategory() {
                 rejectButtonText="Cancel"
                 inputs={['name']}
             />
-            <Toaster />
+            
         </div>
     );
 }

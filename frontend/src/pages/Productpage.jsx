@@ -82,7 +82,7 @@ function ViewProducts() {
 
   return (
     <div className='text-black'>
-      <Toaster />
+      
       <input
         className='w-[15ch] m-2 pl-1'
         name="name"

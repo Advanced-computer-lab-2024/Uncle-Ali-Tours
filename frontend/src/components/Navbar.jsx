@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import logo from "/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useSellerStore } from "../store/seller";
 import { useGuideStore } from "../store/tourGuide";
@@ -32,7 +33,7 @@ function Navbar() {
 			>
 				<div className="flex content-center">
 					<Link to="/" className="pl-8 mt-[6px] tracking-widest text-pink-950">
-						UAT
+						<img src={logo} alt="logo" className="w-28" />
 					</Link>
 					{!!user.userName && (
 						<button

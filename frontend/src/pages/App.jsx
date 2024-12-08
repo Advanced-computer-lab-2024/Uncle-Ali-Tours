@@ -73,14 +73,19 @@ import AddAddressPage from './AddAddressPage.jsx';
 import ViewOrderDetails from './ViewOrderDetails.jsx';
 //import CheckoutPage from './CheckOutPage.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
-import TourGuideTouristReport from './tourGuideTouristReport.jsx';
+import TourGuideTouristReport from './TourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
+import UserManagment from './UserManagment.jsx';
+
 import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 import ViewMyOrders from './ViewMyOrders.jsx';
 import ViewMyItineraries from './ViewMyItineraries.jsx';
 import ViewMyActivities from './ViewMyActivities.jsx';
+import SalesReportPage from './SalesReportPage.jsx';
+import TouristReportPage from './TouristReportPage.jsx';
+
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -126,6 +131,7 @@ function App() {
 
   return (
     <div >
+      <Toaster/>
     <div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
 				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
 					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
@@ -136,7 +142,7 @@ function App() {
 					<img src={pyramid} alt="pyramid" className="w-8 h-8 z-[1] fixed bottom-0 left-6 translate-y-[7px]" />
 					<img src={pyramid} alt="pyramid" className="w-6 h-6 z-[1] fixed bottom-0 left-10 translate-y-[7px]" />
       <Navbar />
-      <Toaster />
+      
       {!loading ? 
       <Routes>
         <Route path="/security" element={<Security />} />
@@ -199,6 +205,8 @@ function App() {
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
+        <Route path="/userManagment" element={<UserManagment/>} />
+
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
         <Route path="/viewMyItineraries" element={<ViewMyItineraries/>} />
         <Route path="/viewMyActivities" element={<ViewMyActivities/>} />
@@ -211,6 +219,8 @@ function App() {
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
         <Route path="/cancel/:type" element={<CancelledPaymentPage/>} />
         <Route path="/success/:type" element={<SuccessfulPaymentPage/>} />
+        <Route path="/salesreport" element={<SalesReportPage/>} />
+        <Route path="/touristreport" element={<TouristReportPage/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

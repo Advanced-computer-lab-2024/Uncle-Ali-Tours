@@ -159,7 +159,7 @@ function App() {
   return (
     <div>
       <Navbar />
-      <Toaster />
+      
       {!loading ? (
         <Routes>
           <Route path="/security" element={<Security />} />
@@ -349,7 +349,7 @@ export const handlePayment = async (req, res) => {
   return (
     <div>
       <Navbar />
-      <Toaster />
+      
       {!loading ? (
         <Routes>
           <Route path="/security" element={<Security />} />

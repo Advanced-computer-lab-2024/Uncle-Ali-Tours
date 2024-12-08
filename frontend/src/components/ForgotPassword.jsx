@@ -37,7 +37,7 @@ function ForgotPassword({visable = false, hide = () => {}, verify = () => {}}) {
         <button onClick={() => handleSubmit()} className='bg-[#dc5809] w-fit mx-auto m-2 py-2 px-6 rounded-xl'>Send</button>
         </div>
 }
-<Toaster/>
+
         </>
   )
 }

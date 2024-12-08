@@ -88,7 +88,7 @@ function MuseumsPage() {
 
   return (
     <div className="max-w-7xl text-black mx-auto p-8 bg-blue-50 rounded-lg">
-      <Toaster />
+      
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Museums and Historical Places</h1>
 
       {/* Form for Creating a New Museum */}
