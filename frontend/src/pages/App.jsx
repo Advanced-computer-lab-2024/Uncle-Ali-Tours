@@ -79,6 +79,9 @@ import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 import ViewMyOrders from './ViewMyOrders.jsx';
+import SalesReportPage from './SalesReportPage.jsx';
+import TouristReportPage from './TouristReportPage.jsx';
+
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -207,6 +210,8 @@ function App() {
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
         <Route path="/cancel/:type" element={<CancelledPaymentPage/>} />
         <Route path="/success/:type" element={<SuccessfulPaymentPage/>} />
+        <Route path="/salesreport" element={<SalesReportPage/>} />
+        <Route path="/touristreport" element={<TouristReportPage/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

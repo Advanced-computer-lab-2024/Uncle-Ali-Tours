@@ -1,257 +1,164 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaEdit, FaCheck, FaEye } from 'react-icons/fa';
+import { IoSaveOutline } from 'react-icons/io5';
+import { toast, Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user';
-import React, { useEffect ,useRef} from "react";
-import { useState } from 'react';
-import { useAdvertiserstore } from '../store/advertiser.js';
-import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import { useAdvertiserstore } from '../store/advertiser';
+import { useTagStore } from '../store/tag';
+import { useRequestStore } from '../store/requests';
+import { useActivityStore } from "../store/activity";
+import egypt from '../images/egypt.jpg';
+import BronzeBadge from '../images/bronze.png';
+import SilverBadge from '../images/silver.png';
+import GoldBadge from '../images/gold.png';
+import Dialog, { dialog } from '../components/Dialog.jsx';
 import { Modal } from 'react-bootstrap';
-import { FaEye, FaEdit } from 'react-icons/fa';
 import AvatarEditor from 'react-avatar-editor';
-import { useRequestStore } from '../store/requests.js';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { FiLoader } from 'react-icons/fi';
-import {useActivityStore} from "../store/activity";
+
 const AdvertiserProfile = () => {
   const { user } = useUserStore();
-  const [filter, setFilter] = useState({});
+  const { advertiser, getAdvertiser, updateAdvertiser, uploadProfilePicture } = useAdvertiserstore();
+  const { tags, getTags } = useTagStore();
+  const { createRequest } = useRequestStore();
   const { getActivities, activities } = useActivityStore();
-  const { advertiser, getAdvertiser, updateAdvertiser, uploadProfilePicture } = useAdvertiserstore(); 
-  const [isRequired, setIsRequired] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [updatedAdvertiser, setUpdatedAdvertiser] = useState({});
+  const [preferences, setPreferences] = useState([]);
+  const [badge, setBadge] = useState('');
+  const [filter, setFilter] = useState({});
   const [profilePic, setProfilePic] = useState(null);
   const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
   const [showPreview, setShowPreview] = useState(false);
   const [scale, setScale] = useState(1.2);
   const [rotate, setRotate] = useState(0);
   const editorRef = useRef(null);
-  const [updatedAdvertiser, setUpdatedAdvertiser] = useState({});
-  const [idFile, setIdFile] = useState(null);  // File input for ID
-  const [taxationCardFile, setTaxationCardFile] = useState(null);  // File input for Taxation Registry Card
+  const [idFile, setIdFile] = useState(null);
+  const [taxationCardFile, setTaxationCardFile] = useState(null);
   const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [report, setReport] = useState({
-  totalTourists: 0,
-  activities: [],
-  itineraries: []
-});
-const [salesReport, setSalesReport] = useState([]);
-const [filteredReport, setFilteredReport] = useState([]);
-const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
-
- useEffect(() => {
-  fetchSalesReport();
- },[activities]);
-const fetchSalesReport = async () => {
-  await getActivities({ ...filter, creator: user.userName }); // Ensure itineraries are fetched
-
-
-  const activitiesSales = activities
-    .map((activity) => ({
-      name: activity.name,
-      revenue: (activity.numberOfBookings || 0) * activity.price,
-      dates: activity.date || "2024-11-01",
-    }));
-
-  const data = [
-    ...activitiesSales,
-  ];
-
-  setSalesReport(data);
-  
-  setFilteredReport(data);
-};
-const handleFilterChange = (field, value) => {
-  setFilters((prev) => ({ ...prev, [field]: value }));
-};
-
-const applyFilters = () => {
-  let filtered = salesReport;
-
-
-
-  // Filter by date range
-  if (filters.dateRange.start && filters.dateRange.end) {
-    filtered = filtered.filter((item) => {
-      const itemDate = new Date(item.date);
-      const startDate = new Date(filters.dateRange.start);
-      const endDate = new Date(filters.dateRange.end);
-      return itemDate >= startDate && itemDate <= endDate;
-    });
-  }
-
-  // Filter by month
-  if (filters.month) {
-    filtered = filtered.filter((item) => new Date(item.date).getMonth() + 1 === parseInt(filters.month));
-  }
-
-  setFilteredReport(filtered);
-  
-};
+    totalTourists: 0,
+    activities: [],
+    itineraries: []
+  });
+  const [salesReport, setSalesReport] = useState([]);
+  const [filteredReport, setFilteredReport] = useState([]);
+  const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
+  const { showDialog } = dialog();
   const navigate = useNavigate();
-  const { createRequest } = useRequestStore();
+
 
   useEffect(() => {
-    async function fetchAdvertiser() {
-      await getAdvertiser({ userName: user.userName }, {}); // Fetch data including profile picture
+    if (user && user.userName) {
+      getAdvertiser({ userName: user.userName }, {});
+      getTags();
+      fetchBadge();
+      fetchReport();
+      fetchSalesReport();
     }
-    fetchAdvertiser();
-  }, []);
+  }, [user.userName]);
+
+  useEffect(() => {
+    if (advertiser && advertiser.myPreferences) {
+      setPreferences(advertiser.myPreferences);
+    }
+  }, [advertiser]);
+
+  const fetchBadge = async () => {
+    // Implement badge fetching logic for advertisers
+    setBadge('level 1'); // Placeholder
+  };
 
 
-useEffect(() => {
   const fetchReport = async () => {
     try {
       const response = await fetch(`http://localhost:3000/api/advertiser/report/${user.userName}`);
       if (!response.ok) {
         throw new Error('Failed to fetch report');
       }
-      const data = await response.json(); // Parse the JSON data
-      console.log('Fetched Report:', data); // Debug log
-      setReport(data); // Update the report state
+      const data = await response.json();
+      setReport(data);
     } catch (error) {
       console.error('Error fetching report:', error);
       toast.error('Failed to fetch report.', { className: 'text-white bg-gray-800' });
     }
   };
 
-  if (user.userName) {
-    fetchReport();
-  }
-}, [user.userName]);
-
-
-  
-  const handleButtonClick = () => {
-    setIsRequired(false); 
+  const fetchSalesReport = async () => {
+    await getActivities({ ...filter, creator: user.userName });
+    const activitiesSales = activities.map((activity) => ({
+      name: activity.name,
+      revenue: (activity.numberOfBookings || 0) * activity.price,
+      dates: activity.date || "2024-11-01",
+    }));
+    setSalesReport(activitiesSales);
+    setFilteredReport(activitiesSales);
   };
-  useEffect(() => {
-    // Retrieve the profile picture from localStorage on component mount
-    const storedProfilePic = localStorage.getItem("advertiserProfilePicture");
-    if (storedProfilePic) {
-      setPreviewFile(storedProfilePic);
+
+  const handleSaveClick = async () => {
+    setIsEditing(false);
+    if (Object.keys(updatedAdvertiser).length) {
+      const { success, message } = await updateAdvertiser(user.userName, updatedAdvertiser);
+      success
+        ? toast.success(message, { className: "text-white bg-gray-800" })
+        : toast.error(message, { className: "text-white bg-gray-800" });
     }
-  }, []);
+  };
 
-  
-  useEffect(() => {
-    const fetchAdvertiserData = async () => {
-      if (user.userName) {
-        const result = await getAdvertiser({ userName: user.userName });
-        if (result.success && advertiser.profilePicture) {
-          setPreviewFile(advertiser.profilePicture);
-          localStorage.setItem("profilePicture", advertiser.profilePicture);
-        }
-      }
-    };
-    fetchAdvertiserData();
-  }, [user.userName, advertiser.profilePicture]);
+  const handlePreferenceToggle = async (tagName) => {
+    const updatedPreferences = preferences.includes(tagName)
+      ? preferences.filter((pref) => pref !== tagName)
+      : [...preferences, tagName];
 
-  const toggleEdit = () => {
-    setIsEditing((prev) => !prev);
-    setProfilePic(null);
+    setPreferences(updatedPreferences);
+    const { success, message } = await updateAdvertiser(user.userName, { myPreferences: updatedPreferences });
+    success
+      ? toast.success('Preferences updated successfully!', { className: 'text-white bg-gray-800' })
+      : toast.error(message, { className: 'text-white bg-gray-800' });
   };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        setProfilePic(file);
-        localStorage.removeItem("profilePicture"); // Clear previous photo before uploading a new one
+      setProfilePic(file);
+      localStorage.removeItem("profilePicture");
     } else {
-        console.error("No file selected");
-    }
-};
-
-const handleSave = async () => {
-  if (editorRef.current && profilePic) {
-    const canvas = editorRef.current.getImageScaledToCanvas();
-    const dataUrl = canvas.toDataURL();
-    const blob = await fetch(dataUrl).then((res) => res.blob());
-    const formData = new FormData();
-    formData.append("profilePicture", blob, "profile-photo.png");
-    formData.append("userName", user.userName);
-
-    try {
-      const response = await axios.put(`http://localhost:3000/api/advertiser/uploadPicture`, formData);
-      if (response.data.success) {
-        const profileImagePath = response.data.profilePicture;
-
-        // Set the full path for preview and save in localStorage with a custom name
-        setPreviewFile(profileImagePath);
-        localStorage.setItem("advertiserProfilePicture", profileImagePath);
-        const storedProfilePic = localStorage.getItem("advertiserProfilePicture");
-        setPreviewFile(storedProfilePic);
- // Custom key name
-        setIsEditing(false);
-        setProfilePic(null);
-        toast.success(response.data.message, { className: "text-white bg-gray-800" });
-
-        // Re-fetch advertiser data if necessary
-        await getAdvertiser({ userName: user.userName });
-      } else {
-        toast.error(response.data.message || "Upload failed", { className: "text-white bg-gray-800" });
-      }
-    } catch (error) {
-      console.error("Error uploading profile photo:", error);
-      toast.error("Error uploading profile photo", { className: "text-white bg-gray-800" });
-    }
-  } else {
-    console.error("No file selected for upload");
-    toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
-  }
-};
-
-const updatePreview = () => {
-  const storedProfilePic = localStorage.getItem("advertiserProfilePicture");
-  if (storedProfilePic) {
-    setPreviewFile(storedProfilePic);
-  }
-};
-
-
-
-const handleUploadClick = async () => {
-  if (selectedFile) {
-    const formData = new FormData();
-    formData.append('profilePicture', selectedFile);
-    formData.append('userName', user.userName);
-
-    try {
-      const response = await axios.put('/api/advertiser/uploadPicture', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success(response.data.message, { className: "text-white bg-gray-800" });
-      
-    
-      if (user.userName) {
-        await getAdvertiser({ userName: user.userName }, {});
-      }
-      
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Upload failed", { className: "text-white bg-gray-800" });
-    }
-  } else {
-    toast.error("Please select a file first", { className: "text-white bg-gray-800" });
-  }
-};
-
-
-// const handleSaveClick = async () => {
-//   if (!isRequired) {
-//     const { success, message } = await updateSeller(user.userName, updatedSeller);
-//     success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
-//   }
-// };
-  const handleSaveClick = async () => {
-    if (!isRequired) {
-      const { success, message } = await updateAdvertiser(user.username, updatedAdvertiser);
-      success 
-        ? toast.success(message, { className: "text-white bg-gray-800" }) 
-        : toast.error(message, { className: "text-white bg-gray-800" });
+      console.error("No file selected");
     }
   };
 
-  const handleRedirect = () => {
-    navigate('/activityPage');
+  const handleSave = async () => {
+    if (editorRef.current && profilePic) {
+      const canvas = editorRef.current.getImageScaledToCanvas();
+      const dataUrl = canvas.toDataURL();
+      const blob = await fetch(dataUrl).then((res) => res.blob());
+      const formData = new FormData();
+      formData.append("profilePicture", blob, "profile-photo.png");
+      formData.append("userName", user.userName);
+
+      try {
+        const response = await axios.put(`http://localhost:3000/api/advertiser/uploadPicture`, formData);
+        if (response.data.success) {
+          const profileImagePath = response.data.profilePicture;
+          setPreviewFile(profileImagePath);
+          localStorage.setItem("advertiserProfilePicture", profileImagePath);
+          setIsEditing(false);
+          setProfilePic(null);
+          toast.success(response.data.message, { className: "text-white bg-gray-800" });
+          await getAdvertiser({ userName: user.userName });
+        } else {
+          toast.error(response.data.message || "Upload failed", { className: "text-white bg-gray-800" });
+        }
+      } catch (error) {
+        console.error("Error uploading profile photo:", error);
+        toast.error("Error uploading profile photo", { className: "text-white bg-gray-800" });
+      }
+    } else {
+      console.error("No file selected for upload");
+      toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
+    }
   };
 
   const handleDeleteClick = () => {
@@ -280,14 +187,13 @@ const handleUploadClick = async () => {
       return;
     }
 
-    // Form submission logic for file upload
     const formData = new FormData();
     formData.append("idFile", idFile);
     formData.append("taxationCardFile", taxationCardFile);
-    formData.append("username", user.username);
+    formData.append("username", user.userName);
 
     try {
-      const response = await fetch('/api/upload-documents', {  // Replace with your backend endpoint
+      const response = await fetch('/api/upload-documents', {
         method: 'POST',
         body: formData,
       });
@@ -303,32 +209,156 @@ const handleUploadClick = async () => {
     }
   };
 
-  if(!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const applyFilters = () => {
+    let filtered = salesReport;
+
+    if (filters.dateRange.start && filters.dateRange.end) {
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.dates);
+        const startDate = new Date(filters.dateRange.start);
+        const endDate = new Date(filters.dateRange.end);
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    }
+
+    if (filters.month) {
+      filtered = filtered.filter((item) => new Date(item.dates).getMonth() + 1 === parseInt(filters.month));
+    }
+
+    setFilteredReport(filtered);
+  };
+
+  const handleWithdrawClick = () => {
+    showDialog();
+  };
+
+
+
+  if (!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
   return (
-  
-      
-
-      <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster />
+      <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-white">Advertiser Profile</h1>
+            </div>
+          </div>
+          
 
-      <div className="flex items-center justify-center mb-6">
-        {previewFile ? (
-          <img
-            style={{ width: "160px", height: "160px", borderRadius: "50%", objectFit: "cover" }}
-            src={`http://localhost:3000${previewFile}`}
-            alt="Profile Picture"
-          />
-        ) : (
-          <div className="text-gray-500">add logo</div>
-        )}
-        <div className="icon-buttons ml-4">
-          <button onClick={() => setShowPreview(true)}>
-            <FaEye />
-          </button>
-          <button onClick={toggleEdit}>
-            <FaEdit />
-          </button>
+          
+          <div className="p-6 sm:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Company Information</h2>
+                {['userName', 'email', 'companyName', 'website', 'hotline', 'industry', 'address'].map((field) => (
+                  <div key={field} className="flex items-center justify-between">
+                    <span className="text-gray-600 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                    <input
+                      type="text"
+                      name={field}
+                      defaultValue={advertiser[field] || ''}
+                      className={`${isEditing ? 'bg-gray-100' : 'bg-transparent'} transition-colors focus:outline-none border-b border-gray-300 px-2 py-1 w-2/3 text-right`}
+                      readOnly={!isEditing}
+                      onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, [field]: e.target.value })}
+                    />
+                  </div>
+                ))}
+                {!isEditing ? (
+                  <button className="text-orange-500 hover:text-orange-600 transition-colors" onClick={() => setIsEditing(true)}>
+                    <FaEdit size={20} />
+                  </button>
+                ) : (
+                  <button className="text-green-500 hover:text-green-600 transition-colors" onClick={handleSaveClick}>
+                    <IoSaveOutline size={20} />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-6">
+                
+              </div>
+            </div>
+            
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Profile Picture</h2>
+                <div className="flex items-center space-x-4">
+                  {previewFile ? (
+                    <img
+                      src={`http://localhost:3000${previewFile}`}
+                      alt="Profile Picture"
+                      className="w-32 h-32 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
+                      No Image
+                    </div>
+                  )}
+                  <div>
+                    <button onClick={() => setShowPreview(true)} className="text-blue-500 hover:text-blue-600">
+                      <FaEye className="inline-block mr-2" /> Preview
+                    </button>
+                    <button onClick={() => setIsEditing(true)} className="text-orange-500 hover:text-orange-600 ml-4">
+                      <FaEdit className="inline-block mr-2" /> Edit
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Document Upload</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">ID</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setIdFile(e.target.files[0])}
+                      className="mt-1 block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-violet-50 file:text-violet-700
+                                hover:file:bg-violet-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Taxation Registry Card</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setTaxationCardFile(e.target.files[0])}
+                      className="mt-1 block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-violet-50 file:text-violet-700
+                                hover:file:bg-violet-100"
+                    />
+                  </div>
+                  <button
+                    onClick={handleFileUpload}
+                    className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors"
+                  >
+                    Upload Documents
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-10 border-t pt-6">
+              <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+                onClick={handleDeleteClick}
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -345,294 +375,100 @@ const handleUploadClick = async () => {
           />
         </Modal.Body>
       </Modal>
-        <h1 className="text-lg mb-4">Profile</h1>
-        <div spacing={4} align="stretch">
-          {/* Editable Profile Fields */}
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              defaultValue={advertiser.userName || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, username: e.target.value })}
-            />
-          </label>
-          <label>
-            Website:
-            <input
-              type="text"
-              name="website"
-              defaultValue={advertiser.website || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, website: e.target.value })}
-            />
-          </label>
-          <label>
-            Hotline:
-            <input
-              type="text"
-              name="hotline"
-              defaultValue={advertiser.hotline || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, hotline: e.target.value })}
-            />
-          </label>
-          <label>
-            Company Profile:
-            <input
-              type="text"
-              name="companyProfile"
-              defaultValue={advertiser.companyProfile || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, companyProfile: e.target.value })}
-            />
-          </label>
-          <label>
-            Industry:
-            <input
-              type="text"
-              name="industry"
-              defaultValue={advertiser.industry || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, industry: e.target.value })}
-            />
-          </label>
-          <label>
-            Address:
-            <input
-              type="text"
-              name="address"
-              defaultValue={advertiser.address || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, address: e.target.value })}
-            />
-          </label>
-          <label>
-            Email:
-            <input
-              type="text"
-              name="email"
-              defaultValue={advertiser.email || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, email: e.target.value })}
-            />
-          </label>
-          <label>
-            Company Name:
-            <input
-              type="text"
-              name="companyName"
-              defaultValue={advertiser.companyName || ''}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              readOnly={isRequired}
-              onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, companyName: e.target.value })}
-            />
-          </label>
-        </div>
 
-        {/* Document Upload Section */}
-        <div className="mt-6">
-          <h2 className="text-xl mb-2">Upload Required Documents</h2>
-          <label className="block mb-2">
-            ID:
-            <input
-              type="file"
-              onChange={(e) => setIdFile(e.target.files[0])}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
-            />
-          </label>
-          <label className="block mb-2">
-            Taxation Registry Card:
-            <input
-              type="file"
-              onChange={(e) => setTaxationCardFile(e.target.files[0])}
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
-            />
-          </label>
-          <button onClick={handleFileUpload} className="bg-green-600 p-2 mt-4 rounded">
-            Upload Documents
-          </button>
-
-          {isEditing && (
-            <>
-              <label>
-                Upload logo:
+      <Modal show={isEditing} onHide={() => setIsEditing(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Profile Picture</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="mb-4 block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-violet-50 file:text-violet-700
+                      hover:file:bg-violet-100"
+          />
+          {profilePic && (
+            <div className="avatar-editor">
+              <AvatarEditor
+                ref={editorRef}
+                image={profilePic}
+                width={200}
+                height={200}
+                border={50}
+                borderRadius={100}
+                color={[255, 255, 255, 0.6]}
+                scale={scale}
+                rotate={rotate}
+              />
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">Zoom</label>
                 <input
-                  type="file"
-                  name="profilePicture"
-                  className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-                  onChange={handleFileChange}
+                  type="range"
+                  min="1"
+                  max="3"
+                  step="0.1"
+                  value={scale}
+                  onChange={(e) => setScale(parseFloat(e.target.value))}
+                  className="w-full"
                 />
-              </label>
-              {profilePic && (
-                <div className="avatar-editor">
-                  <AvatarEditor
-                    ref={editorRef}
-                    image={profilePic}
-                    width={150}
-                    height={150}
-                    border={30}
-                    borderRadius={75}
-                    color={[255, 255, 255, 0.6]}
-                    scale={scale}
-                    rotate={rotate}
-                    style={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}
-                  />
-                  <div className="controls mt-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="3"
-                      step="0.1"
-                      value={scale}
-                      onChange={(e) => setScale(parseFloat(e.target.value))}
-                      className="slider bg-gray-700"
-                    />
-                    <button className="bg-gray-600 text-white p-2 rounded" onClick={() => setRotate((prev) => prev + 90)}>
-                      Rotate
-                    </button>
-                    <button className="bg-black text-white p-2 rounded mt-4" onClick={handleSave}>
-                      Save Profile Picture
-                    </button>
-                    
-                  </div>
-                </div>
-              )}
-            </>
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">Rotate</label>
+                <button
+                  onClick={() => setRotate((prev) => prev + 90)}
+                  className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors"
+                >
+                  Rotate 90°
+                </button>
+              </div>
+            </div>
           )}
-        </div>
-        
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors"
+          >
+            Save Changes
+          </button>
+        </Modal.Footer>
+      </Modal>
 
-        {/* Buttons */}
-        <div className="flex justify-between mt-6">
-          <button className="bg-black text-white p-2 rounded" onClick={handleButtonClick}>Edit</button>
-          <button className="bg-black text-white p-2 rounded" onClick={handleSaveClick}>Save</button>
-          <button className="bg-black text-white p-2 rounded" onClick={handleRedirect}>Activities</button>
-          <button className="bg-black text-white m-6 p-2 rounded" onClick={handleDeleteClick}>Delete Account</button>
-        </div>
-        <div>
-        <Link to='/CreateTransportationActivity'><button className='bg-black text-white m-6 p-2 rounded'>create transportation activity</button></Link>
-        <Link to='/TransportationActivityPage'>
-      <button className='bg-black text-white m-6 p-2 rounded' >Transportation Activity</button> </Link>
-      </div>
-
-        {/* Delete Account Confirmation */}
-        {isDeleteVisible && (
-          <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>Are you sure you want to request to delete your account?</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
+      {isDeleteVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg">
+            <h2 className="text-2xl font-bold mb-4">Confirm Account Deletion</h2>
+            <p className="mb-4">Are you sure you want to request to delete your account? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsDeleteVisible(false)}
+                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccountRequest}
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+              >
+                Confirm Deletion
+              </button>
+            </div>
           </div>
-        )}
-{/* Report Section */}
-
-      <div className="mt-6 bg-gray-700 p-4 rounded-md">
-        <h2 className="text-xl mb-4">Tourist Report</h2>
-        <p>
-          <strong>Total Tourists:</strong> {report.totalTourists}
-        </p>
-        <div className="mt-4">
-          <h3 className="text-lg mb-2">Activities</h3>
-          <table className="w-full text-left text-sm border-collapse border border-gray-600">
-            <thead>
-              <tr>
-                <th className="border border-gray-600 px-2 py-1">Title</th>
-                <th className="border border-gray-600 px-2 py-1">Date</th>
-                <th className="border border-gray-600 px-2 py-1">Tourists</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.activities.length > 0 ? (
-                report.activities.map((activity, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-600 px-2 py-1">{activity.title}</td>
-                    <td className="border border-gray-600 px-2 py-1">
-                      {new Date(activity.date).toLocaleDateString()}
-                    </td>
-                    <td className="border border-gray-600 px-2 py-1">{activity.numberOfTourists}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="border border-gray-600 px-2 py-1" colSpan="3">
-                    No activities available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
-
- 
-      </div>
-                                     {/* Sales Report Section */}
-                                     <div className="relative py-8 px-8 w-[33vw] backdrop-blur-lg bg-[#161821f0] h-full rounded-lg shadow-lg text-white">
-          <h3 className="text-2xl text-center mb-4">Sales Report</h3>
-
-          {/* Filters */}
-          <div className="flex gap-4 mb-4">
-
-            <input
-              type="date"
-              value={filters.dateRange.start}
-              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, start: e.target.value })}
-              className="bg-gray-800 text-white rounded-md px-2 py-2"
-            />
-            <input
-              type="date"
-              value={filters.dateRange.end}
-              onChange={(e) => handleFilterChange("dateRange", { ...filters.dateRange, end: e.target.value })}
-              className="bg-gray-800 text-white rounded-md px-2 py-2"
-            />
-            <button
-              onClick={applyFilters}
-              className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-600"
-            >
-              Apply Filters
-            </button>
-          </div>
-
-          {/* Report Table */}
-          <table className="w-full text-white">
-  <thead>
-    <tr className="border-b border-gray-600">
-      <th className="py-2 px-4">Name</th>
-      <th className="py-2 px-4">Revenue</th>
-      <th className="py-2 px-4"> Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filteredReport.length > 0 ? (
-      filteredReport.map((item, index) => (
-        <tr key={index} className="border-b border-gray-600">
-          <td className="py-2 px-4">{item.name}</td>
-          <td className="py-2 px-4">${item.revenue}</td>
-          <td className="py-2 px-4">{item.dates}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan="6" className="py-4 text-center">
-          No sales data available for the selected filters.
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
-        </div>
-             </div>
-
-       
+      )}
+    </div>
   );
 };
 
 export default AdvertiserProfile;
+
