@@ -122,7 +122,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "Activities",
       subItems: [
-        { name: "Activities", path: "/viewActivities" },
+        { name: "View Activities", path: "/viewActivities" },
+        { name: "Create Activities", path: "/createActivity" },
       ],
     },
     
