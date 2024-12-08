@@ -18,7 +18,7 @@ function ViewProducts() {
   }, []);
 
   const handlePress = async () => {
-    await getProducts({ ...filter, price: { $gte: priceRange[0], $lte: priceRange[1] } }, sort);
+    await getProducts({ ...filter, Available_quantity:{$gt: 0}, price: { $gte: priceRange[0], $lte: priceRange[1] } }, sort);
   };
 
   const handleSort = (value) => {
