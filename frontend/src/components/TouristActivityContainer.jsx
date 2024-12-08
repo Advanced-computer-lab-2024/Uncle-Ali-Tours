@@ -1,16 +1,16 @@
-import React, { useEffect,useState } from 'react';
-import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { dialog } from '../components/Dialog.jsx';
-import { formdialog } from './FormDialog.jsx'; 
-import { FiLoader } from 'react-icons/fi'; 
-import { useUserStore } from '../store/user.js';
+import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { useActivityStore } from '../store/activity.js';
-import { Link } from 'react-router-dom';
-import Rating from './Rating';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
-import { GoBell , GoBellFill } from "react-icons/go";
+import { FiLoader } from 'react-icons/fi';
+import { GoBell, GoBellFill } from "react-icons/go";
+import { useNavigate } from 'react-router-dom';
+import { useActivityStore } from '../store/activity.js';
 import { useTouristStore } from '../store/tourist.js';
+import { useUserStore } from '../store/user.js';
+import QuantitySelector from './QuantitySelector.jsx';
+import Rating from './Rating';
+
+
 
 
 
@@ -25,7 +25,10 @@ function TouristActivityContainer({ activity, activityChanger,onBookmarkToggle,i
   const [comment, setComment] = useState('');
   const [ setIsBookmarked] = useState(false);
   const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
+  const [quantity, setQuantity] = useState(1);
   const { tourist } = useTouristStore();
+  const navigate = useNavigate();
+
 
 
   const handleIntersted = async (id) =>{
@@ -131,6 +134,19 @@ const handleToggleBookmark = async () => {
   }
 };
 
+const handleQuantityChange = (newQuantity) => {
+  setQuantity(newQuantity);
+};
+
+const handleBookClick = async (activityID , quantity) => {
+  try{
+    navigate(`/payment/activity/${activityID}` , { state: { quantity: quantity } });
+  }
+  catch(error){
+    console.error('Error:', error);
+  }
+};
+
 
    
   return (
@@ -201,6 +217,8 @@ const handleToggleBookmark = async () => {
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail
         </button>
+        <QuantitySelector onChange={handleQuantityChange} maxValue={100} />
+        <button onClick={() => (handleBookClick(activity._id , quantity))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">

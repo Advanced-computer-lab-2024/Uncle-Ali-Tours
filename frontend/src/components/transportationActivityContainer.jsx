@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { dialog } from '../components/Dialog.jsx';
 import { useTouristStore } from '../store/tourist.js';
 import { formdialog } from './FormDialog.jsx';
+import QuantitySelector from './QuantitySelector.jsx';
+
 
 function TransportationActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
@@ -16,6 +18,9 @@ function TransportationActivityContainer({ activity, activityChanger }) {
   const user = JSON.parse(localStorage.getItem("user"));
   const {tourist, updateBookings,unBook} = useTouristStore();
   const navigate = useNavigate();
+
+  const [quantity, setQuantity] = useState(1);
+
 
 
   const handleShare = (id) => {
@@ -76,14 +81,19 @@ function TransportationActivityContainer({ activity, activityChanger }) {
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
 
-  const handleBookClick = async (activityID) => {
+  const handleBookClick = async (activityID , quantity) => {
     try{
-      navigate(`/payment/tActivity/${activityID}`);
+      navigate(`/payment/tActivity/${activityID}` , { state: { quantity: quantity } });
     }
     catch(error){
       console.error('Error:', error);
     }
   };
+
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+  
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
@@ -101,13 +111,14 @@ function TransportationActivityContainer({ activity, activityChanger }) {
         {/* Share options */}
         <button className="p-2 bg-blue-500 text-white mt-2" onClick={() => handleShare(activity._id)}>Copy Link</button>
         <button className="p-2 bg-blue-500 text-white mt-2" onClick={() => setIsModalOpen(true)}>Share via Email</button>
-        <div>   
+        <div>
          <button onClick={() => (handleClick())} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
          {/* {   !tourist?.myBookings?.includes(activity._id) ?
          <button onClick={() => (handleBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  :   
          <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
          } */}
-                  <button onClick={() => (handleBookClick(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>
+                  <QuantitySelector onChange={handleQuantityChange} maxValue={100} />
+                  <button onClick={() => (handleBookClick(activity._id, quantity))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>
 
          </div>
 

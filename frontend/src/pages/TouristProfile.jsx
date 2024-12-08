@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 //import React, { useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
+import { FaEdit } from "react-icons/fa";
+import { IoSaveOutline } from "react-icons/io5";
 import { Link, useNavigate } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
+import TouristPromos from '../components/TouristPromos.jsx';
+import BronzeBadge from '../images/bronze.png';
+import egypt from '../images/egypt.jpg';
+import GoldBadge from '../images/gold.png';
+import SilverBadge from '../images/silver.png';
 import { useRequestStore } from '../store/requests.js';
 import { useTagStore } from '../store/tag';
 import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
-import TouristPromos from '../components/TouristPromos.jsx';
-import { FiLoader } from 'react-icons/fi';
-import { FaEye, FaEdit } from "react-icons/fa";
-import { IoSaveOutline } from "react-icons/io5";
-import BronzeBadge from '../images/bronze.png';
-import SilverBadge from '../images/silver.png';
-import GoldBadge from '../images/gold.png';
-import egypt from '../images/egypt.jpg';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
@@ -58,6 +57,7 @@ const fetchBadge = async () => {
 };
 useEffect(() => {
   // Fetch itineraries and activities when the component mounts
+  if(user.userName) {
   const fetchData = async () => {
     const itineraries = await fetchUpcomingItineraries(user.userName);
     const activities = await fetchUpcomingActivities(user.userName);
@@ -67,7 +67,8 @@ useEffect(() => {
   };
 
   fetchData();
-}, []);
+}
+}, [user.userName]);
 
 
 const handleRedirect1 = () => {

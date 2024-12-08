@@ -9,7 +9,7 @@ const CartPage = ({ user }) => {
 
     useEffect(() => {
     getCartProducts(user.userName);
-    }, [getCartProducts, user.userName]);
+    }, [ user.userName, cartProducts]);
 
     const handleCheckout = () => {
         if (cartProducts.length === 0) {

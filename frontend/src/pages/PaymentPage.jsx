@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useActivityStore } from '../store/activity';
 import { useItineraryStore } from '../store/itinerary';
 import { usePaymentStore } from '../store/payment';
@@ -10,17 +10,20 @@ import { useUserStore } from '../store/user';
 function PaymentPage() {
   const location = useLocation();
   const { bookedHotel, bookedFlight } = location.state || {};
+  const { quantity } = location.state || 1;
   const { type, id } = useParams();
   const [itemList, setItemList] = useState(null);
   const [price, setPrice] = useState(0);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('creditCard'); // Default method
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('creditCard');
+  const [orderData, setOrderData] = useState(null);
 
   const { currentItinerary, getItineraryById } = useItineraryStore();
   const { currentActivity, getActivityById } = useActivityStore();
   const { getTransportationActivityById, transportationActivity } = useTransportationActivityStore();
-  const { items, setSelectedItems, currency, setCurrency, createCheckoutSession , CheckoutUsingWallet} = usePaymentStore();
+  const { items, setSelectedItems, currency, setCurrency, createCheckoutSession , CheckoutUsingWallet } = usePaymentStore();
   const { user } = useUserStore();
   const { tourist , checkoutList } = useTouristStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(type, id);
@@ -55,7 +58,7 @@ function PaymentPage() {
     if (type === 'itinerary') {
       console.log("itinerary currentItinerary", currentItinerary);
       setItemList(currentItinerary);
-            setPrice(currentItinerary.price);
+            setPrice(currentItinerary.price*quantity * user.currencyRate);
             console.log(currentItinerary);
             console.log(currentItinerary.price);
     }
@@ -63,28 +66,28 @@ function PaymentPage() {
     if (type === 'activity') {
             console.log("activity currentActivity", currentActivity);
             setItemList(currentActivity);
-            setPrice(currentActivity.price);
+            setPrice(currentActivity.price*quantity * user.currencyRate);
             console.log(currentActivity);
             console.log(currentActivity.price);
     }
     if (type === 'tActivity') {
             console.log("tActivity transportationActivity", transportationActivity);
             setItemList(transportationActivity);
-            setPrice(transportationActivity?.price);
+            setPrice(transportationActivity?.price*quantity * user.currencyRate);
             console.log(transportationActivity);
             console.log(transportationActivity?.price);
     
   }if (type === 'hotel') {
       console.log("bookedHotel", bookedHotel);
             setItemList(bookedHotel);
-            setPrice(Number(bookedHotel.data.price.total));
+            setPrice(Number(bookedHotel.data.price.total * user.currencyRate));
             console.log(bookedHotel.data.price.total);
     }
 
     if (type === 'flight') {
       console.log("bookedFlight", bookedFlight);
             setItemList(bookedFlight);
-            setPrice(bookedFlight.data.price.raw);
+            setPrice(bookedFlight.data.price.raw * user.currencyRate);
             console.log(bookedFlight.data.price.raw);
     }
 
@@ -96,31 +99,45 @@ function PaymentPage() {
         totalPrice += product.productId.price * product.quantity * user.currencyRate;
       });
       setPrice(totalPrice);
+
+      const orderDataProducts = checkoutList.map((product) => ({
+        productId: product.productId._id,
+        quantity: product.quantity,
+      }));
+      setOrderData({
+        creator: user.userName,
+        products: orderDataProducts,
+        deliveryAddress:"l7d ma n3mel el deliveryAddress",
+        paymentMethod: selectedPaymentMethod,
+        total: price,
+      });
     }
 
   }
-  , [currentItinerary, currentActivity,transportationActivity,itemList , user.chosenCurrency]);
+  , [currentItinerary, currentActivity,transportationActivity,itemList , user.chosenCurrency , quantity]);
 
   useEffect(() => {
     console.log("itemList last useEffect: ", itemList);
     if (itemList) {
       console.log("itemList before calling setselected: ", itemList);
-      setSelectedItems(itemList, type);
+      setSelectedItems(itemList, type , quantity);
     }
     console.log("items: ", items);
   }
   , [itemList]);
 
 
-
   const handlePayment = () => {
+    console.log('Processing payment...', orderData);
+    sessionStorage.setItem('orderData', JSON.stringify(orderData));
+
     if (selectedPaymentMethod === 'creditCard') {
       createCheckoutSession(items, user.currencyRate, currency, type);
     } else if (selectedPaymentMethod === 'wallet') {
       CheckoutUsingWallet(items, user.userName , type);
       console.log('Processing payment using wallet...');
     } else if (selectedPaymentMethod === 'cashOnDelivery') {
-      // Logic for Cash on Delivery
+      navigate(`/success/${type}`);
       console.log('Cash on Delivery selected...');
     }
   };
@@ -163,6 +180,7 @@ function PaymentPage() {
           />
           Wallet
         </label>
+        {type === 'product' && (
         <label>
           <input
             type="radio"
@@ -171,7 +189,7 @@ function PaymentPage() {
             onChange={(e) => setSelectedPaymentMethod(e.target.value)}
           />
           Cash on Delivery
-        </label>
+        </label>)}
       </div>
 
       {/* Conditional Rendering for Payment Method */}

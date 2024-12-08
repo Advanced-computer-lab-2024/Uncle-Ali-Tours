@@ -21,6 +21,7 @@ export const createOrder = async (req, res) => {
         await newOrder.save();
         return res.status(201).json({ success: true, data: newOrder });
     } catch (error) {
+        console.error("Error creating order:", error.message);
         return res.status(500).json({ success: false, message: error.message });
     }
 };

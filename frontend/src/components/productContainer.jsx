@@ -229,12 +229,13 @@ function ProductContainer({ product, productChanger, tourist }) {
                 </button>
               
               <QuantitySelector onChange={handleQuantityChange} maxValue={product.Available_quantity} />
-              <button
+              {product.Available_quantity > 0 && (
+                <button
                 onClick={() => isAddedToCart ? handleRemoveFromCart(product._id) : handleCart(product._id)}
                 className="transform transition-colors duration-300 hover:text-green-500 focus:outline-none"
               >
                 <FaShoppingCart size="25" className={isAddedToCart ? "text-green-500 mr-4" : "text-gray-300 mr-4"} />
-              </button>
+              </button>)}
             </div>
             {user?.type === "tourist" && (
               <div className="flex justify-between text-xs">
