@@ -39,7 +39,7 @@ function UnVerified() {
 
   return (
     <div className="mt-12">
-        <Toaster/>
+        
       <p className="text-4xl">You are not verified yet</p>
       <div className="relative p-6 w-[70vh] mx-auto mt-4 backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
         <p className="text-2xl">Please upload the required documents</p>

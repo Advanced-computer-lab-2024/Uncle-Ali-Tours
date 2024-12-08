@@ -59,7 +59,7 @@ const TourGuideTouristReport = () => {
 
   return (
     <div>
-      <Toaster /> {/* Display toasts for notifications */}
+       {/* Display toasts for notifications */}
       {/* Report Section */}
       <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
         <h2 className="text-xl mb-4">Tourist Report</h2>

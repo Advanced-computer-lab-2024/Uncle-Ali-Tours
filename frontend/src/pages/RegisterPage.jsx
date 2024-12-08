@@ -195,12 +195,12 @@ function RegisterPage() {
                         style={styles.registerButton}
                         onClick={handleRegister}
                     >
-                        {selectedType === "tourist" || selectedType === "" ? "Register as Tour Guide" : "Sign Up"}
+                        {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
                     </motion.button>
                 </div>
             </motion.div>
             <footer style={styles.footer}>
-                <p style={styles.footerText}>© {new Date().getFullYear()} All Rights Reserved</p>
+                <p style={styles.footerText}>© {new Date().getFullYear()} U A T. All rights reserved.</p>
             </footer>
         </div>
     )

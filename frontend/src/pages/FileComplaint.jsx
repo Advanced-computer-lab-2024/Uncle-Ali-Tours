@@ -31,7 +31,7 @@ function FileComplaint() {
 
   return (
     <div>
-        <Toaster />
+        
       <p>FileComplaint</p>
       <div className="bg-white mt-32 h-fit mx-auto pt-2 w-fit rounded-xl">
         <div className="flex flex-col items-center">

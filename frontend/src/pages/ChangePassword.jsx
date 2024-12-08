@@ -46,7 +46,7 @@ function ChangePassword() {
     }
   return (
     <div className='bg-white mt-32 w-fit h-fit mx-auto pt-2 rounded-xl'>
-        <Toaster />
+        
         <div className='flex flex-col items-center'>
             {!forgot && <input name='userName' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} placeholder='Old Password' className='border border-[rgb(205,205,205)] m-6 p-2 shadow-md rounded bg-gray-300' type='password' />}
             <input name='email' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder='New Password' className='border border-[rgb(205,205,205)] m-6 p-2 shadow-md rounded bg-gray-300' type='password' />

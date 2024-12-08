@@ -152,7 +152,7 @@ const TourGuideProfilePage = () =>{
 
     return (
         <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-            <Toaster/>
+            
             <div className="flex items-center justify-center mb-6">
         {previewFile ? (
           <img
