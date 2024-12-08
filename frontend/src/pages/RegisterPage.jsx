@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'; 
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
@@ -27,6 +27,7 @@ function RegisterPage() {
         dateOfBirth: "",
         occupation: "",
     });
+    const [acceptedTerms, setAcceptedTerms] = React.useState(false); // New state for accepting terms
     const navigate = useNavigate();
 
     const { createUser } = useUserStore();
@@ -47,6 +48,11 @@ function RegisterPage() {
     }, []);
 
     const handleRegister = async () => {
+        if (!acceptedTerms) {
+            toast.error("You must accept the terms and conditions to proceed.", { className: "text-white bg-gray-800" });
+            return;
+        }
+
         let userType = selectedType;
         if (selectedType === "") {
             userType = "tour guide"; // Default type when no selection
@@ -188,12 +194,26 @@ function RegisterPage() {
                         ))
                     )}
 
+                    {/* Terms and Conditions Checkbox */}
+                    <div style={styles.checkboxContainer}>
+                        <label style={styles.checkboxLabel}>
+                            <input 
+                                type="checkbox" 
+                                checked={acceptedTerms}
+                                onChange={() => setAcceptedTerms(!acceptedTerms)}
+                                style={styles.checkbox}
+                            />
+                            I accept the <a href="/terms" style={styles.link}>terms and conditions</a>.
+                        </label>
+                    </div>
+
                     {/* Sign Up Button */}
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         style={styles.registerButton}
                         onClick={handleRegister}
+                        disabled={!acceptedTerms}  // Disable the button if terms are not accepted
                     >
                         {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
                     </motion.button>
@@ -306,6 +326,23 @@ const styles = {
         fontSize: '1rem',
         cursor: 'pointer',
         transition: 'background-color 0.3s',
+    },
+    checkboxContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '1rem',
+    },
+    checkboxLabel: {
+        color: '#333',
+        fontSize: '1rem',
+    },
+    checkbox: {
+        marginRight: '0.5rem',
+    },
+    link: {
+        color: '#007bff',
+        textDecoration: 'none',
     },
     footer: {
         position: 'absolute',

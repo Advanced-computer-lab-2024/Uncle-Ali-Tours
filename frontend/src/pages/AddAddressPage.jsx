@@ -27,8 +27,8 @@ const AddAddressPage = () => {
   };
 
   const handleAddAddress = async (e) => {
-    e.preventDefault();
-  
+    e.preventDefault();  // Prevent the default form submit behavior
+
     try {
       // Assuming `username` is part of the state, and is sent as the `creator` field
       const response = await axios.post("/api/tourist/addDeliveryAddress", {
@@ -164,7 +164,7 @@ const AddAddressPage = () => {
             name="isDefault"
             id="isDefault"
             checked={newAddress.isDefault}
-            onChange={(e) => setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }))}
+            onChange={(e) => setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }))} 
             className="mr-2"
           />
           <label htmlFor="isDefault" className="text-gray-700">Set as Default Address</label>

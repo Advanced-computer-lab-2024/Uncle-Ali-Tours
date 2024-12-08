@@ -7,6 +7,7 @@ import Tourist from "../models/tourist.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import User from "../models/user.model.js";
 //import Order from "../models/order.js";
+import { checkAndNotifyUpcomingItinerary } from './notification.controller.js';
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -182,10 +183,10 @@ export const badgeLevel = async (req, res) => {
         }
 
         let level = "level 1";
-        if(tourist.myPoints>500000){
+        if(tourist.accumulatedPoints>500000){
             level="level 3";
         }
-        else if(tourist.myPoints>100000){
+        else if(tourist.accumulatedPoints>100000){
             level="level 2";
         }
         else{
@@ -970,6 +971,87 @@ export const deleteAddress = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: 'Error deleting address', error });
   }
+};
+
+
+
+export const checkUpcomingItineraryNotifications = async (req, res) => {
+    try {
+        const { userName } = req.params;
+
+    
+        const result = await checkAndNotifyUpcomingItinerary(userName);
+
+        if (result.success) {
+            return res.status(200).json({ success: true, message: result.message });
+        } else {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+    } catch (error) {
+        console.error("Error checking upcoming itinerary notifications:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+export const handleSuccessfulPaymentForTourist = async (req, res) => {
+    try {
+        const { username, items, type , amountPaid } = req.body;
+        console.log("before checking fields","username:",username,"items:",items,"amount:" ,amountPaid);
+      // Validate request body
+        if (!username || !items || !type ) {
+        return res.status(400).json({ message: "Missing required fields." });
+        }
+
+        if (isNaN(amountPaid) || amountPaid <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid amount paid" });
+        }
+
+      // Find the tourist by username
+        const tourist = await Tourist.findOne({ userName: username });
+        if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found." });
+        }
+
+      // Ensure items is an array
+        const itemsArray = Array.isArray(items) ? items : [items];
+
+      // Add each item to the touristItems array
+        itemsArray.forEach(item => {
+            // console.log(item);
+            tourist.touristItems.push({ itemData: item.itemData ,quantity:item.quantity ,itemDetails:item.itemDetails, type });
+        });
+
+        let value = 0;
+
+        // Validate the badge before proceeding
+        switch (tourist.badge) {
+            case 'level 1':
+                value = amountPaid * 0.5;
+                break;
+            case 'level 2':
+                value = amountPaid * 1;
+                break;
+            case 'level 3':
+                value = amountPaid * 1.5;
+                break;
+            default:
+                return res.status(400).json({ success: false, message: "Invalid badge level" });
+        }
+
+        // Ensure value is a valid number before adding to points
+        if (isNaN(value)) {
+            return res.status(400).json({ success: false, message: "Calculated value is invalid" });
+        }
+
+        tourist.myPoints += value;
+
+      // Save the updated tourist document
+        await tourist.save();
+        // console.log(tourist);
+        res.status(200).json({ message: "Item successfully added to tourist items.", tourist });
+    } catch (error) {
+        console.error("Error handling successful payment:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
 };
 
 

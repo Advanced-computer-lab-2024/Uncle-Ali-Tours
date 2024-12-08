@@ -216,6 +216,8 @@ const TouristProfilePage = () => {
         </div>
       </div>
     </div>
+
+    
   );
 };
 
