@@ -57,7 +57,7 @@ function LoginPage() {
         break;
 
       case "governor":
-        navigate("/attraction");
+        navigate("/governerProfilePage");
         break;
     
       default:
