@@ -1,272 +1,267 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useUserStore } from '../store/user';
 import { useGuideStore } from '../store/tourGuide';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import Dialog, { dialog } from '../components/Dialog.jsx';
-import AvatarEditor from 'react-avatar-editor';
-import { FaEye, FaEdit } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { Modal } from 'react-bootstrap';
 import axios from 'axios';
-import { useRequestStore } from '../store/requests.js';
-import { FiLoader } from "react-icons/fi";
-import {useItineraryStore} from "../store/itinerary";
+import { IoSaveOutline } from 'react-icons/io5';
+import egypt from '../images/egypt.jpg';
+import {
+  Bar, Pie
+} from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from "chart.js";
 
-const TourGuideProfilePage = () =>{
-    const {user} = useUserStore();
-    const {guide,getGuide,updateGuide} = useGuideStore();
-    const [isRequired, setIsRequired] = useState(true);
-    const { showDialog } = dialog()
-    const [isEditing, setIsEditing] = useState(false);
-    const [showPreview, setShowPreview] = useState(false);
-    const [profilePic, setProfilePic] = useState(null);
-    const [previewFile, setPreviewFile] = useState(localStorage.getItem("ProfilePicture") || "");
-    const editorRef = useRef(null);
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-    const handleButtonClick = () => {
-        setIsRequired(false);
-    };
-    
-    const [updatedGuide,setUpdatedGuide]= useState({});  
-    const handleButtonClickk = async () => {
-        if(!isRequired){
-           const {success, message}  = await updateGuide(user.userName , updatedGuide);
-           success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
+const TourGuideProfilePage = () => {
+  const { user } = useUserStore();
+  const { guide, getGuide, updateGuide } = useGuideStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [previewFile, setPreviewFile] = useState(localStorage.getItem("ProfilePicture") || "");
+  const [updatedGuide, setUpdatedGuide] = useState({});
+  const [report, setReport] = useState({
+    totalTourists: 0,
+    activities: [],
+    itineraries: [],
+  });
+  const [selectedMonth, setSelectedMonth] = useState(""); // State to store selected month
+  const [filteredItineraries, setFilteredItineraries] = useState([]); // State for filtered itineraries
+  const [totalTouristsForMonth, setTotalTouristsForMonth] = useState(0); // State to track tourists count for the selected month
+  const [showBarChart, setShowBarChart] = useState(true); // Show Bar Chart by default
+  const [showPieChart, setShowPieChart] = useState(false);
 
-        }
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user.type !== 'tour guide') {
+      navigate('/');
     }
-    const navigate = useNavigate();
-    const handleRedirect = () => {
-        navigate('/itineraryPage');
+  }, []);
+
+  useEffect(() => {
+    const fetchGuideData = async () => {
+      if (user.userName) {
+        const result = await getGuide({ userName: user.userName });
+        if (result.success && guide.profilePicture) {
+          setPreviewFile(guide.profilePicture);
+          localStorage.setItem("ProfilePicture", guide.profilePicture);
+        }
+      }
     };
+    fetchGuideData();
+  }, [user.userName, guide.profilePicture]);
 
-    useEffect(() => {
-        if (user.type !== 'tour guide') {
-            navigate('/');
-        }
-    }, []);
+  const fetchReport = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tourGuide/report/${user.userName}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch report");
+      }
+      const data = await response.json(); // Parse the JSON data
+      console.log("Fetched Report:", data); // Debug log
+      setReport(data); // Update report state
+    } catch (error) {
+      console.error("Error fetching report:", error);
+      toast.error("Failed to fetch report.", { className: "text-white bg-gray-800" });
+    }
+  };
 
-    useEffect(() => {
-        const fetchGuideData = async () => {
-            if (user.userName) {
-            const result = await getGuide({ userName: user.userName });
-            if (result.success && guide.profilePicture) {
-                setPreviewFile(guide.profilePicture);
-                localStorage.setItem("ProfilePicture", guide.profilePicture);
-            }}
-        };
-        fetchGuideData();
-    }, [user.userName, guide.profilePicture]);
+  useEffect(() => {
+    if (user.userName) {
+      fetchReport(); // Fetch data when username is available
+    }
+  }, [user.userName]);
 
-    
-    const toggleEdit = () => {
-        setIsEditing((prev) => !prev);
-        setProfilePic(null);
-      };
+  const handleMonthChange = (event) => {
+    const selectedDate = event.target.value;
+    setSelectedMonth(selectedDate);
 
-    const handleEditClick = () => setIsRequired(false);
-    const handleSaveClick = async () => {
-        if (!isRequired) {
-            const { success, message } = await updateGuide(user.userName, updatedGuide);
-            success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
-        }
-    };
+    const filtered = report.itineraries.filter((itinerary) => {
+      const itineraryMonth = formatMonth(itinerary.availableDates[0]); // Format the itinerary date to YYYY-MM
+      return itineraryMonth === selectedDate;
+    });
+    setFilteredItineraries(filtered);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setProfilePic(file);
-            localStorage.removeItem("ProfilePicture");
-        } else {
-            console.error("No file selected");
-        }
-    };
-    const handleUploadClick = async () => {
-        if (selectedFile) {
-          const formData = new FormData();
-          formData.append('profilePicture', selectedFile);
-          formData.append('userName', user.userName);
-      
-          try {
-            const response = await axios.put('/api/tourGuide/uploadPicture', formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            toast.success(response.data.message, { className: "text-white bg-gray-800" });
-            
-            // Refresh seller data after upload
-            if (user.userName) {
-              await getGuide({ userName: user.userName }, {});
-            }
-            
-          } catch (error) {
-            toast.error(error.response?.data?.message || "Upload failed", { className: "text-white bg-gray-800" });
-          }
-        } else {
-          toast.error("Please select a file first", { className: "text-white bg-gray-800" });
-        }
-      };
-      
+    const totalTourists = filtered.reduce((acc, itinerary) => acc + itinerary.numberOfTourists, 0);
+    setTotalTouristsForMonth(totalTourists);
+  };
 
-      const handleSaveProfilePicture = async () => {
-        if (editorRef.current && profilePic) {
-            const canvas = editorRef.current.getImageScaledToCanvas();
-            const dataUrl = canvas.toDataURL();
-            const blob = await fetch(dataUrl).then((res) => res.blob());
-            const formData = new FormData();
-            formData.append("profilePicture", blob, "profile-photo.png");
-            formData.append("userName", user.userName);
-    
-            try {
-                const response = await axios.put(`http://localhost:3000/api/tourGuide/uploadPicture`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-    
-                if (response.data.success) {
-                    const profileImagePath = response.data.profilePicture;
-                    setPreviewFile(profileImagePath);
-                    localStorage.setItem("ProfilePicture", profileImagePath);
-                    setIsEditing(false);
-                    setProfilePic(null);
-                    toast.success(response.data.message, { className: "text-white bg-gray-800" });
-    
-                    // Refresh guide data to show the updated image
-                    await getGuide({ userName: user.userName });
-                } else {
-                    toast.error(response.data.message || "Upload failed", { className: "text-white bg-gray-800" });
-                }
-            } catch (error) {
-                console.error("Error uploading profile photo:", error);
-                toast.error("Error uploading profile photo", { className: "text-white bg-gray-800" });
-            }
-        } else {
-            console.error("No file selected for upload");
-            toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
-        }
-    };
-    
-    
+  const formatMonth = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return `${(d.getMonth() + 1).toString().padStart(2, "0")}`;
+  };
 
-   
+  const chartData = {
+    labels: (filteredItineraries.length > 0 ? filteredItineraries : report.itineraries).map(
+      (itinerary) => itinerary.title
+    ),
+    datasets: [
+      {
+        label: "Tourists",
+        data: (filteredItineraries.length > 0 ? filteredItineraries : report.itineraries).map(
+          (itinerary) => itinerary.numberOfTourists
+        ),
+        backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+        borderColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-    return (
-        <div className="relative p-10 max-w-3xl mx-auto mt-5 rounded-lg shadow-lg bg-gray-800 text-white">
-            <Toaster/>
-            <div className="flex items-center justify-center mb-6">
-        {previewFile ? (
-          <img
-            style={{ width: "160px", height: "160px", borderRadius: "50%", objectFit: "cover" }}
-            src={`http://localhost:3000${previewFile}`}
-            alt="ProfilePicture"
-          />
-        ) : (
-          <div className="text-gray-500">add profile picture</div>
-        )}
-        <div className="icon-buttons ml-4">
-          <button onClick={() => setShowPreview(true)}>
-            <FaEye />
-          </button>
-          <button onClick={toggleEdit}>
-            <FaEdit />
-          </button>
+  const handleSaveClick = async () => {
+    const { success, message } = await updateGuide(user.userName, updatedGuide);
+    success ? toast.success(message, { className: "text-white bg-gray-800" }) : toast.error(message, { className: "text-white bg-gray-800" });
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      localStorage.removeItem("ProfilePicture");
+      setPreviewFile(URL.createObjectURL(file));
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Toaster />
+      <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-white">Tour Guide Profile</h1>
+              <div className="relative">
+                <img
+                  src={`http://localhost:3000${previewFile}`}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white"
+                />
+                <label
+                  htmlFor="profile-upload"
+                  className="absolute bottom-0 right-0 bg-white rounded-full p-2 cursor-pointer"
+                >
+                  <FaEdit className="text-orange-500" />
+                </label>
+                <input
+                  id="profile-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 sm:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
+                {['userName', 'email', 'mobileNumber', 'yearsOfExperience', 'previousWork', 'nationality', 'dateOfBirth'].map((field) => (
+                  <div key={field} className="flex items-center justify-between">
+                    <span className="text-gray-600 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                    <input
+                      type="text"
+                      name={field}
+                      defaultValue={guide[field] || ''}
+                      className={`bg-transparent transition-colors focus:outline-none border-b border-gray-300 px-2 py-1 w-2/3 text-right`}
+                      readOnly={!isEditing}
+                      onChange={(e) => setUpdatedGuide({ ...updatedGuide, [field]: e.target.value })}
+                    />
+                  </div>
+                ))}
+                {!isEditing ? (
+                  <button className="text-orange-500 hover:text-orange-600 transition-colors" onClick={() => setIsEditing(true)}>
+                    <FaEdit size={20} />
+                  </button>
+                ) : (
+                  <button className="text-green-500 hover:text-green-600 transition-colors" onClick={handleSaveClick}>
+                    <IoSaveOutline size={20} />
+                  </button>
+                )}
+              </div>
+
+              {/* Tourist Report Section - White Background */}
+              <div className="bg-white md:col-span-1 bg-white p-4 border border-gray-600 shadow-md rounded">
+                {/* Render the charts */}
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <div className="flex justify-between mb-4">
+                    <button
+                      onClick={() => {
+                        setShowBarChart(true);
+                        setShowPieChart(false);
+                      }}
+                      className={`px-4 py-2 rounded-md ${
+                        showBarChart ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      Bar Chart
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPieChart(true);
+                        setShowBarChart(false);
+                      }}
+                      className={`px-4 py-2 rounded-md ${
+                        showPieChart ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      Pie Chart
+                    </button>
+                  </div>
+                  {showBarChart && <Bar data={chartData} />}
+                  {showPieChart && <Pie data={chartData} />}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <Modal show={showPreview} onHide={() => setShowPreview(false)} centered>
+      <Modal show={isEditing} onHide={() => setIsEditing(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Profile Picture Preview</Modal.Title>
+          <Modal.Title>Edit Profile Picture</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-center">
-          <img
-            src={`http://localhost:3000${previewFile}`}
-            alt="Profile Preview"
-            className="img-fluid"
-            style={{ maxWidth: "100%", borderRadius: "50%" }}
+        <Modal.Body>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="mb-4 block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-violet-50 file:text-violet-700
+                      hover:file:bg-violet-100"
           />
         </Modal.Body>
+        <Modal.Footer>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveClick}
+            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors"
+          >
+            Save Changes
+          </button>
+        </Modal.Footer>
       </Modal>
-
-           <h1>profile</h1>
-           <div className="grid">
-           <label>NAME : <input type = "text" name='name' defaultValue={guide.userName} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange= {(e) => setUpdatedGuide({ ...updatedGuide, userName: e.target.value})}></input></label>
-           <label>Email : <input type = "text" name='email' defaultValue={guide.email} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, email: e.target.value})}></input></label>
-           <label>Mobile number : <input type = "text" name='mobileNumer' defaultValue={guide.mobileNumber} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, mobileNumber: e.target.value})}></input></label>
-           <label>Years of experience : <input type = "Number" name='yearsOfExperiance' defaultValue={guide.yearsOfExperience} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, yearsOfExperience: e.target.value})}></input></label>
-           <label>Previous Work : <input type = "text" name='previousWork' defaultValue={guide.previousWork} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, previousWork: e.target.value})}></input></label>
-           <label>Nationality : <input type = "text" name='nationality' defaultValue={guide.nationality} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, nationality: e.target.value})}></input></label>
-           <label>Date of birth : <input type = "text" name='dateOfBirth' defaultValue={guide.dateOfBirth ? guide.dateOfBirth.split('T')[0] : ""} style={{color: 'black', backgroundColor: 'white'}} readOnly={isRequired} onChange={(e) => setUpdatedGuide({ ...updatedGuide, dateOfBirth: e.target.value})}></input></label>           
-           </div>
-
-           
-
-        
-
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClick}>Edit</button> 
-           <button className='bg-black text-white m-6 p-2 rounded' onClick={handleButtonClickk}>save</button>
-           <div>
-           <Dialog msg={"Are you sure you want to delete your account?"} accept={() => (console.log("deleted"))} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
-            {/* <button className='bg-red-600 text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button> */}
-           </div>
-           {isEditing && (
-            <>
-              <label>
-                Upload img:
-                <input
-                  type="file"
-                  name="ProfilePicture"
-                  className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-                  onChange={handleFileChange}
-                />
-              </label>
-              {profilePic && (
-                <div className="avatar-editor">
-                  <AvatarEditor
-                    ref={editorRef}
-                    image={profilePic}
-                    width={150}
-                    height={150}
-                    border={30}
-                    borderRadius={75}
-                    color={[255, 255, 255, 0.6]}
-                    
-                    style={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}
-                  />
-                  <div className="controls mt-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="3"
-                      step="0.1"
-                      
-                      className="slider bg-gray-700"
-                    />
-                    
-                    <button className="bg-black text-white p-2 rounded mt-4" onClick={handleSaveProfilePicture}>
-                      Save Profile Picture
-                    </button>
-                    
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        
-       
-           <br />
-          {/* <button className='bg-black text-white m-6 p-2 rounded' onClick={handleDeleteClick}>Delete Account</button>  */}
-           {/* {isDeleteVisible && (
-            <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-            <p>Are you sure you want to request to delete your account?</p>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={handleDeleteAccountRequest}>Request</button>
-            <button className="bg-red-500 mt-4 px-4 py-2 rounded" onClick={() => setIsDeleteVisible(false)}>Cancel</button>
-            </div>
-           )}          */}
-          
-                                 
-             </div>
-        
-    );
+    </div>
+  );
 };
 
 export default TourGuideProfilePage;
