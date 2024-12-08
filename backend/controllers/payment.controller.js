@@ -5,6 +5,8 @@ import Tourist from '../models/tourist.model.js';
 import TransportationActivity from '../models/transportationActivity.model.js';
 import { createFlightBooking } from './flightBooking.controller.js';
 import { createHotelBooking } from './hotelBooking.controller.js';
+import { sendEmail } from "../util/email.js";
+const { EMAIL } = process.env;
 
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -184,7 +186,7 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
             default:
                 return res.status(400).json({ success: false, message: "Invalid type" });
         }
-
+        await sendEmailReceipt(tourist, items, amountPaid);
       // Save the updated tourist document
         await tourist.save();
     
@@ -194,4 +196,69 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+const sendEmailReceipt = async (tourist, items, amountPaid) => {
+    // const transporter = nodemailer.createTransport({
+    //     service: 'gmail', // You can use any email service provider
+    //     auth: {
+    //         user: 'your-email@gmail.com',
+    //         pass: 'your-email-password',
+    //     },
+    // });
+
+    const itemDetails = items.map(item => ({
+        name: item.itemData.name,
+        quantity: item.quantity,
+        price: item.itemData.price,
+        total: item.quantity * item.itemData.price,
+    }));
+
+    // Calculate the overall total
+    const totalAmount = itemDetails.reduce((acc, item) => acc + item.total, 0);
+
+    // Create HTML content for the email receipt
+    const htmlContent = `
+        <h2>Your Payment Receipt</h2>
+        <p>Dear ${tourist.userName},</p>
+        <p>Thank you for your payment. Here are the details of your purchase:</p>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price (per unit)</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${itemDetails.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price}</td>
+                        <td>${item.total}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <p><strong>Total Paid: ${amountPaid}</strong></p>
+        <p>We appreciate your business!</p>
+    `;
+
+    // Send the email
+    const mailOptions = {
+        from: EMAIL,
+        to: tourist.email,  // Use the tourist's email from the tourist object
+        subject: 'Payment Receipt',
+        html: htmlContent,
+    };
+
+    try {
+        await sendEmail(mailOptions);
+        console.log('Receipt sent successfully!');
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
+
 

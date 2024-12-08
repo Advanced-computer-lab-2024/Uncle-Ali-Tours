@@ -133,7 +133,7 @@ const WishlistPage = ({ user }) => {
                             >
                                 Remove from Wishlist
                             </button>
-                            <QuantitySelector onChange={handleQuantityChange} />
+                            <QuantitySelector onChange={handleQuantityChange} maxValue={product.Available_quantity} />
                             <button
                                 onClick={() =>
                                     cartStatus[product._id]

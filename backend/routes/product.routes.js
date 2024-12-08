@@ -7,13 +7,15 @@ import {
     archiveProduct,
     uploadProfilePicture ,
     upload,
-    addRatingReview
+    addRatingReview,
+    getProductById
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
 
 // Route to get all products
 router.get('/', getProducts);
+router.get('/:id', getProductById);
 
 // Route to create a new product
 router.post('/', createProduct);

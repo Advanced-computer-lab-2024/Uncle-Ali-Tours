@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export const useOrderStore = create((set) => ({
   orders: [],
+  currentOrder:{},
   setOrders: (orders) => set({ orders }),
 
   // Fetch orders with optional filters and sorting
@@ -127,6 +128,54 @@ export const useOrderStore = create((set) => ({
       set({ orders: data.data });
 
       return { success: true, message: 'Fetched orders by username', data: data.data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  getOrderById: async (id) => {
+    try {
+      const res = await fetch(`/api/orders/${id}/getByID`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
+      set({ currentOrder: data.data }); // Set the fetched order in the state
+      return { success: true, order: data.data };
+    } catch (error) {
+      console.error("Error in getOrderById:", error);
+      return { success: false, message: error.message };
+    }
+  },
+  
+  // Cancel an order
+  cancelOrder: async (id) => {
+    try {
+      const res = await fetch(`/api/orders/${id}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
+
+      // Update the order in the state to reflect the cancellation
+      set((state) => ({
+        orders: state.orders.map((order) =>
+          order._id === id ? { ...order, status: 'cancelled' } : order
+        ),
+      }));
+
+      return { success: true, message: 'Order cancelled and refund issued to your wallet' };
     } catch (error) {
       return { success: false, message: error.message };
     }

@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/user";
 import { useProductStore } from "../store/product";
+import { useItineraryStore } from '../store/itinerary.js';
 import toast, { Toaster } from "react-hot-toast";
 import Promo from "../components/Promo";
+import { useActivityStore } from "../store/activity.js";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { deleteUser, createUser, getUsersNumber, getNewUsersLastMonth, user } = useUserStore();
   const { getProducts, products } = useProductStore();
+  const { getItineraries, itineraries} = useItineraryStore();
+  const { getActivities, activities } = useActivityStore();
 
   const [users, setUsers] = useState(0);
   const [newUsers, setNewUsers] = useState(0);
@@ -34,28 +38,69 @@ const AdminDashboard = () => {
   }, [user]);
   
   const fetchSalesReport = async () => {
-    await getProducts();
-    const giftShopSales = products
-      .filter((product) => product.sales > 0)
-      .map((product) => ({
-        category: "Gift Shop",
-        name: product.name,
-        revenue: (product.sales || 0) * product.price,
-        appRate: 10, // Assuming 10% app rate for now
-        appRevenue: ((product.sales || 0) * product.price) * 0.1,
-        date: product.date || "2024-11-01",
-      }));
+    try {
+      await getProducts(); // Fetch products
+      const giftShopSales = products
+        .filter((product) => product.sales > 0)
+        .map((product) => ({
+          category: "Gift Shop",
+          name: product.name,
+          salesOrBookings: product.sales, // Number of sales
+          price: `$${product.price.toFixed(2)}`, // Format price
+          revenue: `$${(product.sales * product.price).toFixed(2)}`, // Format revenue
+          appRate: 10,
+          appRevenue: `$${(product.sales * product.price * 0.1).toFixed(2)}`, // Format app revenue
+          date: product.date ? new Date(product.date).toISOString().split("T")[0] : "----",
+        }));
   
-    // Example static event and itinerary data
-    const data = [
-      { category: "Event", name: "Event 1", revenue: 1000, appRate: 10, appRevenue: 100, date: "2024-11-01" },
-      { category: "Itinerary", name: "Itinerary 1", revenue: 500, appRate: 10, appRevenue: 50, date: "2024-11-02" },
-      ...giftShopSales,
-    ];
-
-    setSalesReport(data);
-    setFilteredReport(data);
+      await getItineraries(); // Fetch itineraries
+      const itineraryData = itineraries
+        .filter((itinerary) => itinerary.numberOfBookings > 0)
+        .map((itinerary) => ({
+          category: "Itinerary",
+          name: itinerary.name,
+          salesOrBookings: itinerary.numberOfBookings, // Number of bookings
+          price: `$${itinerary.price.toFixed(2)}`, // Format price
+          revenue: `$${(itinerary.numberOfBookings * itinerary.price).toFixed(2)}`, // Format revenue
+          appRate: 10,
+          appRevenue: `$${(itinerary.numberOfBookings * itinerary.price * 0.1).toFixed(2)}`, // Format app revenue
+          date: itinerary.availableDates[0]
+            ? new Date(itinerary.availableDates[0]).toISOString().split("T")[0]
+            : "No Date",
+        }));
+  
+      await getActivities(); // Fetch activities
+      const activityData = activities
+        .filter((activity) => activity.numberOfBookings > 0)
+        .map((activity) => ({
+          category: "Activity",
+          name: activity.name,
+          salesOrBookings: activity.numberOfBookings, // Number of bookings
+          price: `$${activity.price.toFixed(2)}`, // Format price
+          revenue: `$${(activity.numberOfBookings * activity.price).toFixed(2)}`, // Format revenue
+          appRate: 10,
+          appRevenue: `$${(activity.numberOfBookings * activity.price * 0.1).toFixed(2)}`, // Format app revenue
+          date: activity.date ? new Date(activity.date).toISOString().split("T")[0] : "No Date",
+        }));
+  
+      const data = [...activityData, ...itineraryData, ...giftShopSales];
+      console.log("Final Sales Report Data:", data); // Debug final data
+  
+      // Update state with final report
+      setSalesReport(data);
+      setFilteredReport(data);
+    } catch (error) {
+      console.error("Error fetching sales report:", error);
+      toast.error("Failed to load sales report.", { className: "text-white bg-red-600" });
+    }
   };
+  
+  
+  
+  
+  
+  
+  
   const handleAddGovernor = async (e) => {
     e.preventDefault(); 
     const payload = { ...governordata, type: "governor" };
@@ -252,7 +297,7 @@ const AdminDashboard = () => {
             className="bg-gray-800 text-white rounded-md px-2 py-2"
           >
             <option value="">All Categories</option>
-            <option value="Event">Event</option>
+            <option value="Activity">Activity</option>
             <option value="Itinerary">Itinerary</option>
             <option value="Gift Shop">Gift Shop</option>
           </select>
@@ -279,30 +324,40 @@ const AdminDashboard = () => {
         </div>
 
         {/* Sales Report Table */}
-        <table className="w-full table-auto mt-4 text-white">
-          <thead>
-            <tr>
-              <th className="py-2">Category</th>
-              <th className="py-2">Name</th>
-              <th className="py-2">Revenue</th>
-              <th className="py-2">App Rate</th>
-              <th className="py-2">App Revenue</th>
-              <th className="py-2">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReport.map((report, index) => (
-              <tr key={index} className="bg-gray-800 hover:bg-gray-700">
-                <td className="py-2">{report.category}</td>
-                <td className="py-2">{report.name}</td>
-                <td className="py-2">{report.revenue}</td>
-                <td className="py-2">{report.appRate}%</td>
-                <td className="py-2">{report.appRevenue}</td>
-                <td className="py-2">{report.date}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <table className="w-full table-auto mt-4 text-white text center">
+  <thead>
+    <tr>
+      <th className="py-2">Category</th>
+      <th className="py-2">Name</th>
+      <th className="py-2">Sales/Bookings</th>
+      <th className="py-2">Price</th>
+      <th className="py-2">Revenue</th>
+      <th className="py-2">App Revenue</th>
+      <th className="py-2">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredReport.length === 0 ? (
+      <tr>
+        <td colSpan="7" className="text-center py-4">No data available</td>
+      </tr>
+    ) : (
+      filteredReport.map((report, index) => (
+        <tr key={index} className="bg-gray-800 hover:bg-gray-700">
+          <td className="py-2">{report.category}</td>
+          <td className="py-2">{report.name}</td>
+          <td className="py-2">{report.salesOrBookings}</td>
+          <td className="py-2">{report.price}</td>
+          <td className="py-2">{report.revenue}</td>
+          <td className="py-2">{report.appRevenue}</td>
+          <td className="py-2">{report.date}</td>
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
+
+
       </div>
 
       {/* View All Products Section */}

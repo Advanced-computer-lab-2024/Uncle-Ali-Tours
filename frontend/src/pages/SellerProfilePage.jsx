@@ -12,6 +12,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { IoIosAddCircle } from "react-icons/io";
 import { FaArrowRotateRight } from "react-icons/fa6";
+import egypt from '../images/egypt.jpg';
 
 import {
 	Chart as ChartJS,
@@ -211,7 +212,9 @@ const SellerProfile = () => {
 
 	return (
 		<div className="w-full mt-24 flex">
-			<div className="bg-gradient-to-b shadow-xl relative fro-100% from-[#C1BAA1] h-[60vh] w-[24vw] mx-auto rounded-lg">
+			<img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[200vw] h-[100vh] bg-black opacity-600 pointer-events-none" />
+				{/* <div className="bg-gradient-to-b shadow-2xl relative fro-100% from-[white] h-[60vh] w-[24vw] mx-auto rounded-lg"> */}
+				<div className="bg-gradient-to-b from-white via-white/90 to-white/70 shadow-2xl relative h-[60vh] w-[24vw] mx-auto rounded-lg">
 				<div className="absolute top-0 left-1/2 translate-x-[-50%] translate-y-[-35%]">
 					<label
 						for="pic-upload"
@@ -238,15 +241,15 @@ const SellerProfile = () => {
 					/>
 				</div>
 				<p className="lg:text-3xl md:text-2xl  absolute top-32 left-1/2 translate-x-[-50%]">
-					{"Esm el seller"}
+					{sell.userName || ""}
 				</p>
 				<p className="lg:text-xl md:text-lg font-thin  absolute top-[220px] left-1/2 translate-x-[-50%]">
-					{"email el seller@gamil.com"}
+					{sell.email || "email el seller@gamil.com"}
 				</p>
 				<p className="lg:text-xl md:text-lg font-thin  absolute top-[180px] left-1/2 translate-x-[-50%]">
-					{"+201823793346"}
+					{sell.mobileNumber || "+201823793346"}
 				</p>
-				<Link to="/" className="absolute top-5 left-8">
+				<Link to="/editProfile" className="absolute top-5 left-8">
 					Edit
 				</Link>
 
@@ -270,7 +273,8 @@ const SellerProfile = () => {
 				</div>
 			</div>
 
-			<div className="bg-gradient-to-t shadow-xl relative mb-6 from-100% from-[#C1BAA1] min-h-[60vh] w-[70vw] mx-auto rounded-lg">
+			{/* <div className="bg-gradient-to-b shadow-xl relative mb-6 fro-100% from-[white] min-h-[60vh] w-[70vw] mx-auto rounded-lg"> */}
+			<div className="bg-gradient-to-b from-white via-white/90 to-white/70 shadow-xl relative mb-6 min-h-[60vh] w-[70vw] mx-auto rounded-lg">
 				<div className="absolute top-8 shadow-md bg-[#D7D3BF]/90 rounded-full left-1/2 translate-x-[-50%]">
 					<button
 						className={`${archivedButton ? "hover:scale-[0.985] " : "shadow-md scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full`} 

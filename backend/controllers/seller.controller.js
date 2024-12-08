@@ -158,19 +158,29 @@ export const createSeller = async (req, res) => {
 export const deleteSeller = async (req, res) => {
   const { userName } = req.body;
 
+  if (!userName) {
+    return res.status(400).json({ success: false, message: "userName is required" });
+  }
+
   try {
     const seller = await Seller.findOne({ userName });
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
-        }
-        await Product.deleteMany({creator:userName});
-        await Seller.findOneAndDelete({ userName: userName });
-        // Remove profile picture file if it exists
+    }
+
+    await Product.deleteMany({ creator: userName });
+    await Seller.findOneAndDelete({ userName });
+
+    // Remove profile picture file if it exists
     if (seller.profilePicture && fs.existsSync(path.join(__dirname, `../${seller.profilePicture}`))) {
       fs.unlinkSync(path.join(__dirname, `../${seller.profilePicture}`));
     }
-        res.json({ success: true, message: "Seller profile deleted successfully" });
-    } catch (error) {
-        res.status(506).json({ success: false, message: "Server error", error: error.message });
-    }
+    
+    
+
+    res.json({ success: true, message: "Seller profile deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting seller:", error); // Log the error for debugging
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
 };
