@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
@@ -12,6 +12,7 @@ import { FaUser, FaEnvelope, FaLock, FaPhone, FaFlag, FaBirthdayCake, FaBriefcas
 import egypt from '../images/egypt.jpg';
 
 function RegisterPage() {
+    const [acceptTerms, setAcceptTerms] = React.useState(false);  // New state for terms acceptance
     const [activeTab, setActiveTab] = React.useState('user');
     const [newUser, setNewUser] = React.useState({
         userName: "",
@@ -45,15 +46,15 @@ function RegisterPage() {
             await new Promise(r => setTimeout(r, 2000));
             switch (type) {
                 case "tour guide":
-                    await getGuide({userName : newUser.userName},{});
+                    await getGuide({userName : newUser.userName}, {});
                     navigate("/TourGuideProfilePage");
                     break;
                 case "advertiser":
-                    await getAdvertiser({userName : newUser.userName},{});
+                    await getAdvertiser({userName : newUser.userName}, {});
                     navigate("/advertiserProfile");
                     break;
                 case "seller":
-                    await getSeller({userName : newUser.userName},{});
+                    await getSeller({userName : newUser.userName}, {});
                     navigate("/sellerProfile");
                     break;
                 default:
@@ -69,12 +70,12 @@ function RegisterPage() {
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
         if (success) {
             await new Promise(r => setTimeout(r, 2000));
-            await getTourist({userName : tourist.userName},{});
+            await getTourist({userName : tourist.userName}, {});
             navigate("/touristProfile");
         }
     }
 
-    const types = ["tour guide", "advertiser", "seller"]
+    const types = ["tour guide", "advertiser", "seller"];
     
     const touristData = [
         { name: "userName", icon: FaUser, placeholder: "Username" },
@@ -163,10 +164,25 @@ function RegisterPage() {
                                     whileTap={{ scale: 0.95 }}
                                     style={styles.registerButton}
                                     onClick={() => handleAddUser(type)}
+                                    disabled={!acceptTerms}  // Disable button if terms are not accepted
                                 >
                                     {type}
                                 </motion.button>
                             ))}
+                        </div>
+
+                        {/* Terms Acceptance Section */}
+                        <div style={styles.termsWrapper}>
+                            <input 
+                                type="checkbox"
+                                checked={acceptTerms}
+                                onChange={() => setAcceptTerms(!acceptTerms)} 
+                                style={styles.checkbox}
+                            />
+                            <span style={styles.termsText}>
+                                I accept the 
+                                <a href="/terms-and-conditions" style={styles.termsLink}> Terms and Conditions</a>
+                            </span>
                         </div>
                     </div>
                 )}
@@ -191,6 +207,7 @@ function RegisterPage() {
                             whileTap={{ scale: 0.95 }}
                             style={styles.registerButton}
                             onClick={handleAddTourist}
+                            disabled={!acceptTerms}  // Disable button if terms are not accepted
                         >
                             Register as Tourist
                         </motion.button>
@@ -331,8 +348,23 @@ const styles = {
     },
     footerText: {
         margin: 0,
-    }
+    },
+    termsWrapper: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '1rem',
+    },
+    checkbox: {
+        marginRight: '0.5rem',
+    },
+    termsText: {
+        fontSize: '0.9rem',
+        color: '#333',
+    },
+    termsLink: {
+        color: '#dc5809',
+        textDecoration: 'underline',
+    },
 };
 
-export default RegisterPage
-
+export default RegisterPage;

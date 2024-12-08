@@ -14,7 +14,6 @@ import { IoSaveOutline } from "react-icons/io5";
 import BronzeBadge from '../images/bronze.png';
 import SilverBadge from '../images/silver.png';
 import GoldBadge from '../images/gold.png';
-import egypt from '../images/egypt.jpg';
 
 const TouristProfile = ({ userName }) => {
   const {user} = useUserStore();
@@ -42,32 +41,20 @@ const TouristProfile = ({ userName }) => {
   useEffect(() => {
     // Trigger the check when the profile page loads
     const checkNotifications = async () => {
-      try {
-          // Make GET request to check for upcoming itineraries
-          const response = await fetch(`/api/tourist/${userName}/check-upcoming-itinerary`, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-          });
-  
-          // If the response is ok (status 200-299)
-          if (response.ok) {
-              const data = await response.json();
-              if (data.success) {
-                  console.log(data.message);  // Notification sent successfully
-              } else {
-                  console.log(data.message);  // No notification needed
-              }
-          } else {
-              // Handle the case when the response status is not OK
-              console.error('Error fetching upcoming itinerary:', response.statusText);
-          }
-      } catch (error) {
-          console.error("Error checking upcoming itinerary notifications:", error);
-      }
-  };
-  
+        try {
+            // Make GET request to check for upcoming itineraries
+            const response = await axios.get(`/api/tourist/${userName}/check-upcoming-itinerary`);
+
+            // If the server responds with success
+            if (response.data.success) {
+                console.log(response.data.message);  // Notification sent successfully
+            } else {
+                console.log(response.data.message);  // No notification needed
+            }
+        } catch (error) {
+            console.error("Error checking upcoming itinerary notifications:", error);
+        }
+    };
 
     // Call the function to check for notifications when the component mounts
     checkNotifications();
@@ -102,16 +89,16 @@ const TouristProfile = ({ userName }) => {
   };
 
   
-  useEffect(() => {
-    const fetchData = async () => {
-      const itineraries = await fetchUpcomingItineraries(user.userName);
-      //const activities = await fetchUpcomingActivities(user.userName);
-      setUpcomingItineraries(itineraries);
-      //setUpcomingActivities(activities);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const itineraries = await fetchUpcomingItineraries(user.userName);
+  //     const activities = await fetchUpcomingActivities(user.userName);
+  //     setUpcomingItineraries(itineraries);
+  //     setUpcomingActivities(activities);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   
   useEffect(() => {
@@ -142,7 +129,7 @@ useEffect(() => {
   // Fetch itineraries and activities when the component mounts
   const fetchData = async () => {
     const itineraries = await fetchUpcomingItineraries(user.userName);
-   // const activities = await fetchUpcomingActivities(user.userName);
+    const activities = await fetchUpcomingActivities(user.userName);
 
     setUpcomingItineraries(itineraries.length); // Update state with number of itineraries
     setUpcomingActivities(activities.length); // Update state with number of activities
@@ -287,8 +274,7 @@ const getBadgeImage = () => {
   return (
     <div className="flex w-full mt-12 justify-around">
     <Toaster />
-      <img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[200vw] h-[100vh] bg-black opacity-600 pointer-events-none" />
-        <div className="flex flex-col gap-[6vh] justify-start"> 
+      <div className="flex flex-col gap-[6vh] justify-start"> 
         <div className="flex gap-[6vw] justify-around"> 
          <div className="relative p-6 w-fit backdrop-blur-lg bg-[#161821f0] h-[68vh] max-w-3xl rounded-lg shadow-lg text-white left-[-20%]"> 
          <div className="absolute top-[-25px] left-[50%] transform -translate-x-[50%] w-24 h-24">
@@ -525,7 +511,6 @@ const getBadgeImage = () => {
 
     
   );
-  
 };    
 
 export default TouristProfile;
