@@ -1,39 +1,61 @@
-import React from 'react'
-import {create} from 'zustand';
+import React from 'react';
+import { create } from 'zustand';
 import { IoClose } from "react-icons/io5";
 
 export const dialog = create((set) => ({
-    show: false,
-    setShow: (show) => set({show}),
-    showDialog: () => set({show: true}),
-    hideDialog: () => set({show: false}),
-   }));
+  show: false,
+  setShow: (show) => set({ show }),
+  showDialog: () => set({ show: true }),
+  hideDialog: () => set({ show: false }),
+}));
 
+function Dialog({ msg, accept, reject, acceptButtonText = "Accept", rejectButtonText = "Reject" }) {
+  const { show, hideDialog } = dialog();
 
-function Dialog({msg, accept, reject, acceptButtonText= "accept", rejectButtonText="reject"}) {
-    const {show, hideDialog} = dialog()
-     
-    const acceptClick = () => {
-        accept()
-        hideDialog()
-    }
+  const acceptClick = () => {
+    accept();
+    hideDialog();
+  };
 
-    const rejectClick = () => {
-        reject()
-        hideDialog()
-    }
+  const rejectClick = () => {
+    reject();
+    hideDialog();
+  };
+
+  if (!show) return null;
 
   return (
-    show &&
-    <div className='bg-gray-700 h-fit text-center p-4 w-[23vw] rounded-xl absolute right-0 left-0 top-[20vh] mx-auto'>
-        <button onClick={() => (hideDialog())} className='absolute right-3 h-fit rounded-full'>
-        <IoClose size={20}/>
-        </button>
-        <p className='my-2'>{msg}</p>
-        <button onClick={acceptClick} className='bg-[#dc5809] m-2 py-2 px-6 rounded'>{acceptButtonText}</button>
-        <button onClick={rejectClick} className='bg-[#dc5809] m-2 py-2 px-6 rounded'>{rejectButtonText}</button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
+        <div className="flex justify-between items-center border-b p-4">
+          <h3 className="text-xl font-bold text-gray-900">Confirmation</h3>
+          <button
+            onClick={hideDialog}
+            className="text-gray-400 hover:text-gray-500 transition-colors"
+          >
+            <IoClose size={24} />
+          </button>
         </div>
-  )
+        <div className="p-6">
+          <p className="text-gray-700 mb-6 text-lg">{msg}</p>
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={acceptClick}
+              className="px-5 py-3 bg-orange-500 text-white font-semibold rounded-md hover:bg-orange-600 transition-all ml-4"
+            >
+              {acceptButtonText}
+            </button>
+            <button
+              onClick={rejectClick}
+              className="px-5 py-3 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100 transition-all mr-4"
+            >
+              {rejectButtonText}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default Dialog
+export default Dialog;

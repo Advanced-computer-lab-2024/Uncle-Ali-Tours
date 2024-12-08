@@ -153,7 +153,6 @@ const SideMenu = ({ isOpen, onClose }) => {
       toast.error(message, { className: 'text-white bg-gray-800' });
     }
   };
-
   return (
     <div
       className={`fixed top-0 rounded-lg left-0 h-[100vh] mr-[0.8vw] w-64 bg-white text-white transform ${isOpen ? "translate-x-0" : "translate-x-[calc(-100%-0.8vw)]"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
@@ -189,32 +188,32 @@ const SideMenu = ({ isOpen, onClose }) => {
 
         {/* Render "My Preferences" section only for tourists */}
         {user.type === "tourist" && (
-          <div className={`mb-4 w-[90%] mx-auto ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "bg-gray-900" : ""}`}>
-            <h2
-              onClick={() => toggleMenu(user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length)}
-              className={`${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
-            >
-              My Preferences
-              <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "rotate-180" : ""}`} />
-            </h2>
-            <ul className={`transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
-              {tags && tags.length > 0 ? (
-                tags.map((tag) => (
-                  <li key={tag._id || tag.name}>
-                    <button
-                      onClick={() => handlePreferenceToggle(tag.name)}
-                      className={`hover:text-[#C6EBC5] transition-all duration-500 ${expandedIndex === (user.type === "tourist" ? menuItemsTourist.length : menuItemsAdmin.length) ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
-                    >
-                      {tag.name}
-                      {preferences.includes(tag.name) && <FaCheck className="text-green-500" />}
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="px-4 py-1 text-sm">Loading preferences...</li>
-              )}
-            </ul>
-          </div>
+           <div className={`mb-4 w-[90%] mx-auto ${expandedIndex === menuItemsTourist.length ? "bg-gray-900" : ""}`}>
+           <h2
+             onClick={() => toggleMenu(menuItemsTourist.length)}
+             className={`${expandedIndex === menuItemsTourist.length ? "text-red-200" : ""} text-lg transition-colors w-full duration-500 mx-auto py-2 rounded font-bold mb-2 px-4 cursor-pointer hover:bg-gray-700 flex justify-between items-center`}
+           >
+             My Preferences
+             <FaAngleDown className={`transition-transform duration-500 ${expandedIndex === menuItemsTourist.length ? "rotate-180" : ""}`} />
+           </h2>
+           <ul className={`transition-all duration-500 ${expandedIndex === menuItemsTourist.length ? "h-[20vh]" : "h-[0px]"} overflow-hidden`}>
+             {tags && tags.length > 0 ? (
+               tags.map((tag) => (
+                 <li key={tag._id || tag.name}>
+                   <button
+                     onClick={() => handlePreferenceToggle(tag.name)}
+                     className={`hover:text-blue-200 transition-all duration-500 ${expandedIndex === menuItemsTourist.length ? "h-[3ch] hover:bg-gray-700 px-4 py-1 my-2 text-sm" : "h-[0px] text-[0px]"} block mx-auto rounded w-full text-left flex items-center justify-between`}
+                   >
+                     {tag.name}
+                     {preferences.includes(tag.name) && <FaCheck className="text-green-500" />}
+                   </button>
+                 </li>
+               ))
+             ) : (
+               <li className="px-4 py-1 text-sm">Loading preferences...</li>
+             )}
+           </ul>
+         </div>
         )}
       </nav>
     </div>

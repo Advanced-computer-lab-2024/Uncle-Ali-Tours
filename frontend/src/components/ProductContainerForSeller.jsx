@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import { BiSolidArchiveOut, BiSolidArchiveIn } from "react-icons/bi";
 import { useProductStore } from '../store/product.js';
-import { FaEdit } from "react-icons/fa";
+import { FaEdit ,FaStar} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import avatar from "/avatar.png";
 import { Modal } from "react-bootstrap";
 import { IoClose } from "react-icons/io5";
+import Button from '../components/Button';
+import toast from 'react-hot-toast';
+import { useTouristStore } from "../store/tourist.js";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/DialogAI';
+
 
 function ProductContainerForSeller({ product }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const {tourist} = useTouristStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState('');
   const displayPrice = (product.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
   const [showPreview, setShowPreview] = useState(false);
   const keys = [
@@ -28,6 +38,58 @@ function ProductContainerForSeller({ product }) {
   const handleArchiveClick = (e) => {
     e.preventDefault();
     archiveProduct(product._id, !product.archive);
+  };
+  const handleReviewClick = async (type) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tourist/check-purchase/${tourist.userName}/${product._id}`);
+      const data = await response.json();
+
+      if (data.canReview) {
+        setDialogType(type);
+        setIsDialogOpen(true);
+      } else {
+        toast.error(data.message, { className: "text-white bg-gray-800" });
+      }
+    } catch (error) {
+      console.error('Error checking purchase status', error);
+      toast.error('There was an error checking purchase status. Please try again.', { className: "text-white bg-gray-800" });
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (dialogType === 'rate' && rating > 5) {
+      toast.error("Rating cannot exceed 5", { className: "text-white bg-gray-800" });
+      return;
+    }
+    if (dialogType === 'review' && review === "") {
+      toast.error("Please put a review before submitting", { className: "text-white bg-gray-800" });
+      return;
+    }
+    
+    const requestData = {
+      user: { userName: tourist.userName },
+      [dialogType === 'rate' ? 'rating' : 'reviewText']: dialogType === 'rate' ? rating : review
+    };
+
+    try {
+      const response = await fetch(`/api/product/${product._id}/rate-review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+      } else {
+        toast.error(data.message || 'Failed to submit');
+      }
+    } catch (error) {
+      console.error('Error submitting rating/review:', error);
+      toast.error('An error occurred. Please try again.', { className: "text-white bg-gray-800" });
+    }
+    
+    setIsDialogOpen(false);
   };
 
   return (
@@ -71,6 +133,12 @@ function ProductContainerForSeller({ product }) {
               </button>
             </div>
           )}
+           {user.type === 'tourist' && (
+            <div>
+          <button onClick={()=> handleReviewClick('review')} className="text-black p-2">Review</button>
+          <button onClick={()=> handleReviewClick('rate')} className="text-black p-2">Rate</button>
+          </div>
+          )}
         </div>
       </div>
       <Modal
@@ -97,7 +165,39 @@ function ProductContainerForSeller({ product }) {
           />
         </Modal.Body>
       </Modal>
+      <Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+        <DialogHeader>
+          <DialogTitle>{dialogType === 'rate' ? 'Rate the Product' : 'Write a Review'}</DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          {dialogType === 'rate' && (
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  className={`cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                  onClick={() => setRating(star)}
+                />
+              ))}
+            </div>
+          )}
+          {dialogType === 'review' && (
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              className="w-full p-2 border rounded"
+              rows="4"
+              placeholder="Write your review here..."
+            />
+          )}
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
+    
   );
 }
 

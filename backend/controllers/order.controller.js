@@ -1,8 +1,11 @@
 import Order from "../models/order.model.js";
 import Tourist from "../models/tourist.model.js";
 
+
 export const createOrder = async (req, res) => {
     const orderData = req.body;
+
+    // Validate required fields
     if (!orderData.creator) {
         return res.status(400).json({ success: false, message: 'Username is required' });
     }
@@ -15,10 +18,30 @@ export const createOrder = async (req, res) => {
     if (!orderData.paymentMethod) {
         return res.status(400).json({ success: false, message: 'Payment method is required' });
     }
-    const newOrder = new Order(orderData);
+
+    // Create the new order with 'shipping' as the initial status
+    const newOrder = new Order({
+        ...orderData,
+        status: 'shipping', // Default status when an order is created
+    });
 
     try {
         await newOrder.save();
+
+        // Schedule the status update to 'shipped' after 3 minutes (180000 ms)
+        setTimeout(async () => {
+            try {
+                const updatedOrder = await Order.findByIdAndUpdate(
+                    newOrder._id,
+                    { status: 'shipped' },
+                    { new: true }
+                );
+                console.log(`Order ${newOrder._id} status updated to 'shipped'`);
+            } catch (error) {
+                console.error(`Failed to update order ${newOrder._id} to 'shipped':`, error.message);
+            }
+        }, 180000); // 3 minutes in milliseconds
+
         return res.status(201).json({ success: true, data: newOrder });
     } catch (error) {
         console.error("Error creating order:", error.message);
