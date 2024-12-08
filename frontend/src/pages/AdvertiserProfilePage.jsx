@@ -249,6 +249,25 @@ const AdvertiserProfile = () => {
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
             <div className="flex justify-between items-center">
               <h1 className="text-3xl font-bold text-white">Advertiser Profile</h1>
+              <div className="relative">
+                <img
+                  src={`http://localhost:3000${previewFile}`}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white"
+                />
+                <label
+                  htmlFor="profile-upload"
+                  className="absolute bottom-0 right-0 bg-white rounded-full p-2 cursor-pointer"
+                >
+                  <FaEdit className="text-orange-500" />
+                </label>
+                <input
+                  id="profile-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </div>
             </div>
           </div>
           
@@ -288,66 +307,8 @@ const AdvertiserProfile = () => {
             
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Profile Picture</h2>
-                <div className="flex items-center space-x-4">
-                  {previewFile ? (
-                    <img
-                      src={`http://localhost:3000${previewFile}`}
-                      alt="Profile Picture"
-                      className="w-32 h-32 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
-                      No Image
-                    </div>
-                  )}
-                  <div>
-                    <button onClick={() => setShowPreview(true)} className="text-blue-500 hover:text-blue-600">
-                      <FaEye className="inline-block mr-2" /> Preview
-                    </button>
-                    <button onClick={() => setIsEditing(true)} className="text-orange-500 hover:text-orange-600 ml-4">
-                      <FaEdit className="inline-block mr-2" /> Edit
-                    </button>
-                  </div>
-                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Document Upload</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">ID</label>
-                    <input
-                      type="file"
-                      onChange={(e) => setIdFile(e.target.files[0])}
-                      className="mt-1 block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Taxation Registry Card</label>
-                    <input
-                      type="file"
-                      onChange={(e) => setTaxationCardFile(e.target.files[0])}
-                      className="mt-1 block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100"
-                    />
-                  </div>
-                  <button
-                    onClick={handleFileUpload}
-                    className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors"
-                  >
-                    Upload Documents
-                  </button>
-                </div>
-              </div>
+              
             </div>
 
             <div className="mt-10 border-t pt-6">
@@ -391,42 +352,7 @@ const AdvertiserProfile = () => {
                       file:bg-violet-50 file:text-violet-700
                       hover:file:bg-violet-100"
           />
-          {profilePic && (
-            <div className="avatar-editor">
-              <AvatarEditor
-                ref={editorRef}
-                image={profilePic}
-                width={200}
-                height={200}
-                border={50}
-                borderRadius={100}
-                color={[255, 255, 255, 0.6]}
-                scale={scale}
-                rotate={rotate}
-              />
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">Zoom</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="3"
-                  step="0.1"
-                  value={scale}
-                  onChange={(e) => setScale(parseFloat(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">Rotate</label>
-                <button
-                  onClick={() => setRotate((prev) => prev + 90)}
-                  className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors"
-                >
-                  Rotate 90°
-                </button>
-              </div>
-            </div>
-          )}
+          
         </Modal.Body>
         <Modal.Footer>
           <button
@@ -466,6 +392,52 @@ const AdvertiserProfile = () => {
           </div>
         </div>
       )}
+        {profilePic && (
+  <div className="fixed top-0 right-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg">
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        onClick={() => setProfilePic(null)}
+      >
+        <IoClose size={24} />
+      </button>
+      <AvatarEditor
+        ref={editorRef}
+        image={profilePic}
+        width={250}
+        height={250}
+        border={50}
+        borderRadius={125}
+        color={[255, 255, 255, 0.6]}
+        scale={scale}
+        rotate={rotate}
+      />
+      <div className="mt-4 flex items-center justify-between">
+        <input
+          type="range"
+          min="1"
+          max="2"
+          step="0.01"
+          value={scale}
+          onChange={(e) => setScale(parseFloat(e.target.value))}
+          className="w-1/2"
+        />
+        <button
+          className="bg-gray-200 text-gray-700 p-2 rounded-full"
+          onClick={() => setRotate((prev) => prev + 90)}
+        >
+          <FaArrowRotateRight />
+        </button>
+      </div>
+      <button
+        className="mt-4 w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition-colors"
+        onClick={handleSaveProfilePicture}
+      >
+        Save Profile Picture
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };
