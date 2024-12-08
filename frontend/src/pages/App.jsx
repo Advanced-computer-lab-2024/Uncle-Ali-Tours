@@ -79,6 +79,8 @@ import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 import ViewMyOrders from './ViewMyOrders.jsx';
+import ViewMyItineraries from './ViewMyItineraries.jsx';
+import ViewMyActivities from './ViewMyActivities.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -198,6 +200,8 @@ function App() {
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
+        <Route path="/viewMyItineraries" element={<ViewMyItineraries/>} />
+        <Route path="/viewMyActivities" element={<ViewMyActivities/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
 

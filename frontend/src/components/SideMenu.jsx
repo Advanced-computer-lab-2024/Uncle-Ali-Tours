@@ -43,8 +43,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "My Bookings",
       subItems: [
-        { name: "Upcoming Itineraries", path: "/upcomingItineraries" },
-        { name: "Upcoming Activities", path: "/upcomingActivities" },
+        { name: "Upcoming Itineraries", path: "/viewMyItineraries" },
+        { name: "Upcoming Activities", path: "/viewMyActivities" },
       ],
     },
     {

@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     chosenCurrency: {
         type: String,
-        default: "EGP",
+        default: "USD",
     },
     currencyRate: {
         type: Number,
