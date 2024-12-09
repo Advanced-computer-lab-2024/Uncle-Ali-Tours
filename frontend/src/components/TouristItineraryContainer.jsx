@@ -267,21 +267,21 @@ const handleSubmit = async () => {
 };
 
 // Handle eligibility check for rate or review
-const handleReviewClick = async (type , itineraryId) => {
-  try {
-      const response = await fetchPastItineraries(tourist.userName);
-      // const data = await response.json();
-      // console.log(itineraryId)
-      const specificItinerary = response.find(itinerary => itinerary._id === itineraryId);
-      // console.log(specificItinerary)
-      if (specificItinerary) {
-          openDialog(type);
-      } else {
-          toast.error(data.message, { className: "text-white bg-gray-800" });
-      }
-  } catch (error) {
-      console.error('Error checking itinerary booking', error);
-      toast.error('There was an error checking itinerary booking. Please try again.', { className: "text-white bg-gray-800" });
+const handleReviewClick = async (e) => {
+  e.preventDefault();
+  const itineraryId = itinerary._id;
+
+  if (!itineraryId) {
+    console.error('Error: Itinerary ID is missing');
+    return;
+  }
+  const { success, message } = await createItineraryReview(itineraryId, rating, comment,user);
+  if (success) {
+    toast.success('Review added successfully!');
+    setRating(0);
+    setComment('');
+  } else {
+    toast.error('Failed to add review: ' + message);
   }
 };
 
@@ -325,13 +325,37 @@ const handleToggleBookmark = async () => {
 
   return (
     <Card className="w-full max-w-[700px] mx-auto">
-       <div className="flex items-center justify-between mb-2">
-       <div>
-<h3>Add a Review</h3>
-       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
-      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
-      <button onClick={handleSubmitItineraryReview}>Submit</button>
-   </div> 
+        <p>Average Rating: {itinerary.rating} (from {itinerary.numReviews} reviews)</p>
+
+        <div>
+        <div>
+        <h3>Add a Review</h3>
+        <input
+          type="number"
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+          placeholder="Rating"
+          min="1"
+          max="5"
+        />
+        <input
+          type="text"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Comment"
+        />
+        <button onClick={handleReviewClick} disabled={isLoading}>
+          {isLoading ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
+        <div>
+        <h3>Reviews</h3>
+        {itinerary.reviews?.map((review, index) => (
+          <div key={index}>
+            <Rating value={review.rating} text={review.comment} />
+          </div>
+        ))}
+      </div>
                 <h3 className="text-lg font-bold"></h3>
                 <button
                     onClick={handleToggleBookmark}
