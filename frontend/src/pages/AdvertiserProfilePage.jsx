@@ -377,7 +377,7 @@ const AdvertiserProfile = () => {
           <div className="mt-10 border-t pt-6">
             <button
               className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
-              onClick={handleDeleteClick}
+              onClick={handleDeleteAccountRequest}
             >
               Delete Account
             </button>
