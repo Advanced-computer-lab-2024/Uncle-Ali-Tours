@@ -113,7 +113,7 @@ const TouristProfilePage = () => {
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-white">Tourist Profile</h1>
+              <h1 className="text-3xl font-bold text-white">Profile Page</h1>
               <img src={getBadgeImage()} alt={`${badge} badge`} className="h-16 w-16" />
             </div>
           </div>

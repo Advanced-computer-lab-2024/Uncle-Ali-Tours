@@ -6,6 +6,7 @@ import { usePaymentStore } from '../store/payment';
 import { useTouristStore } from '../store/tourist';
 import { useTransportationActivityStore } from '../store/transportationActivity';
 import { useUserStore } from '../store/user';
+import TouristPromos from '../components/TouristPromos.jsx';
 import axios from 'axios';
 function PaymentPage() {
   const location = useLocation();
@@ -177,73 +178,80 @@ function PaymentPage() {
     return <div>Loading...</div>;
   }
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10 mb-10">
-      <h1 className="text-3xl font-bold mb-6 text-center">Payment Page</h1>
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <h1 className="text-3xl font-bold text-white">Payment Page</h1>
+          </div>
+          
+          <div className="p-6 sm:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+                {items.map((item, index) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg shadow">
+                    <p className="text-lg font-semibold text-gray-800">{item.itemData.name}</p>
+                    <p className="text-gray-600">
+                      Price: {(item.itemData.price * user.currencyRate).toFixed(2)} {user.chosenCurrency}
+                    </p>
+                  </div>
+                ))}
 
-      {items.map((item, index) => (
-        <div key={index} className="mb-4 border-b pb-2">
-          <p className="text-lg font-semibold">Item: {item.itemData.name}</p>
-          <p className="text-gray-700">
-            Price: {(item.itemData.price * user.currencyRate).toFixed(2)} {user.chosenCurrency}
-          </p>
+                <div className="bg-orange-100 p-4 rounded-lg shadow">
+                  <h2 className="text-2xl font-semibold text-orange-800 mb-2">
+                    Total Price: {price.toFixed(2)} {user.chosenCurrency}
+                  </h2>
+                  <p className="text-orange-600">Discount: {discount}%</p>
+                </div>
+
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={handlePromoCodeChange}
+                    placeholder="Enter promo code"
+                    className="w-full p-2 border rounded-md"
+                  />
+                  <button 
+                    onClick={applyPromoCode} 
+                    className="w-full bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors"
+                  >
+                    Apply Promo Code
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold text-gray-900">Select Payment Method</h2>
+                  {['creditCard', 'wallet', ...(type === 'product' ? ['cashOnDelivery'] : [])].map((method) => (
+                    <label key={method} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value={method}
+                        checked={selectedPaymentMethod === method}
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        className="text-orange-500 focus:ring-orange-500"
+                      />
+                      <span className="text-gray-700 capitalize">{method.replace(/([A-Z])/g, ' $1').trim()}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handlePayment}
+                  className="w-full bg-green-500 text-white px-4 py-3 rounded-md hover:bg-green-600 transition-colors text-lg font-semibold"
+                >
+                  Proceed to Payment
+                </button>
+              </div>
+
+              <div>
+                <TouristPromos userName={user.userName} />
+              </div>
+            </div>
+          </div>
         </div>
-      ))}
-
-      <h2 className="text-2xl font-bold mt-6 mb-4">Total Price: {(price).toFixed(2)} {user.chosenCurrency}</h2>
-
-      <div className="mb-6">
-        <input
-          type="text"
-          value={promoCode}
-          onChange={handlePromoCodeChange}
-          placeholder="Enter promo code"
-          className="w-full p-2 border rounded-md mb-2"
-        />
-        <button onClick={applyPromoCode} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-          Apply Promo Code
-        </button>
-        <p className="mt-2 text-green-500">Discount: {discount}%</p>
       </div>
-
-      <h2 className="text-xl font-semibold mb-4">Select Payment Method</h2>
-      <div className="space-y-2 mb-6">
-        <label className="block">
-          <input
-            type="radio"
-            value="creditCard"
-            checked={selectedPaymentMethod === 'creditCard'}
-            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-          />
-          Credit Card
-        </label>
-        <label className="block">
-          <input
-            type="radio"
-            value="wallet"
-            checked={selectedPaymentMethod === 'wallet'}
-            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-          />
-          Wallet
-        </label>
-        {type === 'product' && (
-          <label className="block">
-            <input
-              type="radio"
-              value="cashOnDelivery"
-              checked={selectedPaymentMethod === 'cashOnDelivery'}
-              onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            />
-            Cash on Delivery
-          </label>
-        )}
-      </div>
-
-      <button
-        onClick={handlePayment}
-        className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-lg font-semibold"
-      >
-        Proceed to Payment
-      </button>
     </div>
   );
 }

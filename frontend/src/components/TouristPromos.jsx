@@ -1,9 +1,7 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 function TouristPromos({userName = ""}) {
     const [promos, setPromos] = useState([])
-
 
     useEffect(() => {
         if(!userName) return;
@@ -23,21 +21,24 @@ function TouristPromos({userName = ""}) {
     }, [userName])
 
   return (
-    <div className='w-fit p-4 rounded-lg mx-auto'>
-        <p className='text-lg'>PROMOS</p>
-        {
-            promos.map(promo => (
-                <div key={promo._id} className='mt-2 text-white p-1 rounded-lg'>
-                    <div className="flex-1 flex flex-col justify-center items-center border-b border-white">
+    <div className='w-full p-6 rounded-lg bg-white shadow-md'>
+        <h2 className='text-2xl font-semibold text-gray-900 mb-4'>Available Promos</h2>
+        {promos.length === 0 ? (
+            <p className='text-gray-600'>No promos available at the moment.</p>
+        ) : (
+            <div className='space-y-4'>
+                {promos.map(promo => (
+                    <div key={promo._id} className='bg-orange-100 p-4 rounded-lg shadow'>
+                        <h3 className='text-lg font-semibold text-orange-800'>{promo.code}</h3>
+                        <p className='text-gray-700'>{promo.description}</p>
+                        <p className='text-orange-600 font-semibold mt-2'>Discount: {promo.discount}%</p>
                     </div>
-                    <h3>{promo.code}</h3>
-                    <p>{promo.description}</p>
-                    <p>Discount: {promo.discount}%</p>
-                </div>
-            ))
-        }
+                ))}
+            </div>
+        )}
     </div>
   )
 }
 
 export default TouristPromos
+

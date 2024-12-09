@@ -170,7 +170,7 @@ const SellerProfilePage = () => {
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-white">Seller Profile</h1>
+              <h1 className="text-3xl font-bold text-white">Profile Page</h1>
               <div className="relative">
                 <img
                   src={previewFile ? `http://localhost:3000${previewFile}` : avatar}
