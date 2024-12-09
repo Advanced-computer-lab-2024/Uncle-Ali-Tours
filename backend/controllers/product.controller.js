@@ -50,16 +50,16 @@ export const getProducts = async (req, res) => {
 
 
 
-export const uploadProfilePicture = async (req, res) => {
+export const uploadProductPicture = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file provided." });
     }
   
-    const { name } = req.body;
+    const { id } = req.params;
     const filePath = `/uploads/${req.file.filename}`;
   
     try {
-      const product = await Product.findOne({ name });
+      const product = await Product.findById(id);
       if (!product) {
         fs.unlinkSync(req.file.path);
         return res.status(404).json({ message: " not found." });
@@ -76,9 +76,8 @@ export const uploadProfilePicture = async (req, res) => {
   
       return res.status(200).json({
         success: true,
-
-        success: "Product picture uploaded successfully",
-        profilePicture: `http://localhost:5000${filePath}`,
+        message: "Product picture uploaded successfully",
+        profilePicture: `${process.env.SERVER_URL || 'http://localhost:5000'}${filePath}`, // Return the full URL
       });
     } catch (error) {
       console.error("Error uploading profile picture:", error);

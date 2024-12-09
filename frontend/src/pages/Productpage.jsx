@@ -69,6 +69,16 @@ function ViewProducts() {
   };
 
   return (
+    <div className='text-black'>
+      
+      <input
+        className='w-[15ch] m-2 pl-1'
+        name="name"
+        placeholder='Name'
+        onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+      />
+      
+      <button className='p-2 bg-black text-white' onClick={handlePress}>Search</button>
     <div style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#C1BAA1", minHeight: "100vh", color: "#333", padding: "2rem" }}>
       <h1 style={{ textAlign: "center", fontSize: "4rem", fontWeight: "bold", color: "#333", marginBottom: "2rem" }}>
         Manage Your Products
@@ -161,7 +171,10 @@ function ViewProducts() {
       <FormDialog msg="Update values" accept={handleUpdate} reject={() => {}} acceptButtonText="Update" rejectButtonText="Cancel" inputs={["name", "imgURL", "price", "description", "Available_quantity"]} />
       <CreateForm msg="Create Product" accept={handleCreateProduct} reject={() => {}} acceptButtonText="Create" rejectButtonText="Cancel" inputs={["name", "imgURL", "price", "description", "Available_quantity"]} />
     </div>
+    </div>
+
   );
+
 }
 
 export default ViewProducts;

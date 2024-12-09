@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import axios from 'axios';
+
 
 export const useActivityStore = create((set, get) => ({
   currentActivity: {},
@@ -29,6 +31,37 @@ export const useActivityStore = create((set, get) => ({
       console.error("Error fetching tags:", error);
     }
   },
+ // Upload profile picture for a 
+ uploadProductPicture: async (id, profilePicture) => {
+  const formData = new FormData();
+  formData.append("profilePicture", profilePicture);
+
+  try {
+    const response = await axios.put(`http://localhost:3000/api/activity/uploadPicture/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    console.log("Upload response:", response.data);
+
+    const data = response.data;
+    if (data.success && data.profilePicture) {
+      const profileImagePath = data.profilePicture;
+
+      set((state) => ({
+        activities: state.activities.map((activity) =>
+          activity._id === id ? { ...activity, profilePicture: profileImagePath } : activity
+        ),
+      }));
+
+      return { success: true, message: "activity picture uploaded successfully", profilePicture: profileImagePath };
+    } else {
+      return { success: false, message: data.message || "No activity picture path returned" };
+    }
+  } catch (error) {
+    console.error("Error uploading activity picture:", error);
+    return { success: false, message: "Error uploading activity picture" };
+  }
+},
 
   // Fetch categories
   getCategories: async () => {

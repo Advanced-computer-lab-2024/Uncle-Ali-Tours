@@ -13,7 +13,7 @@ function ProductCard({ product }) {
   const [isEditing, setIsEditing] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [previewFile, setPreviewFile] = useState(
-    product.profilePicture ? `http://localhost:3000${product.profilePicture}` : avatar
+    product.profilePicture ? `http://localhost:3000${product.profilePicture}  `: avatar
   );
   const [showPreview, setShowPreview] = useState(false);
   const [isEditingImage, setIsEditingImage] = useState(false);
