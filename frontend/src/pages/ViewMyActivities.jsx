@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import ActivityContainer from '../components/ActivityContainer';
+import TouristActivityContainer from '../components/TouristActivityContainer';
+import UpcomingActivitiesContainer from '../components/UpcomingActivitiesContainer';
 import { useTouristStore } from '../store/tourist';
-import { useUserStore } from '../store/user';
 function ViewMyActivities() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const { fetchUpcomingActivities,fetchPastActivities } = useTouristStore();
+    const { fetchUpcomingItems,fetchPastActivities } = useTouristStore();
     const [myActivities, setMyActivities] = useState([]); // Initialize with an empty array
     const [upcomingButton, setUpcomingButton] = useState(false);
     useEffect(() => {
@@ -14,7 +14,7 @@ function ViewMyActivities() {
     const fetchActivities = async () => {
         const result = upcomingButton
           ? await fetchPastActivities(user.userName)
-          : await fetchUpcomingActivities(user.userName);  
+          : await fetchUpcomingItems(user.userName , "activity");  
           setMyActivities(result);
     };
     
@@ -51,12 +51,12 @@ function ViewMyActivities() {
                     </button>
                   </div>
             <div className="mt-24">
-            {myActivities.length > 0 ? (
+            {myActivities.length > 0 && upcomingButton ? (
                 myActivities.map((activity, index) => (
-                    <ActivityContainer key={index} activity={activity} />
+                    <TouristActivityContainer key={index} activity={activity} />
                 ))
             ) : (
-                <p>No activities found.</p>
+                <UpcomingActivitiesContainer activities={myActivities} />
             )}
             </div>
           </div>

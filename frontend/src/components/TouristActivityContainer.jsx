@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import { FiLoader } from 'react-icons/fi';
 import { GoBell, GoBellFill } from "react-icons/go";
@@ -151,7 +151,7 @@ const handleBookClick = async (activityID , quantity) => {
    
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
-      {!activity.bookingOpen && (activity.interstedIn.includes(tourist._id)?
+      {!activity.bookingOpen && (activity.interstedIn?.includes(tourist._id)?
          <GoBellFill size={20} onClick={() => (handleNotIntersted(activity._id))}/>:     
          <GoBell size={20} onClick={() => (handleIntersted(activity._id))}/>     
          )} 
@@ -206,7 +206,7 @@ const handleBookClick = async (activityID , quantity) => {
       </div>
       <div>
         <h3>Reviews</h3>
-        {activity.reviews.map((review, index) => (
+        {activity.reviews?.map((review, index) => (
           <div key={index}>
             <Rating value={review.rating} text={review.comment} />
           </div>
