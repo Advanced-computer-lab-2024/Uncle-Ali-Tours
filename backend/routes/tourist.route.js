@@ -1,5 +1,5 @@
 import express from "express";
-import { addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItems, getTourist, getWishlistedProducts, handleUnBook, hasPurchasedProduct, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
+import { addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, checkUpcomingItineraryNotifications, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItems, getTourist, getWishlistedProducts, handleSuccessfulPaymentForTourist, handleUnBook, hasPurchasedProduct, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
 
 const router = express.Router();
 
