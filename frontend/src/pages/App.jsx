@@ -76,7 +76,7 @@ import SellerSalesReport from './SellerSalesReport.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
 import TourGuideTouristReport from './TourGuideTouristReport.jsx';
 import UserManagment from './UserManagment.jsx';
-
+import Terms from './Terms.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import GovernorPreferencesTag from './GovernerPrefernceTags.jsx';
@@ -208,7 +208,7 @@ function App() {
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
         <Route path="/userManagment" element={<UserManagment/>} />
-
+        <Route path="/terms" element={<Terms/>} />
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
         <Route path="/viewMyItineraries" element={<ViewMyItineraries/>} />
         <Route path="/viewMyActivities" element={<ViewMyActivities/>} />
