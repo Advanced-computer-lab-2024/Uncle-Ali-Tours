@@ -50,7 +50,7 @@ const handelDeleteTransActivity = async() =>{
 
    return (
     <div className='text-black'>
-      <Toaster />
+      
 
         <div className={` grid w-fit mx-auto`} >
         <div>

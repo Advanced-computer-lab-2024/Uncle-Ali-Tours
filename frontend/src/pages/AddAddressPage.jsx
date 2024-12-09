@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 const AddAddressPage = () => {
   const navigate = useNavigate();
 
+  // Define the state for the form fields
   const [newAddress, setNewAddress] = useState({
-    
     addressLine1: "",
     addressLine2: "",
     city: "",
@@ -15,6 +15,7 @@ const AddAddressPage = () => {
     zipCode: "",
     country: "",
     isDefault: false,
+    username: "",  // Add a state for the username (creator)
   });
 
   const handleInputChange = (e) => {
@@ -29,11 +30,16 @@ const AddAddressPage = () => {
     e.preventDefault();  // Prevent the default form submit behavior
 
     try {
-      const response = await axios.post("/api/tourist/addDeliveryAddress", newAddress);
+      // Assuming `username` is part of the state, and is sent as the `creator` field
+      const response = await axios.post("/api/tourist/addDeliveryAddress", {
+        ...newAddress,  // Spread the address fields
+        creator: newAddress.username // Pass the username as the creator
+      });
 
       if (response.status === 201) {
         toast.success("Address added successfully!");
-        
+        // Optionally, navigate to another page after the address is added
+        // navigate("/someOtherPage");
       }
     } catch (error) {
       console.error("Error details:", error);  // Log the error details for better debugging
@@ -46,7 +52,22 @@ const AddAddressPage = () => {
       <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Add New Address</h2>
       
       <form onSubmit={handleAddAddress} className="space-y-4">
-         
+        
+        {/* Username (Creator) */}
+        <div>
+          <label htmlFor="username" className="text-gray-700">Username (Creator)</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Enter Username"
+            value={newAddress.username}
+            onChange={handleInputChange}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
+            required
+          />
+        </div>
+
         {/* Address Line 1 */}
         <div>
           <label htmlFor="addressLine1" className="text-gray-700">Address Line 1</label>
@@ -152,7 +173,7 @@ const AddAddressPage = () => {
         {/* Submit Button */}
         <div className="text-center">
           <button
-            type="submit"  // Correct button type
+            type="submit"  // Submit the form
             className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
           >
             Add Address

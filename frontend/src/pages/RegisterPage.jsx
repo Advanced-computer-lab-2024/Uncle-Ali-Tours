@@ -215,7 +215,7 @@ function RegisterPage() {
                         onClick={handleRegister}
                         disabled={!acceptedTerms}  // Disable the button if terms are not accepted
                     >
-                        {selectedType === "tourist" || selectedType === "" ? "Register" : "Register"}
+                        {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
                     </motion.button>
                 </div>
             </motion.div>

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { IoCloseSharp } from "react-icons/io5";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { FaAngleDown, FaCheck } from "react-icons/fa";
+import { IoCloseSharp } from "react-icons/io5";
+import { Link } from "react-router-dom";
 import { useTagStore } from "../store/tag";
 import { useTouristStore } from "../store/tourist";
-import { toast } from "react-hot-toast";
-import AddAddressPage from "../pages/AddAddressPage";
 const SideMenu = ({ isOpen, onClose }) => {
   const { updateTourist } = useTouristStore();
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -45,6 +44,7 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "Upcoming Itineraries", path: "/upcomingItineraries" },
         { name: "Upcoming Activities", path: "/upcomingActivities" },
+        { name: "Upcoming Transportation Activities", path: "/upcomingTActivities" }
       ],
     },
     {
@@ -104,6 +104,31 @@ const SideMenu = ({ isOpen, onClose }) => {
     
  
   ];
+  const menuItemsAdvertiser = [
+    {
+      title: "Reports",
+      subItems: [
+        { name: "View Sales Report", path: "/salesreport" },
+        { name: "Tourist Report", path: "/touristreport" },
+      ],
+    },
+    {
+      title: "Transportation Activities",
+      subItems: [
+        { name: "Create Tranportation Activities", path: "/CreateTransportationActivity" },
+        { name: "View Tranportation Activities", path: "/ViewTransportationActivity" },
+      ],
+    },
+    {
+      title: "Activities",
+      subItems: [
+        { name: "View Activities", path: "/viewActivities" },
+        { name: "Create Activities", path: "/createActivity" },
+      ],
+    },
+    
+ 
+  ];
   const menuItemsAdmin = [
     {
       title: "Tags & Categories",
@@ -128,6 +153,8 @@ const SideMenu = ({ isOpen, onClose }) => {
     {
       title: "Users Settings",
       subItems: [
+        { name: "Manage", path: "/userManagment" },
+
         { name: "Complaints", path: "/complaints" },
         { name: "View Delete Requests", path: "/viewDeleteRequests" },
 
@@ -161,7 +188,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         <IoCloseSharp size="25" />
       </button>
       <nav className="mt-16">
-        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : menuItemsTourGuide).map((item, index) => (
+        {(user.type === "tourist" ? menuItemsTourist : user.type==="admin"? menuItemsAdmin : user.type==="seller"? menuItemsSeller : user.type==="advertiser"? menuItemsAdvertiser: menuItemsTourGuide ).map((item, index) => (
           <div key={index} className={`mb-4 w-[90%] mx-auto ${expandedIndex === index ? "" : ""}`}>
             <h2
               onClick={() => toggleMenu(index)}

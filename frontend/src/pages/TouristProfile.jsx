@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaEdit, FaCheck } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { FaCheck, FaEdit } from 'react-icons/fa';
 import { IoSaveOutline } from 'react-icons/io5';
-import { toast, Toaster } from 'react-hot-toast';
-import { useUserStore } from '../store/user';
-import { useTouristStore } from '../store/tourist';
-import { useTagStore } from '../store/tag';
-import egypt from '../images/egypt.jpg';
-import BronzeBadge from '../images/bronze.png';
-import SilverBadge from '../images/silver.png';
-import GoldBadge from '../images/gold.png';
+import { Link } from 'react-router-dom';
 import Dialog, { dialog } from '../components/Dialog.jsx';
+import BronzeBadge from '../images/bronze.png';
+import egypt from '../images/egypt.jpg';
+import GoldBadge from '../images/gold.png';
+import SilverBadge from '../images/silver.png';
+import { useTagStore } from '../store/tag';
+import { useTouristStore } from '../store/tourist';
+import { useUserStore } from '../store/user';
 
 const TouristProfilePage = () => {
   const { user } = useUserStore();
@@ -103,7 +103,7 @@ const TouristProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <Toaster />
+      
       <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />
       <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">

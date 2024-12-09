@@ -3,9 +3,9 @@ import Itinerary from '../models/itinerary.model.js';
 import Product from '../models/product.model.js';
 import Tourist from '../models/tourist.model.js';
 import TransportationActivity from '../models/transportationActivity.model.js';
+import { sendEmail } from "../util/email.js";
 import { createFlightBooking } from './flightBooking.controller.js';
 import { createHotelBooking } from './hotelBooking.controller.js';
-import { sendEmail } from "../util/email.js";
 const { EMAIL } = process.env;
 
 import Stripe from 'stripe';
@@ -261,5 +261,25 @@ const sendEmailReceipt = async (tourist, items, amountPaid) => {
         console.error('Error sending email:', error);
     }
 };
+
+// Handle unbooking payment
+// export const handleUnbookingPaymentForTourist = async (req, res) => {
+//     try {
+//         const { username, items, type , amountPaid } = req.body;
+//         console.log("before checking fields","username:",username,"items:",items,"amount:" ,amountPaid);
+//       // Validate request body
+//         if (!username || !items || !type ) {
+//         return res.status(400).json({ message: "Missing required fields." });
+//         }
+
+//         if (isNaN(amountPaid) || amountPaid <= 0) {
+//             return res.status(400).json({ success: false, message: "Invalid amount paid" });
+//         }
+
+//       // Find the tourist by username
+//         const tourist = await Tourist.findOne({ userName: username });
+//         if (!tourist) {
+//         return res.status(404).json({ message: "Tourist not found." });
+//         }
 
 

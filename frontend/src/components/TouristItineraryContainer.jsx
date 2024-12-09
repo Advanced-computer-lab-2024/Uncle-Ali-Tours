@@ -23,7 +23,7 @@ function TouristItineraryContainer({itinerary, itineraryChanger , accept , rejec
   const { createTourGuideReview } = useGuideStore();
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
-const { tourist } = useTouristStore();
+const { tourist , isPast , isUpcoming} = useTouristStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
@@ -34,7 +34,6 @@ const { tourist } = useTouristStore();
   const { bookItinerary } = useItineraryStore();
 
   const [quantity, setQuantity] = useState(1);
-
 
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
@@ -210,7 +209,9 @@ const handleQuantityChange = (newQuantity) => {
       )}
     </div>
 </div>
-<QuantitySelector onChange={handleQuantityChange} maxValue={100} />
+{!isPast && !isUpcoming && (
+  <QuantitySelector onChange={handleQuantityChange} maxValue={100} />
+)}
 <button 
   onClick={handleRedirectToReviews} 
   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
@@ -243,10 +244,18 @@ const handleQuantityChange = (newQuantity) => {
         </button>
       </div>
       <div className='flex justify-between'>
-      {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
-         <button onClick={() => (handleBookClick(itinerary._id , quantity))} className="p-2 bg-blue-500 text-white">book</button>  :   
-         <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
-         }
+      {/* {   !tourist?.itineraryBookings?.some(booking => booking._id === itinerary._id) ? */}
+      {!isPast && (
+  !isUpcoming ? (
+    <button onClick={() => handleBookClick(itinerary._id, quantity)} className="p-2 bg-blue-500 text-white">
+      Book
+    </button>
+  ) : (
+    <button onClick={() => handleUnBook(itinerary._id)} className="p-2 bg-blue-500 text-white">
+      Unbook
+    </button>
+  )
+)}
          </div>
         <div className='flex justify-between'>
         <div className='flex'>

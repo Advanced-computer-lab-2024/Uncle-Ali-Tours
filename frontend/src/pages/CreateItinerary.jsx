@@ -304,7 +304,7 @@ function CreateItinerary() {
                     </Link>
                 </div>
             </div>
-            <Toaster />
+            
         </div>
     );
 }
