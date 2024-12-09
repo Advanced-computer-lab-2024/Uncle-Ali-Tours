@@ -8,6 +8,8 @@ import { useUserStore } from "../store/user";
 import { useSellerStore } from "../store/seller";
 import { useProductStore } from "../store/product";
 import ProductContainerForSeller from "../components/ProductContainerForSeller";
+import UnVerified  from "../components/UnVerified";
+
 import { Bar } from "react-chartjs-2";
 import AvatarEditor from "react-avatar-editor";
 import egypt from "../images/egypt.jpg";
@@ -51,6 +53,7 @@ const SellerProfilePage = () => {
   const [maxPages, setMaxPages] = useState(1);
   const [archivedButton, setArchivedButton] = useState(false);
   const [showChart, setShowChart] = useState(true);
+  const isVerified = sell?.verified;
 
   useEffect(() => {
     getSeller({ userName: user.userName }, {});
@@ -136,6 +139,9 @@ const SellerProfilePage = () => {
     };
   };
 
+  if (!isVerified) {
+    return <UnVerified />;
+  }
   const handleDeleteAccountRequest = async () => {
     const deleteRequest = {
       userName: user.userName,
@@ -160,6 +166,7 @@ const SellerProfilePage = () => {
         className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none"
       />
       <div className="max-w-7xl mx-auto">
+     
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
             <div className="flex justify-between items-center">

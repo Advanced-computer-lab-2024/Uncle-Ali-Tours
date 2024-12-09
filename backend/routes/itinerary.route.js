@@ -17,4 +17,8 @@ router.put("/flag",flagItinerary);
 router.put('/intrestedIn',interestedIn);
 router.put('/uploadPicture/:id', upload.single('profilePicture'), uploadProductPicture);
 router.put('/notIntrestedIn',removeInterestedIn);
+router.post('/bookmark', addBookmark);
+router.get('/bookmarkedItineraries/:userName', getBookmarkedItinerariesForUser);
+router.put('/toggleBookmark', toggleBookmark);
+router.delete('/bookmark', removeBookmark);
 export default router;

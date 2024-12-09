@@ -328,6 +328,65 @@ export const useItineraryStore = create((set, get) => ({
       // console.error("Error updating itinerary:", error);
       return { success: false, message: body.message };
     }
-  }
+  },
+  bookmarkItinerary: async (itineraryId, userName) => {
+    console.log('Itinerayr ID:', itineraryId);
+    console.log('User name:', userName);
+    
+    try {
+        const res = await fetch('/api/itinerary/bookmark', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itineraryId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error bookmarking Itinerary:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+removeBookmark: async (itineraryId, userName) => {
+    try {
+        const res = await fetch('/api/itinerary/bookmark', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itineraryId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error removing bookmark:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+getBookmarkedItineraries: async (userName) => {
+    try {
+      const res = await fetch(`/api/itinerary/bookmarkedItineraries/${userName}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+        const data = await res.json();
+        console.log("Bookmarked Itineraries:", data.bookmarks);
+        if (res.ok) {
+          return data.bookmarks;
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+        return { success: false, message: error.message };
+    }
+},
 
 }));

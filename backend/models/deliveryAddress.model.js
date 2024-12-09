@@ -10,20 +10,15 @@ const deliveryAddressSchema = new mongoose.Schema({
   state: { type: String, required: true },
   zipCode: { type: String, required: true },
   country: { type: String, required: true },
-<<<<<<< HEAD
+
+
   isDefault: { type: Boolean, default: false },
   creator: {
     type: String,
     required: true
 },  // to mark default address
-=======
-  isDefault: { type: Boolean, default: false }, 
-  data: [],
-  creator: {
-      type: String,
-      required: true
-  }, // to mark default address
->>>>>>> 2e86b1ce43d2bc94e338a1927599cace8e8fa6a8
+  // to mark default address
+
 });
 
 const DeliveryAddress = mongoose.model('DeliveryAddress', deliveryAddressSchema);

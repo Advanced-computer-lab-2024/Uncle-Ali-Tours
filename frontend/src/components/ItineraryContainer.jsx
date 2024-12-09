@@ -93,6 +93,8 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     }
   };
 
+  
+
   const handleSubmitItineraryReview = async (e) => {
     e.preventDefault();
     if (!tourist?.itineraryBookings?.includes(itinerary._id)) {
@@ -235,6 +237,9 @@ const handleSave = () => {
 // }
 // };
 
+
+
+  
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>

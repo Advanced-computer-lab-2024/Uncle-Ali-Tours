@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
@@ -10,11 +10,11 @@ import { useTouristStore } from '../store/tourist.js';
 import { useUserStore } from '../store/user.js';
 import QuantitySelector from './QuantitySelector.jsx';
 import Rating from './Rating';
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 
 
-
-function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary,interestedIn,removeInterestedIn} = useItineraryStore();
+function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject,onBookmarkToggle = () => {},isBookmarked}) {
+  const {currentItinerary, setCurrentItinerary,interestedIn,removeInterestedIn,bookmarkItinerary,getBookmarkeditineraries, removeBookmarks} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -30,6 +30,8 @@ const { tourist , isPast , isUpcoming} = useTouristStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [ setIsBookmarked] = useState(false);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
 
   const { bookItinerary } = useItineraryStore();
 
@@ -152,8 +154,55 @@ const handleQuantityChange = (newQuantity) => {
   setQuantity(newQuantity);
 };
 
+useEffect(() => {
+  // Check if the activity is already bookmarked
+  if (user?.bookmarkerItineraries?.includes(itinerary._id)) {
+      setIsBookmarked(true);
+  }
+}, [user, itinerary]);
+
+const handleToggleBookmark = async () => {
+  try {
+      const response = await fetch('/api/itinerary/toggleBookmark', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itineraryId: itinerary._id }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+          toast.success(data.message);
+          onBookmarkToggle(itinerary._id, data.itinerary.isBookmarked); // Update parent state
+          const newIsBookmarked = data.itinerary.isBookmarked;
+
+          // Update both local and parent states
+          setLocalIsBookmarked(newIsBookmarked);
+          onBookmarkToggle(itinerary._id, newIsBookmarked);
+      } else {
+          toast.error(data.message);
+      }
+  } catch (error) {
+      toast.error('Failed to update bookmark');
+      console.error('Error toggling bookmark:', error);
+  }
+};
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
+        <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-bold"></h3>
+                <button
+                    onClick={handleToggleBookmark}
+                    className="ml-2"
+                    aria-label="Bookmark Itinerary"
+                >
+                    {localIsBookmarked ? (
+                        <AiFillStar className="text-yellow-500" size={28} />
+                    ) : (
+                        <AiOutlineStar className="text-gray-500" size={28} />
+                    )}
+                </button>
+            </div>
         <div className='grid p-2'>
         {!itinerary.bookingOpen && (itinerary.interstedIn.includes(tourist._id)?
          <GoBellFill size={20} onClick={() => (handleNotIntersted(itinerary._id))}/>:     

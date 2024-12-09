@@ -33,7 +33,7 @@ const UpcomingActivitiesContainer = () => {
         toast.success(response.message, { className: "text-white bg-gray-800" });
         setUpcomingActivities(prevActivities => prevActivities.filter(activity => activity.itemDetails._id !== activityID));
       } else {
-        toast.error(response.message, { className: "text-white bg-gray-800" });
+        console.error(response.message, { className: "text-white bg-gray-800" });
       }
     } catch (error) {
       console.error('Error unbooking activity:', error);
