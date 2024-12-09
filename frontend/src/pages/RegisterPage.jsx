@@ -48,51 +48,50 @@ function RegisterPage() {
     }, []);
 
     const handleRegister = async () => {
+        // Check if terms are accepted
         if (!acceptedTerms) {
-            toast.error("You must accept the terms and conditions to proceed.", { className: "text-white bg-gray-800" });
+            toast.error("You need to accept the terms and conditions to proceed.", { className: "text-white bg-gray-800" });
             return;
         }
-
-        let userType = selectedType;
-        if (selectedType === "") {
-            userType = "tour guide"; // Default type when no selection
-        }
-
+    
+        let userType = selectedType || "tour guide"; // Default to "tour guide" if no type is selected
+    
+        // Handle tourist registration
         if (userType === "tourist") {
-            // Validate tourist fields if necessary
             const { userName, email, password, mobileNumber, nationality, dateOfBirth, occupation } = tourist;
             if (!userName || !email || !password || !mobileNumber || !nationality || !dateOfBirth || !occupation) {
                 toast.error("Please fill out all fields for Tourist.", { className: "text-white bg-gray-800" });
                 return;
             }
-
+    
             const passedTourist = { ...tourist, type: "tourist" };
             const { success, message } = await createUser(passedTourist);
-            success 
-                ? toast.success(message, { className: "text-white bg-gray-800" }) 
+            success
+                ? toast.success(message, { className: "text-white bg-gray-800" })
                 : toast.error(message, { className: "text-white bg-gray-800" });
-            
+    
             if (success) {
-                await new Promise(r => setTimeout(r, 2000));
+                await new Promise((r) => setTimeout(r, 2000));
                 await getTourist({ userName: tourist.userName }, {});
                 navigate("/touristProfile");
             }
-        } else {
-            // Validate newUser fields if necessary
+        } 
+        // Handle other user types registration
+        else {
             const { userName, email, password } = newUser;
             if (!userName || !email || !password) {
                 toast.error("Please fill out all fields.", { className: "text-white bg-gray-800" });
                 return;
             }
-
+    
             const passedUser = { ...newUser, type: userType };
             const { success, message } = await createUser(passedUser);
-            success 
-                ? toast.success(message, { className: "text-white bg-gray-800" }) 
+            success
+                ? toast.success(message, { className: "text-white bg-gray-800" })
                 : toast.error(message, { className: "text-white bg-gray-800" });
-            
+    
             if (success) {
-                await new Promise(r => setTimeout(r, 2000));
+                await new Promise((r) => setTimeout(r, 2000));
                 switch (userType) {
                     case "tour guide":
                         await getGuide({ userName: newUser.userName }, {});
@@ -111,7 +110,8 @@ function RegisterPage() {
                 }
             }
         }
-    }
+    };
+    
 
     const touristData = [
         { name: "userName", icon: FaUser, placeholder: "Username" },
@@ -131,7 +131,7 @@ function RegisterPage() {
 
     return (
         <div style={styles.container} className="relative">
-            <Toaster />
+
             <div style={styles.backgroundOverlay} />
             <img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[100vw] h-[100vh] bg-black opacity-200" alt="Background" />
             <motion.div 
@@ -209,14 +209,14 @@ function RegisterPage() {
 
                     {/* Sign Up Button */}
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        style={styles.registerButton}
-                        onClick={handleRegister}
-                        disabled={!acceptedTerms}  // Disable the button if terms are not accepted
-                    >
-                        {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
-                    </motion.button>
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    style={styles.registerButton}
+    onClick={handleRegister}
+>
+    {selectedType === "tourist" || selectedType === "" ? "Register" : "Register"}
+</motion.button>
+
                 </div>
             </motion.div>
             <footer style={styles.footer}>

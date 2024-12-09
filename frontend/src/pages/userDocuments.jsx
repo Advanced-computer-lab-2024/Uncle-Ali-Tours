@@ -19,7 +19,7 @@ const UserDocuments = () => {
         const data = await response.json();
 
         if (data.success) {
-          setUploadedDocuments(data.documents); // Set the documents state with all seller documents
+          setUploadedDocuments(data.documents);
         } else {
           setError(data.message || "Failed to fetch documents.");
         }
@@ -31,51 +31,125 @@ const UserDocuments = () => {
     };
 
     fetchDocuments();
-  }, [user]);
+  }, [user, navigate]);
+
+  // Handle Accept Button Click
+  const handleAccept = async (userName) => {
+    try {
+      const response = await fetch(`/api/seller/acceptDocument`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userName }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Documents for ${userName} accepted successfully!`);
+        setUploadedDocuments((prev) => prev.filter((doc) => doc.userName !== userName));
+      } else {
+        toast.error(data.message || "Failed to accept documents.");
+      }
+    } catch (error) {
+      console.error("Error accepting documents:", error);
+      toast.error("An error occurred while accepting documents.");
+    }
+  };
+
+  // Handle Reject Button Click
+  const handleReject = async (userName) => {
+    try {
+      const response = await fetch(`/api/seller/rejectDocument`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userName }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Documents for ${userName} rejected successfully!`);
+        setUploadedDocuments((prev) => prev.filter((doc) => doc.userName !== userName));
+      } else {
+        toast.error(data.message || "Failed to reject documents.");
+      }
+    } catch (error) {
+      console.error("Error rejecting documents:", error);
+      toast.error("An error occurred while rejecting documents.");
+    }
+  };
 
   return (
     <div className="col-span-1 lg:col-span-3 p-6 bg-[#161821f0] rounded-lg shadow-lg text-white">
       <h3 className="text-xl text-center mb-4">Uploaded Documents</h3>
 
-      {error && <p className="text-red-500">{error}</p>} {/* Show error if any */}
+      {error && <p className="text-red-500">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-3">
         {uploadedDocuments ? (
           uploadedDocuments.length > 0 ? (
             uploadedDocuments.map((doc, index) => (
-              <div key={index} className="mb-4">
-                <h4 className="text-lg mt-4">Seller: {doc.userName}</h4>
-                <h5 className="text-md mt-2">Seller ID:</h5>
-                {doc.sellerID ? (
-                  <a
-                    href={`http://localhost:5000${doc.sellerID}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              <div key={index} className="mb-6 p-4 border border-gray-700 rounded-lg">
+                <h4 className="text-lg font-bold mb-2">Seller: {doc.userName}</h4>
+                
+                <div className="mb-2">
+                  <h5 className="text-md font-semibold">Seller ID:</h5>
+                  {doc.sellerID ? (
+                    <a
+                      href={`http://localhost:5000${doc.sellerID}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 underline"
+                    >
+                      View Seller ID
+                    </a>
+                  ) : (
+                    <p className="text-gray-400">No Seller ID uploaded</p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <h5 className="text-md font-semibold">Taxation Registry Card:</h5>
+                  {doc.taxationRegistryCard ? (
+                    <a
+                      href={`http://localhost:5000${doc.taxationRegistryCard}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 underline"
+                    >
+                      View Taxation Registry Card
+                    </a>
+                  ) : (
+                    <p className="text-gray-400">No Taxation Registry Card uploaded</p>
+                  )}
+                </div>
+
+                {/* Accept and Reject Buttons */}
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => handleAccept(doc.userName)}
+                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
                   >
-                    View Seller ID
-                  </a>
-                ) : (
-                  <p>No Seller ID uploaded</p>
-                )}
-                <h5 className="text-md mt-2">Taxation Registry Card:</h5>
-                {doc.taxationRegistryCard ? (
-                  <a
-                    href={`http://localhost:5000${doc.taxationRegistryCard}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleReject(doc.userName)}
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
                   >
-                    View Taxation Registry Card
-                  </a>
-                ) : (
-                  <p>No Taxation Registry Card uploaded</p>
-                )}
+                    Reject
+                  </button>
+                </div>
               </div>
             ))
           ) : (
-            <p>No documents found.</p>
+            <p className="text-gray-400 text-center">No documents found.</p>
           )
         ) : (
-          <p>Loading documents...</p>
+          <p className="text-gray-400 text-center">Loading documents...</p>
         )}
       </div>
     </div>

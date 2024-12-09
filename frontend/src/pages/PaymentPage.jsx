@@ -176,33 +176,38 @@ function PaymentPage() {
   if (itemList == null || price == null) {
     return <div>Loading...</div>;
   }
-
   return (
-    <div>
-      <h1>Payment Page</h1>
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10 mb-10">
+      <h1 className="text-3xl font-bold mb-6 text-center">Payment Page</h1>
+
       {items.map((item, index) => (
-        <div key={index}>
-          <p>Item: {item.itemData.name}</p>
-          <p>
+        <div key={index} className="mb-4 border-b pb-2">
+          <p className="text-lg font-semibold">Item: {item.itemData.name}</p>
+          <p className="text-gray-700">
             Price: {(item.itemData.price * user.currencyRate).toFixed(2)} {user.chosenCurrency}
           </p>
         </div>
       ))}
-      <h2>Total price: {(price).toFixed(0)} {user.chosenCurrency}</h2>
-      <div>
-      <input 
-        type="text" 
-        value={promoCode} 
-        onChange={handlePromoCodeChange} 
-        placeholder="Enter promo code" 
-      />
-      <button onClick={applyPromoCode}>Apply Promo Code</button>
-      <p>Discount: {discount}%</p>
-    </div>
-      {/* Payment Method Selection */}
-      <h2>Select Payment Method</h2>
-      <div>
-        <label>
+
+      <h2 className="text-2xl font-bold mt-6 mb-4">Total Price: {(price).toFixed(2)} {user.chosenCurrency}</h2>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          value={promoCode}
+          onChange={handlePromoCodeChange}
+          placeholder="Enter promo code"
+          className="w-full p-2 border rounded-md mb-2"
+        />
+        <button onClick={applyPromoCode} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+          Apply Promo Code
+        </button>
+        <p className="mt-2 text-green-500">Discount: {discount}%</p>
+      </div>
+
+      <h2 className="text-xl font-semibold mb-4">Select Payment Method</h2>
+      <div className="space-y-2 mb-6">
+        <label className="block">
           <input
             type="radio"
             value="creditCard"
@@ -211,7 +216,7 @@ function PaymentPage() {
           />
           Credit Card
         </label>
-        <label>
+        <label className="block">
           <input
             type="radio"
             value="wallet"
@@ -221,40 +226,24 @@ function PaymentPage() {
           Wallet
         </label>
         {type === 'product' && (
-        <label>
-          <input
-            type="radio"
-            value="cashOnDelivery"
-            checked={selectedPaymentMethod === 'cashOnDelivery'}
-            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-          />
-          Cash on Delivery
-        </label>)}
+          <label className="block">
+            <input
+              type="radio"
+              value="cashOnDelivery"
+              checked={selectedPaymentMethod === 'cashOnDelivery'}
+              onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+            />
+            Cash on Delivery
+          </label>
+        )}
       </div>
 
-      {/* Conditional Rendering for Payment Method */}
-      {selectedPaymentMethod === 'creditCard' && (
-        <div>
-          <p>Pay securely using your credit card.</p>
-          <button onClick={handlePayment}>Pay</button>
-        </div>
-      )}
-      {selectedPaymentMethod === 'wallet' && (
-        <div>
-          <p>Pay using your wallet balance.</p>
-          <p>Wallet Balance:{(tourist.myWallet *  user.currencyRate)} {user.chosenCurrency}</p>
-          <p>Price: {(price).toFixed(2)} {user.chosenCurrency}</p>
-          <p>Remaining Balance: {((tourist.myWallet *  user.currencyRate) - price).toFixed(2)} {user.chosenCurrency}</p>
-          <p>Do you want to proceed with the payment?</p>
-          <button onClick={handlePayment}>Pay</button>
-        </div>
-      )}
-      {selectedPaymentMethod === 'cashOnDelivery' && (
-        <div>
-          <p>Pay in cash upon delivery.</p>
-          <button onClick={handlePayment}>Confirm Order</button>
-        </div>
-      )}
+      <button
+        onClick={handlePayment}
+        className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-lg font-semibold"
+      >
+        Proceed to Payment
+      </button>
     </div>
   );
 }
