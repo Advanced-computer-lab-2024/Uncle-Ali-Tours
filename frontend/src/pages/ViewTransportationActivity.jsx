@@ -56,12 +56,16 @@ const handelDeleteTransActivity = async(id) =>{
       <div className={` grid w-fit mx-auto`} >
         <div>
       <div className='mb-4 text-xl'>
-            Available Transportation Activities  <br/> 
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <h1 className="text-3xl font-bold text-white">
+             Your Booked Flights 
+            </h1>
+          
             <input className='w-[15ch] m-2 pl-1'value={filter.pickUpLocation || ""} name={"pickUpLocation"} placeholder='pick up location' onChange={(e) => setFilter({ ...filter, pickUpLocation: e.target.value})}/>
             <input className='w-[15ch] m-2 pl-1 'value={filter.dropOfLocation || ""} name={'dropOfLocation'} placeholder='drop of location' onChange={(e) => setFilter({ ...filter, dropOfLocation: e.target.value})}/>
             <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
         </div>
-
+        </div>
         {
             transportationActivities.map((activity, index)=> (
                 <TransportationActivityContainer key={index} activityChanger={changeTransportationActivity} activity={activity}/>   

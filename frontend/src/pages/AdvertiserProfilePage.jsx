@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEdit, FaCheck, FaEye } from 'react-icons/fa';
-import { IoSaveOutline } from 'react-icons/io5';
+import { FaEdit, FaCheck } from "react-icons/fa";
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { IoSaveOutline, IoClose } from "react-icons/io5";
 import { toast, Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user';
 import { useAdvertiserstore } from '../store/advertiser';
@@ -377,7 +378,7 @@ const AdvertiserProfile = () => {
           <div className="mt-10 border-t pt-6">
             <button
               className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
-              onClick={handleDeleteClick}
+              onClick={handleDeleteAccountRequest}
             >
               Delete Account
             </button>
