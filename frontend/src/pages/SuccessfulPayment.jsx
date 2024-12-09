@@ -49,7 +49,7 @@ function SuccessfulPayment() {
                     <div key={index} className="p-4 border rounded-lg shadow-sm bg-gray-50">
                       <h2 className="text-xl font-semibold mb-2">{item.itemData.name}</h2>
                       <p className="text-gray-700">Quantity: <span className="font-medium">{item.quantity}</span></p>
-                      <p className="text-gray-700">Price: <span className="font-medium">${Number(item.itemData.price).toFixed(2)}</span></p>
+                      <p className="text-gray-700">Price: <span className="font-medium">{Number(item.itemData.price).toFixed(2)}</span></p>
                     </div>
                   ))}
                 </div>

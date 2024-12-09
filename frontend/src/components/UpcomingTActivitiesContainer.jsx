@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
 
@@ -44,7 +44,6 @@ const UpcomingTActivitiesContainer = () => {
   return (
     <div className="p-4">
       <h1>Upcoming Transportation Activities</h1>
-       />
       {upcomingTActivities.length === 0 ? (
         <p>No upcoming transportation activities found.</p>
       ) : (
