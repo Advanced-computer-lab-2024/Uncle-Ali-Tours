@@ -191,14 +191,14 @@ export const deleteSeller = async (req, res) => {
 
   
 };
-const docsUploadDirectory = path.join(
-  "C:/Users/loaym/Documents/GitHub/Uncle-Ali-Tours/backend/uploads/docs"
-);
+// const docsUploadDirectory = path.join(
+//   "C:/Users/loaym/Documents/GitHub/Uncle-Ali-Tours/backend/uploads/docs"
+// );
 
 // Ensure the uploads/docs directory exists
-if (!fs.existsSync(docsUploadDirectory)) {
-  fs.mkdirSync(docsUploadDirectory, { recursive: true });
-}
+// if (!fs.existsSync(docsUploadDirectory)) {
+//   fs.mkdirSync(docsUploadDirectory, { recursive: true });
+// }
 export const uploadDocuments = async (req, res) => {
   console.log("Received files:", req.files); // Log the received files
   console.log("Received body:", req.body);   // Log the received body

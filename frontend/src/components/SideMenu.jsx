@@ -27,6 +27,13 @@ const SideMenu = ({ isOpen, onClose }) => {
         { name: "My Itineraries", path: "/viewMyItineraries" },
       ],
     },
+
+    {
+      title: "bookmarks",
+      subItems: [
+        { name: "View bookmarks", path: "/bookmarks" },
+      ],
+    },
     {
       title: "Activities",
       subItems: [
@@ -81,6 +88,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         { name: "View Itineraries", path: "/itineraryPage" },
       ],
     },
+   
     {
       title: "Reports",
       subItems: [
