@@ -223,6 +223,8 @@ const TouristProfilePage = () => {
                 ))}
               </div>
             </div>
+            <br/>
+            <p>Here is a link for a video demo on how to use the website: https://drive.google.com/drive/folders/11bVsJ2HgrXGTd6EOkQgqL3WPJ9YkvCob?usp=sharing </p>
           </div>
         </div>
       </div>
