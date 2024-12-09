@@ -911,6 +911,11 @@ export const addDeliveryAddress = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    
+    if (!creator) {
+        return res.status(400).json({ message: 'Creator (user) is not identified' });
+    }
+
     const newAddress = new DeliveryAddress({
       
       addressLine1,
@@ -931,6 +936,7 @@ export const addDeliveryAddress = async (req, res) => {
 
 
 export const getAllAddresses = async (req, res) => {
+    
   try {
     const addresses = await DeliveryAddress.find({ userName: req.params.userName });
     return res.status(200).json(addresses);
