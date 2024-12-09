@@ -169,7 +169,7 @@ function ActivityContainer({ activity, activityChanger }) {
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
-      <Toaster />
+      
       <div className='grid p-2'>
       <div className="flex items-center justify-center mb-6">
         {previewFile ? (
@@ -296,10 +296,6 @@ function ActivityContainer({ activity, activityChanger }) {
         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
         Share via Mail
         </button>
-        {   !tourist?.ActivityBookings?.includes(activity._id) ?
-         <button onClick={() => (handleBookClick(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>book</button>  : <div></div>   
-        //  <button onClick={() => (handleUnBook(activity._id))} className='mr-2 transform transition-transform duration-300 hover:scale-125 '>unbook</button>     
-         }
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">

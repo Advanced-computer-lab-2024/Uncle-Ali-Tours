@@ -16,6 +16,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const uploadDirectory = path.join(__dirname, "../uploads");
+console.log("Upload directory path:", uploadDirectory);
 
 // Ensure the uploads directory exists
 if (!fs.existsSync(uploadDirectory)) {
@@ -25,16 +26,23 @@ if (!fs.existsSync(uploadDirectory)) {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDirectory);
+    console.log("Saving file to:", uploadDirectory);  // Log the directory
+    cb(null, uploadDirectory);  // Save files to the correct directory
   },
   filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+    const uniqueName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
+    console.log("Saving file with name:", uniqueName);  // Log the filename
+    cb(null, uniqueName);  // Use a unique name to avoid overwriting
   },
 });
 
-export const upload = multer({ storage: storage });
-export const uploadMiddleware = upload.single("profilePicture");
 
+export const upload = multer({ storage: storage });
+export const uploadMiddleware = upload.fields([
+  { name: "profilePicture", maxCount: 1 },
+  { name: "sellerID", maxCount: 1 },
+  { name: "taxationRegistryCard", maxCount: 1 },
+]);
 // Upload Profile Picture for Seller
 export const uploadProfilePicture = async (req, res) => {
   if (!req.file) {
@@ -183,4 +191,107 @@ export const deleteSeller = async (req, res) => {
     console.error("Error deleting seller:", error); // Log the error for debugging
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
+
+  
 };
+
+export const uploadDocuments = async (req, res) => {
+  if (!req.files) {
+    console.log("No files received:", req.body);  // Log the received data to check if files are coming
+    return res.status(400).json({ message: "No files provided." });
+  }
+
+  const { userName } = req.body;
+
+  // Get the paths for the uploaded files
+  const taxIDPath = req.files["taxID"]
+    ? `/uploads/${req.files["taxID"][0].filename}`
+    : null;
+  const taxationRegistryCardPath = req.files["taxationRegistryCard"]
+    ? `/uploads/${req.files["taxationRegistryCard"][0].filename}`
+    : null;
+
+  try {
+    const seller = await Seller.findOne({ userName });
+    if (!seller) {
+      console.log("Seller not found:", userName);
+      
+      // Delete the files if the seller is not found
+      if (taxIDPath) fs.unlinkSync(path.join(__dirname, `../${taxIDPath}`));
+      if (taxationRegistryCardPath) fs.unlinkSync(path.join(__dirname, `../${taxationRegistryCardPath}`));
+
+      return res.status(404).json({ message: "Seller not found." });
+    }
+
+    // Remove old files if necessary
+    if (taxIDPath && seller.taxID && fs.existsSync(path.join(__dirname, `../${seller.taxID}`))) {
+      fs.unlinkSync(path.join(__dirname, `../${seller.taxID}`));
+    }
+    if (taxationRegistryCardPath && seller.taxationRegistryCard && fs.existsSync(path.join(__dirname, `../${seller.taxationRegistryCard}`))) {
+      fs.unlinkSync(path.join(__dirname, `../${seller.taxationRegistryCard}`));
+    }
+
+    // Update seller's documents
+    if (taxIDPath) seller.taxID = taxIDPath;
+    if (taxationRegistryCardPath) seller.taxationRegistryCard = taxationRegistryCardPath;
+
+    await seller.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Documents uploaded successfully",
+      taxID: taxIDPath,
+      taxationRegistryCard: taxationRegistryCardPath,
+    });
+  } catch (error) {
+    console.error("Error uploading documents:", error);  // Log the error
+    return res.status(500).json({ message: "Document upload failed", error });
+  }
+};
+
+export const getUploadedDocuments = async (req, res) => {
+  const { userName } = req.query; // Get username from query string
+  
+  try {
+    const seller = await Seller.findOne({ userName });
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found." });
+    }
+
+    // Send back the document URLs
+    return res.status(200).json({
+      success: true,
+      message: "Documents retrieved successfully",
+      documents: {
+        sellerID: seller.sellerID || null,
+        taxationRegistryCard: seller.taxationRegistryCard || null
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching documents:", error);
+    return res.status(500).json({ message: "Error fetching documents", error });
+  }
+};
+
+export const getAllUploadedDocuments = async (req, res) => {
+  try {
+    const sellers = await Seller.find(); // Find all sellers
+    const documents = sellers.map((seller) => ({
+      userName: seller.userName,
+      profilePicture: seller.profilePicture,
+      sellerID: seller.sellerID,
+      taxationRegistryCard: seller.taxationRegistryCard,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      documents,
+    });
+  } catch (error) {
+    console.error("Error fetching all documents:", error);
+    return res.status(500).json({ message: "Error fetching documents", error });
+  }
+};
+
+
+

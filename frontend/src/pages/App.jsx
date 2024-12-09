@@ -1,23 +1,22 @@
 import React, { useEffect } from 'react';
-import sun from "../images/sun.png";
-import umbrella from "../images/umbrella.png";
-import pyramid from "../images/pyramid.png";
-import plane from "../images/plane.png";
-import { FaSun } from "react-icons/fa6";
 import { FiLoader } from 'react-icons/fi';
 import { Route, Routes } from "react-router-dom";
 import BookMark from '../components/BookMark';
 import EditProduct from "../components/EditProduct.jsx";
 import Navbar from "../components/Navbar";
+import plane from "../images/plane.png";
+import pyramid from "../images/pyramid.png";
+import sun from "../images/sun.png";
+import umbrella from "../images/umbrella.png";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
 import { useGuideStore } from "../store/tourGuide";
 import { useTouristStore } from "../store/tourist";
 import { useUserStore } from "../store/user";
-import EditProfile from "./EditProfile";
 import ActivityCategory from "./ActivityCategory";
 import ActivityDetail from "./ActivityDetail";
 import ActivityPage from "./ActivityPage";
+import AddAddressPage from './AddAddressPage.jsx';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import AdminDashboard from "./AdminDashboardPage";
 import AdminItineraryPage from './AdminItineraryPage';
@@ -25,12 +24,14 @@ import AdvertiserProfile from "./AdvertiserProfilePage";
 import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
 import CancelledPaymentPage from './CancelledPayment';
+import CartPage from "./CartPage.jsx";
 import ChangeCurrency from "./ChangeCurrency";
 import ChangePassword from "./ChangePassword";
 import Complaints from "./Complaints";
 import CreateActivity from "./CreateActivity";
 import CreateItinerary from "./CreateItinerary";
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
+import EditProfile from "./EditProfile";
 import FileComplaint from "./FileComplaint";
 import FlightBookingPage from "./FlightBookingPage";
 import HomePage from "./HomePage";
@@ -60,24 +61,31 @@ import ViewActivities from "./ViewActivities";
 import ViewAttractions from "./ViewAttractions";
 import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
+import ViewOrderDetails from './ViewOrderDetails.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
-import CartPage from "./CartPage.jsx";
-import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
-import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import ViewUpcomingTActivities from './ViewUpcomingTActivities.jsx';
 import WishlistPage from "./WishlistPage";
-import AddAddressPage from './AddAddressPage.jsx';
-import ViewOrderDetails from './ViewOrderDetails.jsx';
 //import CheckoutPage from './CheckOutPage.jsx';
-import TourGuideSalesReport from './TourGuideSalesReport.jsx';
-//import TourGuideTouristReport from './tourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
+import TourGuideSalesReport from './TourGuideSalesReport.jsx';
+import TourGuideTouristReport from './TourGuideTouristReport.jsx';
+import UserManagment from './UserManagment.jsx';
+
 import { Toaster } from 'react-hot-toast';
 
+import GovernorPreferencesTag from './GovernerPrefernceTags.jsx';
+import GovernorProfilePage from "./GovernorProfilePage.jsx";
+import SalesReportPage from './SalesReportPage.jsx';
+import TouristReportPage from './TouristReportPage.jsx';
+import ViewMyActivities from './ViewMyActivities.jsx';
 import ViewMyComplaints from './ViewMyComplaints.jsx';
+import ViewMyItineraries from './ViewMyItineraries.jsx';
 import ViewMyOrders from './ViewMyOrders.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
@@ -124,6 +132,7 @@ function App() {
 
   return (
     <div >
+      <Toaster/>
     <div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
 				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
 					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
@@ -134,7 +143,7 @@ function App() {
 					<img src={pyramid} alt="pyramid" className="w-8 h-8 z-[1] fixed bottom-0 left-6 translate-y-[7px]" />
 					<img src={pyramid} alt="pyramid" className="w-6 h-6 z-[1] fixed bottom-0 left-10 translate-y-[7px]" />
       <Navbar />
-      <Toaster />
+      
       {!loading ? 
       <Routes>
         <Route path="/security" element={<Security />} />
@@ -173,16 +182,16 @@ function App() {
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
         <Route path="/bookmarks" element={<BookMark userName={user.userName} />} />
-						{/*       <Route path="/checkoutPage" element={<CheckoutPage />} />
+			 {/* <Route path="/checkoutPage" element={<CheckoutPage />} /> */}
         <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
         <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
         <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
-						*/}
+				<Route path="/governorProfile" element={<GovernorProfilePage/>} />
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
         <Route path="/orderDetails/:id" element={<ViewOrderDetails/>}/>
-
+        <Route path="GovernorPreferencesTag" element={<GovernorPreferencesTag/>}/>
         <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/TransportationActivityPage" element={<TransportationActivityPage />} />
@@ -195,9 +204,14 @@ function App() {
         <Route path="/upcomingItineraries" element={<ViewUpcomingItineraries/>} />
         <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
+        <Route path="/upcomingTActivities" element={<ViewUpcomingTActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
+        <Route path="/userManagment" element={<UserManagment/>} />
+
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
+        <Route path="/viewMyItineraries" element={<ViewMyItineraries/>} />
+        <Route path="/viewMyActivities" element={<ViewMyActivities/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
 
@@ -207,6 +221,8 @@ function App() {
         <Route path="/payment/:type/:id" element={<PaymentPage />} />
         <Route path="/cancel/:type" element={<CancelledPaymentPage/>} />
         <Route path="/success/:type" element={<SuccessfulPaymentPage/>} />
+        <Route path="/salesreport" element={<SalesReportPage/>} />
+        <Route path="/touristreport" element={<TouristReportPage/>} />
       </Routes>
       :
       <FiLoader size={50} className="mx-auto mt-[49vh] animate-spin" />

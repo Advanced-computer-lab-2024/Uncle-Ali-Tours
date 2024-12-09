@@ -2,11 +2,14 @@ import Activity from "../models/activity.model.js";
 import DeliveryAddress from "../models/deliveryAddress.model.js";
 import Itinerary from "../models/itinerary.model.js";
 import Notification from "../models/notification.model.js";
+import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import Tourist from "../models/tourist.model.js";
 import transportationActivity from "../models/transportationActivity.model.js";
 import User from "../models/user.model.js";
+
 //import Order from "../models/order.js";
+import { checkAndNotifyUpcomingItinerary } from './notification.controller.js';
 export const createTourist = async(req,res)=>{
     const tourist = req.body;
     const today = new Date();
@@ -182,10 +185,10 @@ export const badgeLevel = async (req, res) => {
         }
 
         let level = "level 1";
-        if(tourist.myPoints>500000){
+        if(tourist.accumulatedPoints>500000){
             level="level 3";
         }
-        else if(tourist.myPoints>100000){
+        else if(tourist.accumulatedPoints>100000){
             level="level 2";
         }
         else{
@@ -633,6 +636,24 @@ export const removeProductCart = async (req, res) => {
     }
 };
 
+export const removeAllProductsCart = async (req, res) => {
+    const { userName } = req.body; // Get userName from request body
+    try {
+         // Find tourist by username
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found" });
+        }
+        tourist.productsCart = []; // Empty the cart
+        await tourist.save(); // Save changes to the database
+        return res.status(200).json({ success: true, data: [], message: 'All products removed from cart successfully' });
+    } catch (error) {
+        console.log("Error removing all products from cart:", error.message);
+        res.status(500).json({ success: false, message: "Server error during removing all products from cart" });
+    }
+    
+};
+
 export const getCartProducts = async (req, res) => {
     const { userName } = req.params; // Get userName from request parameters
 
@@ -658,36 +679,95 @@ export const getCartProducts = async (req, res) => {
     }
 };
 
-export const getMyUpcomingItineraries = async (req,res) => {
-    const {userName} = req.query;
-    try{
-        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
-        if (!allItineraries) {
+export const getMyUpcomingItems = async (req, res) => {
+    const { userName , type} = req.query;
+    try {
+        const tourist = await Tourist.findOne({ userName }).select('touristItems -_id').populate('touristItems.itemDetails');
+        console.log("aaaa",tourist);
+        if (!tourist) {
             return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
         }
 
         // Get the current date
         const now = new Date();
 
-        // Filter itineraries to include only those with upcoming dates
-        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
-            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
-                const firstAvailableDate = new Date(itinerary.availableDates[0]);
-                return firstAvailableDate > now;
-            }
-            return false; // Exclude itineraries without valid dates
-        });
+        switch (type) {
+            case 'itinerary':
+        // Filter itineraries to include only those with upcoming dates and include quantity
+        const upcomingItineraries = tourist.touristItems
+            .filter(item => item.type === 'itinerary')
+            .map(item => ({
+                itemDetails: item.itemDetails,
+                quantity: item.quantity
+            }))
+            .filter(itinerary => {
+                if (itinerary.itemDetails.availableDates && itinerary.itemDetails.availableDates.length > 0) {
+                    const firstAvailableDate = new Date(itinerary.itemDetails.availableDates[0]);
+                    return firstAvailableDate > now;
+                }
+                return false; // Exclude itineraries without valid dates
+            });
 
         res.status(200).json({
             success: true,
             data: upcomingItineraries,
             message: 'Upcoming itineraries fetched successfully',
         });
-    } catch (error) {
-            console.log("Error getting upcoming itineraries:", error);
-            res.status(500).json({ success: false, message: "Server error fetching upcoming itineraries" });
+        break;
+        case 'activity':
+            // Filter activities to include only those with upcoming dates and include quantity
+            const upcomingActivities = tourist.touristItems
+                .filter(item => item.type === 'activity')
+                .map(item => ({
+                    itemDetails: item.itemDetails,
+                    quantity: item.quantity
+                }))
+                .filter(activity => {
+                    console.log("daaate:",activity.itemDetails.date)
+                    if (activity.itemDetails.date) {
+                        const activityDate = new Date(activity.itemDetails.date);
+                        return activityDate > now;
+                    }
+                    return false; // Exclude activities without valid dates
+                });
+
+            res.status(200).json({
+                success: true,
+                data: upcomingActivities,
+                message: 'Upcoming activities fetched successfully',
+            });
+            break;
+            case 'tActivity':
+                console.log("tActivity")
+                // Filter activities to include only those with upcoming dates and include quantity
+                const upcomingTActivities = tourist.touristItems
+                    .filter(item => item.type === 'tActivity')
+                    .map(item => ({
+                        itemDetails: item.itemDetails,
+                        quantity: item.quantity
+                    }))
+                    .filter(tActivity => {
+                        if (tActivity?.itemDetails?.date) {
+                            const tActivityDate = new Date(tActivity.itemDetails.date);
+                            return tActivityDate > now;
+                        }
+                        return false; // Exclude activities without valid dates
+                    });
+    
+                res.status(200).json({
+                    success: true,
+                    data: upcomingTActivities,
+                    message: 'Upcoming transport activities fetched successfully',
+                });
+                break;
+        default:
+            res.status(400).json({ success: false, message: "Invalid type" });
         }
-}
+    } catch (error) {
+        console.log("Error getting upcoming data:", error.message);
+        res.status(500).json({ success: false, message: "Server error fetching upcoming data" });
+    }
+};
 
 export const getMyPastItineraries = async (req,res) => {
     const {userName} = req.query;
@@ -892,6 +972,11 @@ export const addDeliveryAddress = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    
+    if (!creator) {
+        return res.status(400).json({ message: 'Creator (user) is not identified' });
+    }
+
     const newAddress = new DeliveryAddress({
       
       addressLine1,
@@ -912,6 +997,7 @@ export const addDeliveryAddress = async (req, res) => {
 
 
 export const getAllAddresses = async (req, res) => {
+    
   try {
     const addresses = await DeliveryAddress.find({ userName: req.params.userName });
     return res.status(200).json(addresses);
@@ -954,6 +1040,151 @@ export const deleteAddress = async (req, res) => {
   }
 };
 
+export const handleUnBook = async (req, res) => {
+    const { userName, id, quantity } = req.body;
+
+    try {
+        // Find the tourist by userId
+        const tourist = await Tourist.findOne({userName: userName});
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: "Tourist not found." });
+        }
+
+        // Find the item in the touristItems array
+        let itemIndex = tourist.touristItems.findIndex(item => item.itemDetails?._id === id && item.quantity === quantity);
+        if (itemIndex === -1) {
+            itemIndex = tourist.touristItems.findIndex(item => item.itemDetails?.id === id && item.quantity === quantity);
+        }
+        if (itemIndex === -1) {
+            return res.status(404).json({ success: false, message: "Item not found in tourist items." });
+        }
+
+        // Get the item details
+        const itemDetails = tourist.touristItems[itemIndex].itemData;
+
+        // Remove the item from the touristItems array
+        tourist.touristItems.splice(itemIndex, 1);
+
+        // Increase the wallet by itemDetails.price * quantity
+        tourist.myWallet += itemDetails.price * quantity;
+
+        // Save the updated tourist document
+        await tourist.save();
+
+        res.status(200).json({ success: true, message: "Item unbooked successfully.", tourist });
+    } catch (error) {
+        console.error("Error unbooking item:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
+// Function to check if a tourist has purchased a product
+export const hasPurchasedProduct = async (req, res) => {
+    try {
+        const { userName, productId } = req.params; // Extract parameters from the request
+
+        // Check if the tourist exists
+        const tourist = await Tourist.findOne({ userName });
+        if (!tourist) {
+            return res.status(404).json({ success: false, message: 'Tourist not found.' });
+        }
+
+        // Search for an order with the specified conditions
+        const order = await Order.findOne({
+            creator: userName,
+            status: 'shipped',
+            'products.productId': productId, // Check if products array contains the productId
+        });
+        if (order) {
+            return res.status(200).json({ success: true, message: 'Product has been purchased.' });
+        } else {
+            return res.status(200).json({ success: false, message: 'Product has not been purchased.' });
+        }
+    } catch (error) {
+        console.error('Error checking product purchase:', error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};
+export const checkUpcomingItineraryNotifications = async (req, res) => {
+    try {
+        const { userName } = req.params;
+
+    
+        const result = await checkAndNotifyUpcomingItinerary(userName);
+
+        if (result.success) {
+            return res.status(200).json({ success: true, message: result.message });
+        } else {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+    } catch (error) {
+        console.error("Error checking upcoming itinerary notifications:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+export const handleSuccessfulPaymentForTourist = async (req, res) => {
+    try {
+        const { username, items, type , amountPaid } = req.body;
+        console.log("before checking fields","username:",username,"items:",items,"amount:" ,amountPaid);
+      // Validate request body
+        if (!username || !items || !type ) {
+        return res.status(400).json({ message: "Missing required fields." });
+        }
+
+        if (isNaN(amountPaid) || amountPaid <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid amount paid" });
+        }
+
+      // Find the tourist by username
+        const tourist = await Tourist.findOne({ userName: username });
+        if (!tourist) {
+        return res.status(404).json({ message: "Tourist not found." });
+        }
+
+      // Ensure items is an array
+        const itemsArray = Array.isArray(items) ? items : [items];
+
+      // Add each item to the touristItems array
+        itemsArray.forEach(item => {
+            // console.log(item);
+            tourist.touristItems.push({ itemData: item.itemData ,quantity:item.quantity ,itemDetails:item.itemDetails, type });
+        });
+
+        let value = 0;
+
+        // Validate the badge before proceeding
+        switch (tourist.badge) {
+            case 'level 1':
+                value = amountPaid * 0.5;
+                break;
+            case 'level 2':
+                value = amountPaid * 1;
+                break;
+            case 'level 3':
+                value = amountPaid * 1.5;
+                break;
+            default:
+                return res.status(400).json({ success: false, message: "Invalid badge level" });
+        }
+
+        // Ensure value is a valid number before adding to points
+        if (isNaN(value)) {
+            return res.status(400).json({ success: false, message: "Calculated value is invalid" });
+        }
+
+        tourist.myPoints += value;
+
+      // Save the updated tourist document
+        await tourist.save();
+        // console.log(tourist);
+        res.status(200).json({ message: "Item successfully added to tourist items.", tourist });
+    } catch (error) {
+        console.error("Error handling successful payment:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
 
 
 
+
+       

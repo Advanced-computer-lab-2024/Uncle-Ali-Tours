@@ -101,7 +101,7 @@ function EditProduct() {
     return (
         <div>
         <div className="p-1 w-[20vw] backdrop-blur-lg bg-[#0e0e2281] mx-auto h-fit m-4 rounded-lg shadow-lg text-white">
-            <Toaster />
+            
             
                   <label for="pic-upload">
                   <img

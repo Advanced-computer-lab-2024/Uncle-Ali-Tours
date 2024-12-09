@@ -76,22 +76,7 @@ function ItineraryPage(itinerary, itineraryChanger) {
               Itinerary flagged as inappropriate, please update it.
             </div>
           )}
-
-          {/* Buttons to update, delete, and activate/deactivate */}
-          <div className="flex items-center mt-2">
-            <button onClick={handleUpdateClick} className='mr-4 transform transition-transform duration-300 hover:scale-125'>
-              <MdOutlineDriveFileRenameOutline size='18' color='black' />
-            </button>
-            <button onClick={handleDeleteClick} className='mr-2 transform transition-transform duration-300 hover:scale-125'>
-              <MdDelete size='18' color='black' />
-            </button>
-            <button
-              onClick={() => handleActivateClick(it)}
-              className='px-1 py-0.5 bg-green-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105'
-            >
-              {it.isActivated ? "Deactivate" : "Activate"}
-            </button>
-          </div>
+          
         </div>
       ))}
 

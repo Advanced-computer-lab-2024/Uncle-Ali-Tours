@@ -15,13 +15,22 @@ export const usePaymentStore = create((set, get) => ({
     currency : "",
     bookedHotel: null,
 
+    // orderDataProducts: [
+    //         {
+    //             productId: "",
+    //             quantity: 1,
+    //         },
+    //     ],
+    
+
     // Setters
     setItems: (items) => set({ items }),
     setCurrency: (currency) => set({ currency }),
     setBookedHotel: (bookedHotel) => set({ bookedHotel }),
+    setOrderData: (orderData) => set({ orderData }),
 
      // Function to set selected items for payment
-    setSelectedItems: (selectedItems , type) => {
+    setSelectedItems: (selectedItems , type , quantity) => {
         console.log("selectedItems: ", selectedItems);
         switch(type){
         case('hotel'):
@@ -32,7 +41,7 @@ export const usePaymentStore = create((set, get) => ({
                     price: selectedItems.data.price.total,
                 },
                 itemDetails: selectedItems.data,
-                quantity: 1, // Default quantity, you can customize this as needed
+                quantity: 1,
             }] });
             console.log("items: ", get().items);
             break;
@@ -56,7 +65,7 @@ export const usePaymentStore = create((set, get) => ({
                     price: item.productId.price,
                 },
                 itemDetails: item.productId,
-                quantity: item.quantity, // Default quantity, you can customize this as needed
+                quantity: item.quantity,
             }));
             set({ items: mappedProducts });
             break;
@@ -69,9 +78,15 @@ export const usePaymentStore = create((set, get) => ({
                         price: item.price,
                     },
                     itemDetails: item,
-                    quantity: 1, // Default quantity, you can customize this as needed
+                    quantity: quantity,
                 }));
                 set({ items: mappedItems });
+
+                // const mappedOrderProducts = itemsArray.map(item => ({
+                //     productId: item._id,
+                //     quantity: quantity,
+                // }));
+                // set({ orderDataProducts: mappedOrderProducts });
                 break;
         }
         

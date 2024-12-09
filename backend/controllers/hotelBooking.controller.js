@@ -38,6 +38,22 @@ export const getHotelBookingByCreator = async (req, res) => {
     }
 };
 
+export const deleteHotelBooking = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const hotelBooking = await HotelBooking.findByIdAndDelete(id);
+        if (!hotelBooking) {
+            res.status(404).json({ message: `No hotel booking with id: ${id}` });
+        } else {
+            res.status(200).json({ message: "Hotel booking deleted successfully" });
+        }
+    }
+    catch (error) {
+        console.error("Error in deleting Hotel Booking", error.message);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const citySearch = async (req, res) => {
     const { city } = req.query;
     try {

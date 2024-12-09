@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'; 
 import { useUserStore } from '../store/user';
 import { toCamelCase } from '../lib/util';
 import toast, { Toaster } from 'react-hot-toast';
@@ -12,14 +12,12 @@ import { FaUser, FaEnvelope, FaLock, FaPhone, FaFlag, FaBirthdayCake, FaBriefcas
 import egypt from '../images/egypt.jpg';
 
 function RegisterPage() {
-    const [activeTab, setActiveTab] = React.useState('user');
+    const [selectedType, setSelectedType] = React.useState(""); // No pre-selected value
     const [newUser, setNewUser] = React.useState({
         userName: "",
         email: "",
         password: "",
     });
-    const navigate = useNavigate();
-
     const [tourist, setTourist] = React.useState({
         userName: "",
         email: "",
@@ -29,53 +27,92 @@ function RegisterPage() {
         dateOfBirth: "",
         occupation: "",
     });
+    const [acceptedTerms, setAcceptedTerms] = React.useState(false); // New state for accepting terms
+    const navigate = useNavigate();
 
-    const {createUser} = useUserStore();
-    const {getAdvertiser} = useAdvertiserstore();
-    const {getGuide} = useGuideStore();
-    const {getSeller} = useSellerStore();
-    const {getTourist} = useTouristStore();
+    const { createUser } = useUserStore();
+    const { getAdvertiser } = useAdvertiserstore();
+    const { getGuide } = useGuideStore();
+    const { getSeller } = useSellerStore();
+    const { getTourist } = useTouristStore();
 
-    const handleAddUser = async function(type) {
-        const passedUser = newUser
-        passedUser.type = type
-        const {success, message} = await createUser(passedUser);
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-        if (success) {
-            await new Promise(r => setTimeout(r, 2000));
-            switch (type) {
-                case "tour guide":
-                    await getGuide({userName : newUser.userName},{});
-                    navigate("/TourGuideProfilePage");
-                    break;
-                case "advertiser":
-                    await getAdvertiser({userName : newUser.userName},{});
-                    navigate("/advertiserProfile");
-                    break;
-                case "seller":
-                    await getSeller({userName : newUser.userName},{});
-                    navigate("/sellerProfile");
-                    break;
-                default:
-                    break;
+    const types = ["tour guide", "advertiser", "seller", "tourist"];
+
+    // Populate newUser with empty fields on mount (default to "tour guide")
+    useEffect(() => {
+        setNewUser({
+            userName: "",
+            email: "",
+            password: "",
+        });
+    }, []);
+
+    const handleRegister = async () => {
+        if (!acceptedTerms) {
+            toast.error("You must accept the terms and conditions to proceed.", { className: "text-white bg-gray-800" });
+            return;
+        }
+
+        let userType = selectedType;
+        if (selectedType === "") {
+            userType = "tour guide"; // Default type when no selection
+        }
+
+        if (userType === "tourist") {
+            // Validate tourist fields if necessary
+            const { userName, email, password, mobileNumber, nationality, dateOfBirth, occupation } = tourist;
+            if (!userName || !email || !password || !mobileNumber || !nationality || !dateOfBirth || !occupation) {
+                toast.error("Please fill out all fields for Tourist.", { className: "text-white bg-gray-800" });
+                return;
+            }
+
+            const passedTourist = { ...tourist, type: "tourist" };
+            const { success, message } = await createUser(passedTourist);
+            success 
+                ? toast.success(message, { className: "text-white bg-gray-800" }) 
+                : toast.error(message, { className: "text-white bg-gray-800" });
+            
+            if (success) {
+                await new Promise(r => setTimeout(r, 2000));
+                await getTourist({ userName: tourist.userName }, {});
+                navigate("/touristProfile");
+            }
+        } else {
+            // Validate newUser fields if necessary
+            const { userName, email, password } = newUser;
+            if (!userName || !email || !password) {
+                toast.error("Please fill out all fields.", { className: "text-white bg-gray-800" });
+                return;
+            }
+
+            const passedUser = { ...newUser, type: userType };
+            const { success, message } = await createUser(passedUser);
+            success 
+                ? toast.success(message, { className: "text-white bg-gray-800" }) 
+                : toast.error(message, { className: "text-white bg-gray-800" });
+            
+            if (success) {
+                await new Promise(r => setTimeout(r, 2000));
+                switch (userType) {
+                    case "tour guide":
+                        await getGuide({ userName: newUser.userName }, {});
+                        navigate("/TourGuideProfilePage");
+                        break;
+                    case "advertiser":
+                        await getAdvertiser({ userName: newUser.userName }, {});
+                        navigate("/advertiserProfile");
+                        break;
+                    case "seller":
+                        await getSeller({ userName: newUser.userName }, {});
+                        navigate("/sellerProfile");
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
 
-    const handleAddTourist = async function() {
-        const passedTourist = tourist
-        passedTourist.type = "tourist"
-        const {success, message} = await createUser(passedTourist);
-        success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
-        if (success) {
-            await new Promise(r => setTimeout(r, 2000));
-            await getTourist({userName : tourist.userName},{});
-            navigate("/touristProfile");
-        }
-    }
-
-    const types = ["tour guide", "advertiser", "seller"]
-    
     const touristData = [
         { name: "userName", icon: FaUser, placeholder: "Username" },
         { name: "email", icon: FaEnvelope, placeholder: "Email" },
@@ -86,11 +123,17 @@ function RegisterPage() {
         { name: "occupation", icon: FaBriefcase, placeholder: "Occupation" },
     ];
 
+    const userData = [
+        { name: "userName", icon: FaUser, placeholder: "Username" },
+        { name: "email", icon: FaEnvelope, placeholder: "Email" },
+        { name: "password", icon: FaLock, placeholder: "Password" },
+    ];
+
     return (
         <div style={styles.container} className="relative">
             <Toaster />
             <div style={styles.backgroundOverlay} />
-            <img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[100vw] h-[100vh] bg-black opacity-200"/>
+            <img src={egypt} className="fixed top-0 left-0 opacity-[0.3] w-[100vw] h-[100vh] bg-black opacity-200" alt="Background" />
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -100,80 +143,29 @@ function RegisterPage() {
                 <h2 style={styles.title}>Join U A T</h2>
                 <p style={styles.subtitle}>Start your journey with us</p>
                 
-                <div style={styles.tabContainer}>
-                    <motion.button 
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        style={activeTab === 'user' ? styles.activeTab : styles.inactiveTab}
-                        onClick={() => setActiveTab('user')}
+                {/* Dropdown for selecting user type */}
+                <div style={styles.dropdownContainer}>
+                    <label htmlFor="userType" style={styles.registerAs}>Register as:</label>
+                    <select
+                        id="userType"
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                        style={styles.select}
+                        aria-label="Select user type"
                     >
-                        User
-                    </motion.button>
-                    <motion.button 
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        style={activeTab === 'tourist' ? styles.activeTab : styles.inactiveTab}
-                        onClick={() => setActiveTab('tourist')}
-                    >
-                        Tourist
-                    </motion.button>
+                        <option value="" disabled>Select user type</option> {/* Placeholder option */}
+                        {types.map((type) => (
+                            <option key={type} value={type}>
+                                {toCamelCase(type)}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
-                {activeTab === 'user' && (
-                    <div style={styles.inputContainer}>
-                        <div style={styles.inputWrapper}>
-                            <FaUser style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='userName'
-                                value={newUser.userName}
-                                onChange={(e) => setNewUser({ ...newUser, userName: e.target.value})}
-                                placeholder='Username'
-                                type='text'
-                            />
-                        </div>
-                        <div style={styles.inputWrapper}>
-                            <FaEnvelope style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='email'
-                                value={newUser.email}
-                                onChange={(e) => setNewUser({ ...newUser, email: e.target.value})}
-                                placeholder='Email'
-                                type='email'
-                            />
-                        </div>
-                        <div style={styles.inputWrapper}>
-                            <FaLock style={styles.icon} />
-                            <input 
-                                style={styles.input}
-                                name='password'
-                                value={newUser.password}
-                                onChange={(e) => setNewUser({ ...newUser, password: e.target.value})}
-                                placeholder='Password'
-                                type='password'
-                            />
-                        </div>
-                        <p style={styles.registerAs}>Register as:</p>
-                        <div style={styles.buttonContainer}>
-                            {types.map((type) => (
-                                <motion.button
-                                    key={type}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    style={styles.registerButton}
-                                    onClick={() => handleAddUser(type)}
-                                >
-                                    {type}
-                                </motion.button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'tourist' && (
-                    <div style={styles.inputContainer}>
-                        {touristData.map((data) => (
+                {/* Conditionally render input fields based on selectedType */}
+                <div style={styles.inputContainer}>
+                    {selectedType === "tourist" ? (
+                        touristData.map((data) => (
                             <div key={data.name} style={styles.inputWrapper}>
                                 <data.icon style={styles.icon} />
                                 <input
@@ -182,23 +174,53 @@ function RegisterPage() {
                                     value={tourist[data.name]}
                                     onChange={(e) => setTourist({ ...tourist, [e.target.name]: e.target.value })}
                                     placeholder={data.placeholder}
+                                    type={data.name === 'password' ? 'password' : (data.name === 'dateOfBirth' ? 'date' : 'text')}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        userData.map((data) => (
+                            <div key={data.name} style={styles.inputWrapper}>
+                                <data.icon style={styles.icon} />
+                                <input
+                                    style={styles.input}
+                                    name={data.name}
+                                    value={newUser[data.name]}
+                                    onChange={(e) => setNewUser({ ...newUser, [e.target.name]: e.target.value })}
+                                    placeholder={data.placeholder}
                                     type={data.name === 'password' ? 'password' : 'text'}
                                 />
                             </div>
-                        ))}
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            style={styles.registerButton}
-                            onClick={handleAddTourist}
-                        >
-                            Register as Tourist
-                        </motion.button>
+                        ))
+                    )}
+
+                    {/* Terms and Conditions Checkbox */}
+                    <div style={styles.checkboxContainer}>
+                        <label style={styles.checkboxLabel}>
+                            <input 
+                                type="checkbox" 
+                                checked={acceptedTerms}
+                                onChange={() => setAcceptedTerms(!acceptedTerms)}
+                                style={styles.checkbox}
+                            />
+                            I accept the <a href="/terms" style={styles.link}>terms and conditions</a>.
+                        </label>
                     </div>
-                )}
+
+                    {/* Sign Up Button */}
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        style={styles.registerButton}
+                        onClick={handleRegister}
+                        disabled={!acceptedTerms}  // Disable the button if terms are not accepted
+                    >
+                        {selectedType === "tourist" || selectedType === "" ? "Register " : "Register"}
+                    </motion.button>
+                </div>
             </motion.div>
             <footer style={styles.footer}>
-                <p style={styles.footerText}>© {new Date().getFullYear()} All Rights Reserved</p>
+                <p style={styles.footerText}>© {new Date().getFullYear()} U A T. All rights reserved.</p>
             </footer>
         </div>
     )
@@ -247,30 +269,30 @@ const styles = {
         color: '#666',
         marginBottom: '2rem',
     },
-    tabContainer: {
+    dropdownContainer: {
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
         marginBottom: '2rem',
     },
-    activeTab: {
-        padding: '0.5rem 1rem',
-        backgroundColor: '#dc5809',
-        color: 'white',
-        border: 'none',
-        borderRadius: '8px',
+    registerAs: {
+        color: '#333',
         fontSize: '1rem',
-        cursor: 'pointer',
-        marginRight: '1rem',
+        marginBottom: '0.5rem',
     },
-    inactiveTab: {
-        padding: '0.5rem 1rem',
-        backgroundColor: 'transparent',
-        color: '#dc5809',
-        border: '2px solid #dc5809',
+    select: {
+        width: '100%',
+        padding: '0.75rem',
+        border: '2px solid #ccc',
         borderRadius: '8px',
         fontSize: '1rem',
+        appearance: 'none',
+        backgroundColor: '#fff',
+        backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23666\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>")',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right 1rem center',
+        backgroundSize: '1rem',
         cursor: 'pointer',
-        marginRight: '1rem',
     },
     inputContainer: {
         display: 'flex',
@@ -289,23 +311,11 @@ const styles = {
     },
     input: {
         width: '100%',
-        padding: '1rem 1rem 1rem 3rem',
+        padding: '0.75rem 1rem 0.75rem 3rem',
         border: '2px solid #ccc',
         borderRadius: '8px',
         fontSize: '1rem',
         transition: 'border-color 0.3s ease',
-    },
-    registerAs: {
-        color: '#333',
-        fontSize: '1rem',
-        textAlign: 'center',
-        marginBottom: '0.5rem',
-    },
-    buttonContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem',
     },
     registerButton: {
         padding: '1rem',
@@ -316,6 +326,23 @@ const styles = {
         fontSize: '1rem',
         cursor: 'pointer',
         transition: 'background-color 0.3s',
+    },
+    checkboxContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '1rem',
+    },
+    checkboxLabel: {
+        color: '#333',
+        fontSize: '1rem',
+    },
+    checkbox: {
+        marginRight: '0.5rem',
+    },
+    link: {
+        color: '#007bff',
+        textDecoration: 'none',
     },
     footer: {
         position: 'absolute',
@@ -334,5 +361,4 @@ const styles = {
     }
 };
 
-export default RegisterPage
-
+export default RegisterPage;
