@@ -57,7 +57,7 @@ function LoginPage() {
         break;
 
       case "governor":
-        navigate("/attraction");
+        navigate("/governerProfilePage");
         break;
     
       default:
@@ -104,7 +104,6 @@ function LoginPage() {
   }
   return (
     <div style={styles.container} className="relative">
-      <Toaster />
       <div style={styles.backgroundOverlay} />
       <img src={egypt} className="absolute top-0 left-0 opacity-[0.3] w-[100vw] h-[100vh] bg-black opacity-200"/>
       <motion.div 
@@ -174,7 +173,7 @@ function LoginPage() {
         </motion.div>
           {/* Footer */}
       <footer style={styles.footer}>
-        <p style={styles.footerText}>© {new Date().getFullYear()} All Rights Reserved</p>
+        <p style={styles.footerText}>© {new Date().getFullYear()}  U A T. All rights reserved.</p>
       </footer>
     </div>
   );

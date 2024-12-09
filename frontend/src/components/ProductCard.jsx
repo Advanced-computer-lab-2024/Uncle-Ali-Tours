@@ -74,7 +74,7 @@ function ProductCard({ product, productChanger }) {
 
   return (
     <div className="mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded">
-      <Toaster />
+      
       <div className="flex items-center justify-center mb-6">
         {previewFile ? (
           <img

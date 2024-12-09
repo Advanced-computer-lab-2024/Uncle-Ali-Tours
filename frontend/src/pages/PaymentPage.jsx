@@ -6,7 +6,7 @@ import { usePaymentStore } from '../store/payment';
 import { useTouristStore } from '../store/tourist';
 import { useTransportationActivityStore } from '../store/transportationActivity';
 import { useUserStore } from '../store/user';
-
+import axios from 'axios';
 function PaymentPage() {
   const location = useLocation();
   const { bookedHotel, bookedFlight } = location.state || {};
@@ -24,6 +24,37 @@ function PaymentPage() {
   const { user } = useUserStore();
   const { tourist , checkoutList } = useTouristStore();
   const navigate = useNavigate();
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const userName = user.userName;
+  const handlePromoCodeChange = (e) => {
+    setPromoCode(e.target.value);
+  };
+
+  const applyPromoCode = async () => {
+    try {
+        const res = await fetch('/api/promo/applyPromo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userName, promoCode }) // Fix: Correctly structure the JSON body
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+            setDiscount(result.data.discount);
+            setPrice(price*(1-result.data.discount/100));
+            alert(`Promo code applied! You get a ${result.data.discount}% discount.`);
+        } else {
+            alert(result.message || 'Invalid promo code');
+        }
+    } catch (error) {
+        console.error('Error applying promo code:', error);
+        alert('Error applying promo code');
+    }
+};
 
   useEffect(() => {
     console.log(type, id);
@@ -158,7 +189,16 @@ function PaymentPage() {
         </div>
       ))}
       <h2>Total price: {(price).toFixed(0)} {user.chosenCurrency}</h2>
-
+      <div>
+      <input 
+        type="text" 
+        value={promoCode} 
+        onChange={handlePromoCodeChange} 
+        placeholder="Enter promo code" 
+      />
+      <button onClick={applyPromoCode}>Apply Promo Code</button>
+      <p>Discount: {discount}%</p>
+    </div>
       {/* Payment Method Selection */}
       <h2>Select Payment Method</h2>
       <div>

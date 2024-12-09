@@ -31,7 +31,7 @@ function Security() {
 
   return (
     <div className="grid relative p-6 w-[33vh] mx-auto mt-12 backdrop-blur-lg bg-[#161821f0] h-fit max-w-3xl rounded-lg shadow-lg text-white">
-        <Toaster />
+        
         <Link to='/changePassword' className="my-2 mx-auto hover:underline">
           changePassword
         </Link>
