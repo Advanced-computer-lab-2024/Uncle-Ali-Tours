@@ -115,7 +115,7 @@ function GovernorPreferencesTag() {
         rejectButtonText="Cancel"
       />
 
-      <Toaster />
+       />
     </div>
   );
 }

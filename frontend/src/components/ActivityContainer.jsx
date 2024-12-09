@@ -17,7 +17,7 @@ function ActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
   const { showDialog } = dialog();
   const { showFormDialog } = formdialog();
-  const { createActivityReview } = useActivityStore();
+  const { createActivityReview, deleteActivity} = useActivityStore();
   const [isLoading, setIsLoading] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
@@ -38,6 +38,17 @@ function ActivityContainer({ activity, activityChanger }) {
     showDialog()
     activityChanger(activity)
   }
+  
+  const handleDeleteActivity = async (activityID) => {
+    if (window.confirm("Are you sure you want to delete this activity?")) {
+      const { success, message } = await deleteActivity(activityID);
+      if (success) {
+        toast.success(message, { className: 'text-white bg-gray-800' });
+      } else {
+        toast.error(message, { className: 'text-white bg-gray-800' });
+      }
+    }
+  };
   
 
   const handleUpdateClick = () => {
@@ -284,7 +295,9 @@ function ActivityContainer({ activity, activityChanger }) {
         >
           <MdOutlineDriveFileRenameOutline size='18' color='black' />
         </Link>
-      <button onClick={handleClick} className='mr-2 transform transition-transform duration-300 hover:scale-125 '><MdDelete size='18' color='black' /></button>
+        <button onClick={() => handleDeleteActivity(activity._id)} className="transform transition-transform duration-300 hover:scale-125">
+  <MdDelete size="18" color="red" />
+</button>
 
       
 

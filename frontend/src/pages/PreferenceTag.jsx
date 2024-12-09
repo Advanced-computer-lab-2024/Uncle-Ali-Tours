@@ -130,7 +130,7 @@ function PreferenceTag() {
         <p>© {new Date().getFullYear()} U A T. All rights reserved.</p>
       </footer>
 
-      <Toaster position="top-right" />
+       position="top-right" />
     </div>
   );
 }

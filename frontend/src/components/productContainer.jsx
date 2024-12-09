@@ -23,10 +23,20 @@ function ProductContainer({ product, tourist }) {
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
+  const [productImage, setProductImage] = useState(avatar);
 
   const displayPrice = (product.price * user.currencyRate).toFixed(2);
 
   let avRating = product.rate.reduce((sum, r) => sum + r.rating, 0) / (product.rate.length || 1);
+  
+  useEffect(() => {
+    const savedImages = JSON.parse(localStorage.getItem("productImages")) || [];
+    const storedImage = savedImages.find((img) => img.id === product._id);
+    if (storedImage) {
+      setProductImage(storedImage.image);
+    }
+  }, [product._id]);
+
 
   useEffect(() => {
     if (tourist) {
@@ -129,8 +139,8 @@ function ProductContainer({ product, tourist }) {
         <div className="w-full flex items-center justify-center">
           <div className="aspect-square overflow-hidden transform scale-110 ml-12 mt-12">
             <img
-              src={product?.profilePicture ? `http://localhost:3000${product.profilePicture}` : avatar}
-              alt="Product"
+                src={productImage}
+                alt="Product"
               className="w-[75%] h-[75%] object-cover cursor-pointer"
               onClick={() => setShowPreview(true)}
             />
@@ -167,6 +177,7 @@ function ProductContainer({ product, tourist }) {
           </div>
         </div>
       </CardContent>
+      
       <CardFooter>
         <Button variant="link" onClick={() => setShowReviews(!showReviews)}>
           {showReviews ? "Hide Reviews" : "Show Reviews"}

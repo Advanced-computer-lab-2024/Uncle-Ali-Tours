@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useUserStore } from "../store/user";
 import toast from "react-hot-toast";
+import Promo from "../components/Promo";
+
 
 const UserManagement = () => {
   const { deleteUser, createUser, getUsersNumber, getNewUsersLastMonth, user } = useUserStore();
@@ -43,12 +45,17 @@ const UserManagement = () => {
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-semibold text-center text-gray-800 mb-8">User Management</h1>
 
-      {/* Stats Section */}
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-8 mb-8 justify-center">
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <h3 className="text-2xl font-semibold mb-4">User Stats</h3>
           <p className="text-xl mb-2">Total Users: {users}</p>
           <p className="text-xl">New Users this Month: {newUsers}</p>
+        </div>
+
+        {/* Promo Codes Section */}
+        <div className="p-6 bg-white rounded-lg shadow-lg text-white">
+          <h3 className="text-xl mb-4">Promo Codes</h3>
+          <Promo />
         </div>
       </div>
 

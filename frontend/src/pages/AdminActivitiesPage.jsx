@@ -48,8 +48,8 @@ function AdminActivityPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+<div className="relative min-h-screen flex flex-col items-center justify-center bg-transparent from-gray-900 to-gray-800">
+<div className="absolute inset-0 bg-black opacity-50"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -124,7 +124,7 @@ function AdminActivityPage() {
         <p>© {new Date().getFullYear()} U A T. All rights reserved.</p>
       </footer>
 
-      <Toaster position="top-right" />
+       
     </div>
   );
 }
