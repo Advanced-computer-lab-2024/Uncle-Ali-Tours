@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { FaEdit } from 'react-icons/fa';
 import { Modal } from 'react-bootstrap';
+import UnVerified  from "../components/UnVerified";
+
 import axios from 'axios';
 import { IoSaveOutline } from 'react-icons/io5';
 import egypt from '../images/egypt.jpg';
@@ -132,7 +134,11 @@ const TourGuideProfilePage = () => {
       setPreviewFile(URL.createObjectURL(file));
     }
   };
+  const isVerified = guide?.verified;
 
+  if (!isVerified) {
+    return <UnVerified />;
+  }
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />

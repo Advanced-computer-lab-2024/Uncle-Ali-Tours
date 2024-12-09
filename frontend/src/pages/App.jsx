@@ -76,7 +76,7 @@ import TourGuideSalesReport from './TourGuideSalesReport.jsx';
 import TourGuideTouristReport from './TourGuideTouristReport.jsx';
 import SellerSalesReport from './SellerSalesReport.jsx';
 import UserManagment from './UserManagment.jsx';
-
+import UserDocuments from './userDocuments.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import ViewMyComplaints from './ViewMyComplaints.jsx';
@@ -204,6 +204,8 @@ function App() {
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
         <Route path="/userManagment" element={<UserManagment/>} />
+        <Route path="/userDocuments" element={<UserDocuments/>} />
+
 
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
 

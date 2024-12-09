@@ -121,42 +121,46 @@ uploadProfilePicture: async (userName, profilePicture) => {
 },
 
 uploadDocuments: async (userName, documents) => {
-        const formData = new FormData();
-        // Append multiple documents to the FormData
-        for (let docKey in documents) {
-            formData.append(docKey, documents[docKey]);
-        }
-        formData.append("userName", userName);
-
-        try {
-            const response = await axios.post(`http://localhost:3000/api/seller/uploadDocuments`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-
-            // Check and log the response from the server
-            console.log("Upload response:", response.data);
-
-            const data = response.data;
-            if (data.success) {
-                const uploadedDocs = {
-                    profilePicture: data.profilePicture,
-                    sellerID: data.sellerID,
-                    taxationRegistryCard: data.taxationRegistryCard,
-                };
-
-                // Update the seller state with the new document paths
-                set((state) => ({
-                    sell: { ...state.sell, ...uploadedDocs },
-                }));
-
-                return { success: true, message: "Documents uploaded successfully", uploadedDocs };
-            } else {
-                console.warn("No documents returned in response:", data);
-                return { success: false, message: data.message || "No document paths returned" };
-            }
-        } catch (error) {
-            console.error("Error uploading documents:", error);
-            return { success: false, message: "Error uploading documents" };
-        }
-    },
+    const formData = new FormData();
+    // Append multiple documents to the FormData
+    for (let docKey in documents) {
+      formData.append(docKey, documents[docKey]);
+    }
+    formData.append("userName", userName);
+  
+    try {
+      const response = await axios.post(`http://localhost:3000/api/seller/uploadDocuments`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+  
+      // Check and log the response from the server
+      console.log("Upload response:", response.data);
+  
+      const data = response.data;
+      if (data.success) {
+        const uploadedDocs = {
+          sellerID: data.sellerID,
+          taxationRegistryCard: data.taxationRegistryCard,
+        };
+  
+        // Log the paths of the uploaded documents
+        console.log("Seller ID Path:", uploadedDocs.sellerID);
+        console.log("Taxation Registry Card Path:", uploadedDocs.taxationRegistryCard);
+  
+        // Update the seller state with the new document paths
+        set((state) => ({
+          sell: { ...state.sell, ...uploadedDocs },
+        }));
+  
+        return { success: true, message: "Documents uploaded successfully", uploadedDocs };
+      } else {
+        console.warn("No documents returned in response:", data);
+        return { success: false, message: data.message || "No document paths returned" };
+      }
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      return { success: false, message: "Error uploading documents" };
+    }
+  },
+  
 }));

@@ -8,6 +8,8 @@ import { useAdvertiserstore } from '../store/advertiser';
 import { useTagStore } from '../store/tag';
 import { useRequestStore } from '../store/requests';
 import { useActivityStore } from "../store/activity";
+import UnVerified  from "../components/UnVerified";
+
 import egypt from '../images/egypt.jpg';
 import BronzeBadge from '../images/bronze.png';
 import SilverBadge from '../images/silver.png';
@@ -240,6 +242,11 @@ const AdvertiserProfile = () => {
 
   if (!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
+  const isVerified = advertiser?.verified;
+
+  if (!isVerified) {
+    return <UnVerified />;
+  }
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster />

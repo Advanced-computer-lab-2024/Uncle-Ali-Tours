@@ -154,9 +154,10 @@ const SideMenu = ({ isOpen, onClose }) => {
       title: "Users Settings",
       subItems: [
         { name: "Manage", path: "/userManagment" },
-
         { name: "Complaints", path: "/complaints" },
+        { name: "View User Documents", path: "/userDocuments" },
         { name: "View Delete Requests", path: "/viewDeleteRequests" },
+
 
       ],
     },
