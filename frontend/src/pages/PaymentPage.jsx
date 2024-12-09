@@ -145,7 +145,7 @@ function PaymentPage() {
     }
 
   }
-  , [currentItinerary, currentActivity,transportationActivity,itemList , user.chosenCurrency , quantity]);
+  , [currentItinerary, currentActivity,transportationActivity,itemList , user.chosenCurrency , quantity , selectedPaymentMethod]);
 
   useEffect(() => {
     console.log("itemList last useEffect: ", itemList);

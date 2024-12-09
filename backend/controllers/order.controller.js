@@ -193,9 +193,10 @@ export const cancelOrder = async (req, res) => {
         if (!tourist) {
             return res.status(404).json({ success: false, message: 'Tourist not found.' });
         }
-
+        if(order.paymentMethod !== 'cashOnDelivery'){
         // Add the order total to the tourist's wallet
         tourist.myWallet += order.total || 0;
+        }
         await tourist.save();
 
         return res.status(200).json({ success: true, message: 'Order cancelled and refund issued to your wallet.', data: order });
