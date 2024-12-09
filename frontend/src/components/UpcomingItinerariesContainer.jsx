@@ -35,7 +35,7 @@ const UpcomingItinerariesContainer = () => {
         toast.success(response.message, { className: "text-white bg-gray-800" });
         setUpcomingItineraries(prevItineraries => prevItineraries.filter(itinerary => itinerary.itemDetails._id !== itineraryID));
       } else {
-        toast.error(response.message, { className: "text-white bg-gray-800" });
+        console.error(response.message, { className: "text-white bg-gray-800" });
       }
     } catch (error) {
       console.error('Error unbooking itinerary:', error.message);

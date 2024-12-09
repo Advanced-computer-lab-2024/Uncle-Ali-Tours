@@ -19,7 +19,7 @@ function ViewUpcomingItineraries() {
 
         fetchData(); // Call the function
         setIsUpcoming(true);
-    }, [user, fetchUpcomingItems]);
+    }, [user, fetchUpcomingItems, UpcomingItinerariesContainer]);
 
     return (
         <div>

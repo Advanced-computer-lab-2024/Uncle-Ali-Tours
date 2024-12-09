@@ -449,7 +449,6 @@ export const useTouristStore = create((set) => ({
                 toast.success(data.message);
                 return true;
             } else {
-                toast.error(data.message);
                 return false;
             }
         } catch (error) {
