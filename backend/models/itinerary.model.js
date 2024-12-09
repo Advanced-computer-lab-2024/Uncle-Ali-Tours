@@ -84,6 +84,11 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  profilePicture: {
+    type: String, 
+    required: false,
+        default: "" // This will store the path to the uploaded picture
+},
   reviews: [reviewSchema],
      rating: {
        type: Number,

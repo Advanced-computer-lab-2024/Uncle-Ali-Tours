@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { create } from 'zustand';
+import axios from 'axios';
 
 
 export const useItineraryStore = create((set, get) => ({
@@ -8,6 +8,38 @@ export const useItineraryStore = create((set, get) => ({
 
   itineraries: [],
   setItineraries: (itineraries) => set({ itineraries }),
+   // Upload profile picture for a 
+
+   uploadProductPicture: async (id, profilePicture) => {
+    const formData = new FormData();
+    formData.append("profilePicture", profilePicture);
+  
+    try {
+      const response = await axios.put(`http://localhost:3000/api/itinerary/uploadPicture/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+  
+      console.log("Upload response:", response.data);
+  
+      const data = response.data;
+      if (data.success && data.profilePicture) {
+        const profileImagePath = data.profilePicture;
+  
+        set((state) => ({
+          itineraries: state.itineraries.map((itinerary) =>
+            itinerary._id === id ? { ...itinerary, profilePicture: profileImagePath } : itinerary
+          ),
+        }));
+  
+        return { success: true, message: "itineraries picture uploaded successfully", profilePicture: profileImagePath };
+      } else {
+        return { success: false, message: data.message || "No itineraries picture path returned" };
+      }
+    } catch (error) {
+      console.error("Error uploading itineraries picture:", error);
+      return { success: false, message: "Error uploading itineraries picture" };
+    }
+  },
 
   addItineraries: async (newItinerary) => {
     try {

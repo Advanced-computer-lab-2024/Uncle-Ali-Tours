@@ -1,5 +1,6 @@
 import express from "express";
-import { activateItinerary, bookItinerary, createItinerary, createItineraryReview, deactivateItinerary, deleteItinerary, flagItinerary, getItinerary, getItineraryById, updateItinerary,interestedIn,removeInterestedIn } from "../controllers/itinerary.controller.js";
+import {   uploadProductPicture ,
+    upload,activateItinerary, bookItinerary, createItinerary, createItineraryReview, deactivateItinerary, deleteItinerary, flagItinerary, getItinerary, getItineraryById, updateItinerary,interestedIn,removeInterestedIn } from "../controllers/itinerary.controller.js";
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.post('/activate', activateItinerary);
 router.put('/:id/book', bookItinerary);
 router.put("/flag",flagItinerary);
 router.put('/intrestedIn',interestedIn);
+router.put('/uploadPicture/:id', upload.single('profilePicture'), uploadProductPicture);
 router.put('/notIntrestedIn',removeInterestedIn);
 export default router;

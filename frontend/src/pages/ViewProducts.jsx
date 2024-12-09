@@ -18,6 +18,7 @@ function ViewProducts() {
     const [visibillity, setVisibillity] = useState(
       false
   );
+  const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
 
  
     const {getProducts, products} = useProductStore();
@@ -32,6 +33,7 @@ function ViewProducts() {
 
    return (
     <div className='text-black'>
+      
         <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
         <input className='w-[15ch] m-2 pl-1' name={"price"} placeholder='Price' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
         <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>

@@ -5,7 +5,73 @@ const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 import Notification from "../models/notification.model.js";
 import Tourist from "../models/tourist.model.js";
+import dotenv from "dotenv";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDirectory = path.join(__dirname, "../uploads");
+
+// Ensure the uploads directory exists
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDirectory);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  },
+});
+
+export const upload = multer({ storage: storage });
+export const uploadMiddleware = upload.single("profilePicture");
+
+export const uploadProductPicture = async (req, res) => {
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided." });
+    }
+  
+    const { id } = req.params;
+    const filePath = `/uploads/${req.file.filename}`;
+  
+    try {
+      const itinerary = await Itinerary.findById(id);
+      if (!itinerary) {
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: " not found." });
+      }
+  
+      // Remove old profile picture file if it exists
+      if (itinerary.profilePicture && fs.existsSync(path.join(__dirname, `../${itinerary.profilePicture}`))) {
+        fs.unlinkSync(path.join(__dirname, `../${itinerary.profilePicture}`));
+      }
+  
+      // Update seller's profile picture path in the database
+      itinerary.profilePicture = filePath;
+      await itinerary.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: "itinerary picture uploaded successfully",
+        profilePicture: `${process.env.SERVER_URL || 'http://localhost:5000'}${filePath}`, // Return the full URL
+      });
+
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      return res.status(500).json({ message: "Profile picture upload failed", error });
+    }
+  };
 
 // Create a new itinerary
 export const createItinerary = async (req, res) => {
@@ -115,6 +181,9 @@ export const deleteItinerary = async (req, res) => {
     try {
         const itineraryExists = await Itinerary.exists({ _id: _id });
 
+        if (itineraryExists.profilePicture && fs.existsSync(path.join(__dirname, `../${itineraryExists.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${itineraryExists.profilePicture}`));
+          }
         if (!itineraryExists) {
             return res.status(404).json({ success: false, message: "Itinerary not found" });
         }
@@ -147,9 +216,14 @@ const notifyIntrest = async(touristId,bookingOpen,itineraryId)=> {
 // Update an itinerary
 export const updateItinerary = async (req, res) => {
     const { id, newItinerary } = req.body;
+    if (req.file) {
+        newItinerary.profilePicture = `/uploads/${req.file.filename}`;
+      }
     try {
         const itineraryExists = await Itinerary.exists({ _id: id });
-
+        if (req.file && itineraryExists.profilePicture && fs.existsSync(path.join(__dirname, `../${itineraryExists.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${itineraryExists.profilePicture}`));
+          }
         if (!itineraryExists) {
             return res.status(404).json({ success: false, message: "Itinerary not found" });
         }
@@ -159,6 +233,7 @@ export const updateItinerary = async (req, res) => {
             console.log(itinerary);
             itinerary.interstedIn.map((touristId)=>{notifyIntrest(touristId,newItinerary.bookingOpen,itinerary._id)})
         }
+
 
         const updatedItinerary = await Itinerary.findByIdAndUpdate(id, newItinerary, { new: true, runValidators: true });
 

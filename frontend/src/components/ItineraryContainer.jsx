@@ -1,4 +1,4 @@
-  import React, { useState } from 'react';
+  import React, { useState ,useRef,useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
@@ -12,7 +12,9 @@ import { useUserStore } from '../store/user.js';
 import { adjustableDialog } from './AdjustableDialog.jsx';
 import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
-
+import { FaEye, FaEdit } from 'react-icons/fa';
+import AvatarEditor from 'react-avatar-editor';
+import { Modal } from 'react-bootstrap';
 
 function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const {currentItinerary, setCurrentItinerary , updateItinerary} = useItineraryStore();
@@ -20,7 +22,13 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+  const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
+  const [showPreview, setShowPreview] = useState(false);
+  const [scale, setScale] = useState(1.2);
+  const [rotate, setRotate] = useState(0);
+  const editorRef = useRef(null);
   const { createTourGuideReview } = useGuideStore();
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
@@ -211,14 +219,171 @@ const deactivate = async () => {
   const {success, message} = await deactivateItinerary(curItinerary._id)
   success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
 }
+useEffect(() => {
+  const savedImages = JSON.parse(localStorage.getItem("aImages")) || [];
+  const aImage = savedImages.find(img => img.id === itinerary._id);
+  if (aImage) {
+    setPreviewFile(aImage.image);
+  }
+}, [itinerary]);
 
+
+const toggleEdit = () => {
+  setIsEditing((prev) => !prev);
+  setProfilePic(null);
+};
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    setProfilePic(file);
+    //localStorage.removeItem("profilePicture");
+  }
+};
+
+const handleSave = () => {
+  if (editorRef.current && profilePic) {
+    const canvas = editorRef.current.getImageScaledToCanvas();
+    const dataUrl = canvas.toDataURL();
+
+    try {
+      const savedImages = JSON.parse(localStorage.getItem("aImages")) || [];
+      const uImages = savedImages.filter(img => img.id !== itinerary._id);
+      uImages.push({ id: itinerary._id, image: dataUrl });
+
+      localStorage.setItem("aImages", JSON.stringify(uImages));
+      setPreviewFile(dataUrl);
+      setIsEditing(false);
+      setProfilePic(null);
+      toast.success("Profile picture saved locally", { className: "text-white bg-gray-800" });
+    } catch (error) {
+      toast.error("Error saving profile photo locally", { className: "text-white bg-gray-800" });
+    }
+  } else {
+    toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
+  }
+};
+
+
+// useEffect(() => {
+//   const savedImages = JSON.parse(localStorage.getItem("Images")) || [];
+//   const Image = savedImages.find(img => img.id === itinerary._id);
+//   if (Image) {
+//     setPreviewFile(Image.image);
+//   }
+// }, [itinerary]);
+
+// const toggleEdit = () => {
+//   setIsEditing((prev) => !prev);
+//   setProfilePic(null);
+// };
+
+// const handleFileChange = (event) => {
+//   const file = event.target.files[0];
+//   if (file) {
+//     setProfilePic(file);
+//    // localStorage.removeItem("profilePicture");
+//   }
+// };
+
+// const handleSave = async () => {
+// if (editorRef.current && profilePic) {
+// const canvas = editorRef.current.getImageScaledToCanvas();
+// const dataUrl = canvas.toDataURL();
+
+// try {
+//   const savedImages = JSON.parse(localStorage.getItem("Images")) || [];
+//   const updatedImages = savedImages.filter(img => img.id !== itinerary._id);
+//   updatedImages.push({ id: itinerary._id, image: dataUrl });
+
+
+//   localStorage.setItem("profilePicture", JSON.stringify(updatedImages));
+//   setPreviewFile(dataUrl);
+//   setIsEditing(false);
+//   setProfilePic(null);
+//   toast.success("Profile picture saved locally", { className: "text-white bg-gray-800" });
+// } catch (error) {
+//   toast.error("Error saving profile photo locally", { className: "text-white bg-gray-800" });
+// }
+// } else {
+// toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
+// }
+// };
 
 
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
-      <Toaster/>
         <div className='grid p-2'>
-       
+        <div className="flex items-center justify-center mb-6">
+        {previewFile ? (
+          <img
+            className="w-40 h-40 rounded-full object-cover"
+            src={previewFile}
+            alt="Product Image"
+          />
+        ) : (
+          <div className="text-gray-500">Add image</div>
+        )}
+        <div className="icon-buttons ml-4">
+          <button className="p-2" onClick={() => setShowPreview(true)}>
+            <FaEye className="h-4 w-4" />
+          </button>
+          <button className="p-2" onClick={toggleEdit}>
+            <FaEdit className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {isEditing && (
+        <>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="mb-4 p-2 border rounded"
+          />
+          {profilePic && (
+            <div className="avatar-editor">
+              <AvatarEditor
+  ref={editorRef}
+  image={profilePic}
+  width={150}
+  height={150}
+  border={30}
+  borderRadius={75}
+  color={[255, 255, 255, 0.6]}
+  scale={scale}
+  rotate={rotate}
+  className="mx-auto mb-4"
+/>
+
+              <div className="controls mt-3 space-y-4">
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={scale}
+                  onChange={(e) => setScale(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+                <button 
+                  onClick={() => setRotate((prev) => prev + 90)}
+                  className="bg-blue-500 text-white p-2 rounded w-full"
+                >
+                  Rotate
+                </button>
+                <button 
+                  onClick={handleSave}
+                  className="bg-green-500 text-white p-2 rounded w-full"
+                >
+                  Save Image
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
       <p>Name: {itinerary.name}</p>
       <p>Tags: {itinerary.tags?.join(', ') || "No tags"}</p>
       <p>Language: {itinerary.language}</p>

@@ -7,7 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import AvatarEditor from 'react-avatar-editor';
 import { Modal } from 'react-bootstrap';
-import { FaEye, FaEdit } from 'react-icons/fa';
+import { FaEye, FaEdit ,FaTimes  } from 'react-icons/fa';
 
 function ProductCard({ product, productChanger }) {
   const { archiveProduct } = useProductStore();
@@ -29,10 +29,18 @@ function ProductCard({ product, productChanger }) {
     productChanger(product);
   };
 
+  // useEffect(() => {
+  //   if (product && product.profilePicture) {
+  //     setPreviewFile(product.profilePicture);
+  //     localStorage.setItem("profilePicture", product.profilePicture);
+  //   }
+  // }, [product]);
+
   useEffect(() => {
-    if (product && product.profilePicture) {
-      setPreviewFile(product.profilePicture);
-      localStorage.setItem("profilePicture", product.profilePicture);
+    const savedImages = JSON.parse(localStorage.getItem("productImages")) || [];
+    const productImage = savedImages.find(img => img.id === product._id);
+    if (productImage) {
+      setPreviewFile(productImage.image);
     }
   }, [product]);
 
@@ -45,17 +53,21 @@ function ProductCard({ product, productChanger }) {
     const file = event.target.files[0];
     if (file) {
       setProfilePic(file);
-      localStorage.removeItem("profilePicture");
+      //localStorage.removeItem("profilePicture");
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (editorRef.current && profilePic) {
       const canvas = editorRef.current.getImageScaledToCanvas();
       const dataUrl = canvas.toDataURL();
 
       try {
-        localStorage.setItem("profilePicture", dataUrl);
+        const savedImages = JSON.parse(localStorage.getItem("productImages")) || [];
+        const updatedImages = savedImages.filter(img => img.id !== product._id);
+        updatedImages.push({ id: product._id, image: dataUrl });
+
+        localStorage.setItem("productImages", JSON.stringify(updatedImages));
         setPreviewFile(dataUrl);
         setIsEditing(false);
         setProfilePic(null);
@@ -68,44 +80,40 @@ function ProductCard({ product, productChanger }) {
     }
   };
 
+
   const handleArchiveClick = () => {
     archiveProduct(product._id, !product.archive);
   };
 
   return (
-    <div className="mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded">
-      <Toaster />
+    <div className="mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rounded h-fit p-4">
       <div className="flex items-center justify-center mb-6">
         {previewFile ? (
           <img
-            style={{ width: "160px", height: "160px", borderRadius: "50%", objectFit: "cover" }}
+            className="w-40 h-40 rounded-full object-cover"
             src={previewFile}
-            alt="Profile Picture"
+            alt="Product Image"
           />
         ) : (
-          <div className="text-gray-500">add img</div>
+          <div className="text-gray-500">Add image</div>
         )}
         <div className="icon-buttons ml-4">
-          <button onClick={() => setShowPreview(true)}>
-            <FaEye />
+          <button className="p-2" onClick={() => setShowPreview(true)}>
+            <FaEye className="h-4 w-4" />
           </button>
-          <button onClick={toggleEdit}>
-            <FaEdit />
+          <button className="p-2" onClick={toggleEdit}>
+            <FaEdit className="h-4 w-4" />
           </button>
         </div>
       </div>
 
       {isEditing && (
         <>
-          <label>
-            Upload img:
-            <input
-              type="file"
-              name="profilePicture"
-              className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-2"
-              onChange={handleFileChange}
-            />
-          </label>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="mb-4 p-2 border rounded"
+          />
           {profilePic && (
             <div className="avatar-editor">
               <AvatarEditor
@@ -118,23 +126,24 @@ function ProductCard({ product, productChanger }) {
                 color={[255, 255, 255, 0.6]}
                 scale={scale}
                 rotate={rotate}
-                style={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)" }}
+                className="mx-auto mb-4"
               />
-              <div className="controls mt-3">
+              <div className="controls mt-3 space-y-4">
                 <input
                   type="range"
-                  min="1"
-                  max="3"
-                  step="0.1"
+                  min={1}
+                  max={3}
+                  step={0.1}
                   value={scale}
                   onChange={(e) => setScale(parseFloat(e.target.value))}
-                  className="slider bg-gray-700"
+                  className="w-full"
                 />
-                <button className="bg-gray-600 text-white p-2 rounded" onClick={() => setRotate((prev) => prev + 90)}>
-                  Rotate
-                </button>
-                <button className="bg-black text-white p-2 rounded mt-4" onClick={handleSave}>
-                  Save img
+               
+                <button 
+                  onClick={handleSave}
+                  className="bg-green-500 text-white p-2 rounded w-full"
+                >
+                  Save Image
                 </button>
               </div>
             </div>
@@ -142,7 +151,27 @@ function ProductCard({ product, productChanger }) {
         </>
       )}
 
-      <Modal show={showPreview} onHide={() => setShowPreview(false)} centered>
+      {showPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-2xl max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Product Image Preview</h2>
+              <button onClick={() => setShowPreview(false)}>
+                <FaTimes className="h-6 w-6" />
+              </button>
+            </div>
+            <img
+              src={previewFile}
+              alt="Product Preview"
+              className="max-w-full h-auto mx-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+ 
+
+
+      {/* <Modal show={showPreview} onHide={() => setShowPreview(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Profile Picture Preview</Modal.Title>
         </Modal.Header>
@@ -154,7 +183,7 @@ function ProductCard({ product, productChanger }) {
             style={{ maxWidth: "100%", borderRadius: "50%" }}
           />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
 
       <div className="grid p-2">
         {Object.keys(product).map((key, index) => (

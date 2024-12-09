@@ -89,6 +89,7 @@ function ViewProducts() {
         placeholder='Name'
         onChange={(e) => setFilter({ ...filter, name: e.target.value })}
       />
+      
       <button className='p-2 bg-black text-white' onClick={handlePress}>Search</button>
 
       <div className='grid w-fit mx-auto'>
@@ -140,12 +141,12 @@ function ViewProducts() {
 
 
 <br></br>
-        <div className={`${filterVisibility ? '' : 'hidden'}`}>
+        {/* <div className={`${filterVisibility ? '' : 'hidden'}`}>
           <div><button onClick={() => handleFilterChange({ $lte: 50 })}>Under $50</button></div>
           <div><button onClick={() => handleFilterChange({ $gte: 50, $lte: 100 })}>$50 - $100</button></div>
           <div><button onClick={() => handleFilterChange({ $gte: 100, $lte: 200 })}>$100 - $200</button></div>
           <div><button onClick={() => handleFilterChange({ $gte: 200 })}>Above $200</button></div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
