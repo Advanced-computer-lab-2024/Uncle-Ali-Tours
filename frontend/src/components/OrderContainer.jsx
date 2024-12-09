@@ -1,14 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import avatar from "/avatar.png";
 import { useProductStore } from '../store/product';
+import avatar from "/avatar.png";
 
 function OrderContainer({ order , orderChanger}) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const navigate = useNavigate();
   const { getProductById } = useProductStore();
-  const currentProduct = order.products[0].productId;
-  const displayPrice = (currentProduct.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
+  const currentProduct = order.products[0]?.productId;
+  const displayPrice = (currentProduct?.price * user.currencyRate).toFixed(2); // Convert price based on currencyRate
   const displayTotal = (order.total * user.currencyRate).toFixed(2);
 
   const handleViewDetails = () => {
@@ -26,7 +26,7 @@ function OrderContainer({ order , orderChanger}) {
       <div className="w-1/2 pr-2 flex items-center justify-center">
         <div className="aspect-square overflow-hidden ml-16 mt-2">
           <img
-            src={currentProduct.profilePicture ? `http://localhost:3000${currentProduct.profilePicture}` : avatar}
+            src={currentProduct?.profilePicture ? `http://localhost:3000${currentProduct.profilePicture}` : avatar}
             alt="Product Preview"
             className="w-[60%] rounded-lg"
           />
@@ -34,9 +34,9 @@ function OrderContainer({ order , orderChanger}) {
       </div>
 
       <div className="grid p-2 w-[60%] text-black">
-        <h3 className="text-xl font-bold mb-2">{currentProduct.name}</h3>
+        <h3 className="text-xl font-bold mb-2">{currentProduct?.name}</h3>
         <p className="mb-1">Price: {displayPrice} {user.chosenCurrency}</p>
-        <p className="mb-1">Quantity: {order.products.find(p => p.productId._id === currentProduct._id).quantity}</p>  
+        <p className="mb-1">Quantity: {order.products.find(p => p.productId._id === currentProduct?._id)?.quantity}</p>  
         <br/>
         <p>Number of items: {order.products.length}</p>
         <p>Total: {displayTotal} {user.chosenCurrency}</p>

@@ -178,6 +178,8 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
                 break;
             case 'product':
                 await Promise.all(items.map(async (item) => {
+                    console.log("itemaaaaaaaa");
+                    console.log("item: ",item);
                     const product = await Product.findById(item.itemDetails._id);
                     tourist.purchasedProducts.push(product._id);
                     product.sales++;

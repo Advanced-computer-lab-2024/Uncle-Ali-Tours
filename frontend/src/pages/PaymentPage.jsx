@@ -168,6 +168,7 @@ function PaymentPage() {
       CheckoutUsingWallet(items, user.userName , type);
       console.log('Processing payment using wallet...');
     } else if (selectedPaymentMethod === 'cashOnDelivery') {
+      sessionStorage.setItem("paymentItems", JSON.stringify(items));
       navigate(`/success/${type}`);
       console.log('Cash on Delivery selected...');
     }
