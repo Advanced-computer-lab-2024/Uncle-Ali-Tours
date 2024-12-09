@@ -55,6 +55,58 @@ useEffect(() => {
      
    };
 
+<<<<<<< Updated upstream
+=======
+   const fetchActivities = async () => {
+    try {
+        const response = await fetch('/api/activity');
+        const data = await response.json();
+        if (data.success) {
+            setActivities(data.data);
+        }
+    } catch (error) {
+        console.error('Error fetching activities:', error);
+    }
+};
+
+useEffect(() => {
+    fetchActivities();
+    fetchBookmarkedActivities(); // Fetch bookmarked activities on page load
+
+}, []);
+const activitiesWithBookmarks = activities.map((activity) => ({
+  ...activity,
+  isBookmarked: bookmarkedIds.includes(activity._id),
+}));
+
+
+const fetchBookmarkedActivities = async () => {
+  try {
+      const response = await fetch(
+          `/api/activity/bookmarkedActivities?userName=${localStorage.getItem('userName')}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        const bookmarkedIds = data.data.map((activity) => activity._id);
+        setBookmarkedIds(bookmarkedIds); // Save bookmarked activity IDs
+      }
+  } catch (error) {
+      console.error('Error fetching bookmarked activities:', error);
+  }
+};
+
+
+// Handle Bookmark Toggle
+const handleBookmarkToggle = (activityId, isBookmarked) => {
+  if (isBookmarked) {
+      setBookmarkedIds((prev) => [...prev, activityId]); // Add to bookmarks
+  } else {
+      setBookmarkedIds((prev) => prev.filter((id) => id !== activityId)); // Remove from bookmarks
+  }
+};
+
+  
+>>>>>>> Stashed changes
 
    return (
     <div className='text-black'>

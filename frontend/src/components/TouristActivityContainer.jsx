@@ -8,8 +8,18 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useActivityStore } from '../store/activity.js';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
+import Button from '../components/Button';
 
+<<<<<<< Updated upstream
 function TouristActivityContainer({ activity, activityChanger }) {
+=======
+import { FaHeart, FaRegHeart, FaShoppingCart, FaStar } from 'react-icons/fa';
+
+
+
+
+function TouristActivityContainer({ activity, activityChanger,onBookmarkToggle,isBookmarked }) {
+>>>>>>> Stashed changes
   const [email, setEmail] = useState("");
   const { createActivityReview } = useActivityStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +27,36 @@ function TouristActivityContainer({ activity, activityChanger }) {
   const user = useUserStore((state) => state.user);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+<<<<<<< Updated upstream
+=======
+  const [ setIsBookmarked] = useState(false);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
+  const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
+  const { tourist,addActWishlist, removeActWishlist, addProductToCart, removeProductCart } = useTouristStore();
+
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+
+  const handleIntersted = async (id) =>{
+    const { success, message } = await interestedIn(tourist._id,id);
+    if(success) 
+      toast.success(message, {className: "text-white bg-gray-800"}) 
+    else 
+      toast.error(message, {className: "text-white bg-gray-800"})
+}
+
+const handleNotIntersted = async (id) =>{
+    const { success, message } = await removeInterestedIn(tourist._id,id);
+    if(success) 
+      toast.success(message, {className: "text-white bg-gray-800"}) 
+    else 
+      toast.error(message, {className: "text-white bg-gray-800"})
+}
+
+
+
+>>>>>>> Stashed changes
   const handleShare = (id) => {
     const link = `${window.location.origin}/activityDetail/${id}`;
     navigator.clipboard.writeText(link).then(() => {
@@ -59,9 +99,133 @@ function TouristActivityContainer({ activity, activityChanger }) {
       toast.error('Failed to add review: ' + message);
     }
   };
+<<<<<<< Updated upstream
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
       <Toaster />
+=======
+
+
+  useEffect(() => {
+    setLocalIsBookmarked(isBookmarked);
+}, [isBookmarked]);
+
+  useEffect(() => {
+    // Check if the activity is already bookmarked
+    if (user?.bookmarkedActivities?.includes(activity._id)) {
+        setIsBookmarked(true);
+    }
+}, [user, activity]);
+
+
+const handleBookmarkToggle = (activityId, isBookmarked) => {
+  setActivities((prev) =>
+      prev.map((activity) =>
+          activity._id === activityId ? { ...activity, isBookmarked } : activity
+      )
+  );
+};
+
+useEffect(() => {
+  if (tourist) {
+    setIsWishlisted(tourist.bookmark?.includes(activity._id));
+  }
+}, [tourist, activity._id]);
+
+const handleWishlist = async () => {
+  if (user.type !== 'tourist') {
+    return toast.error('You are not allowed to bookmark', { className: 'text-white bg-gray-800' });
+  }
+
+  try {
+    const { success, message } = isWishlisted
+      ? await removeActWishlist(user.userName, activity._id)
+      : await addActWishlist(user.userName, activity._id);
+
+    if (success) {
+      setIsWishlisted(!isWishlisted);
+      toast.success(message, { className: 'text-white bg-gray-800' });
+    } else {
+      toast.error(message, { className: 'text-white bg-gray-800' });
+    }
+  } catch (error) {
+    toast.error('Error updating wishlist.');
+  }
+};
+
+
+
+const handleToggleBookmark = async () => {
+  try {
+      const response = await fetch('/api/activity/toggleBookmark', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activityId: activity._id }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+          toast.success(data.message);
+        //  onBookmarkToggle(activity._id, data.activity.isBookmarked); // Update parent state
+          const newIsBookmarked = data.activity.isBookmarked;
+
+          // Update both local and parent states
+          setLocalIsBookmarked(newIsBookmarked);
+          onBookmarkToggle(activity._id, newIsBookmarked);
+      } else {
+          toast.error(data.message);
+      }
+  } catch (error) {
+      toast.error('Failed to update bookmark');
+      console.error('Error toggling bookmark:', error);
+  }
+};
+
+const handleQuantityChange = (newQuantity) => {
+  setQuantity(newQuantity);
+};
+
+const handleBookClick = async (activityID , quantity) => {
+  try{
+    navigate(`/payment/activity/${activityID}` , { state: { quantity: quantity } });
+  }
+  catch(error){
+    console.error('Error:', error);
+  }
+};
+
+
+   
+  return (
+    <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
+      {!activity.bookingOpen && (activity.interstedIn?.includes(tourist._id)?
+         <GoBellFill size={20} onClick={() => (handleNotIntersted(activity._id))}/>:     
+         <GoBell size={20} onClick={() => (handleIntersted(activity._id))}/>     
+         )} 
+
+<div className="flex flex-wrap justify-center gap-2">
+              <Button variant="outline" onClick={handleWishlist}>
+                {isWishlisted ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+              </Button>
+              </div>
+       
+         <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-bold"></h3>
+                <button
+    onClick={handleToggleBookmark}
+    className="ml-2"
+    aria-label="Bookmark Activity"
+>
+    {localIsBookmarked ? (
+        <AiFillStar className="text-yellow-500" size={28} />
+    ) : (
+        <AiOutlineStar className="text-gray-500" size={28} />
+    )}
+</button>
+
+            </div>
+      
+>>>>>>> Stashed changes
       <div className='grid p-2'>
         <p>Name: {activity.name}</p>
         <p>Date: {new Date(activity.date).toLocaleDateString()}</p>

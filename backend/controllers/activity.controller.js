@@ -1,5 +1,162 @@
 import Activity from "../models/activity.model.js";
 
+<<<<<<< Updated upstream
+=======
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDirectory = path.join(__dirname, "../uploads");
+
+if (!fs.existsSync(uploadDirectory)) {
+    fs.mkdirSync(uploadDirectory, { recursive: true });
+  }
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDirectory);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+    },
+  });
+  
+  export const upload = multer({ storage: storage });
+  export const uploadMiddleware = upload.single("profilePicture");
+  
+
+  export const uploadProductPicture = async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided." });
+    }
+  
+    const { id } = req.params;
+    const filePath = `/uploads/${req.file.filename}`;
+  
+    try {
+      const activity = await Activity.findById(id);
+      if (!activity) {
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: " not found." });
+      }
+  
+      // Remove old profile picture file if it exists
+      if (activity.profilePicture && fs.existsSync(path.join(__dirname, `../${activity.profilePicture}`))) {
+        fs.unlinkSync(path.join(__dirname, `../${activity.profilePicture}`));
+      }
+  
+      // Update seller's profile picture path in the database
+      activity.profilePicture = filePath;
+      await activity.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: "activity picture uploaded successfully",
+        profilePicture: `${process.env.SERVER_URL || 'http://localhost:5000'}${filePath}`, // Return the full URL
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      return res.status(500).json({ message: "Profile picture upload failed", error });
+    }
+  };
+
+  
+
+
+export const addBookmark = async (req, res) => {
+    const { userName, activityId } = req.body;
+
+    if (!userName || !activityId) {
+        return res.status(400).json({ message: "User name and Activity ID are required" });
+    }
+
+    try {
+        const existingBookmark = await Bookmark.findOne({ userName, activityId });
+        if (existingBookmark) {
+            return res.status(400).json({ message: "Activity already bookmarked" });
+        }
+
+        const bookmark = new Bookmark({ userName, activityId });
+        await bookmark.save();
+        res.status(201).json({ message: "Activity bookmarked successfully", bookmark });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getBookmarkedActivitiesForUser = async (req, res) => {
+    const { userName } = req.params;
+
+    if (!userName) {
+        return res.status(400).json({ message: "User name is required" });
+    }
+
+    try {
+        const bookmarks = await Bookmark.find({ userName }).populate("activityId");
+        res.status(200).json({ bookmarks });
+
+              // Return full activity details
+              const bookmarkedActivities = user.bookmarkedActivities;
+              return res.status(200).json({ success: true, data: bookmarkedActivities });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+export const toggleBookmark = async (req, res) => {
+    const { activityId } = req.body;
+
+    if (!activityId) {
+        return res.status(400).json({ success: false, message: "Activity ID is required" });
+    }
+
+    try {
+        // Find the activity
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ success: false, message: "Activity not found" });
+        }
+
+        // Toggle the isBookmarked flag
+        activity.isBookmarked = !activity.isBookmarked;
+        await activity.save();
+
+        res.status(200).json({
+            success: true,
+            message: activity.isBookmarked ? "Activity bookmarked" : "Bookmark removed",
+            activity,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export const removeBookmark = async (req, res) => {
+    const { userName, activityId } = req.body;
+
+    if (!userName || !activityId) {
+        return res.status(400).json({ message: "User name and Activity ID are required" });
+    }
+
+    try {
+        const deletedBookmark = await Bookmark.findOneAndDelete({ userName, activityId });
+        if (!deletedBookmark) {
+            return res.status(404).json({ message: "Bookmark not found" });
+        }
+
+        res.status(200).json({ message: "Bookmark removed successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+
+// Create Activity
+>>>>>>> Stashed changes
 // Create Activity
 export const createActivity = async (req, res) => {
     const activity = req.body;

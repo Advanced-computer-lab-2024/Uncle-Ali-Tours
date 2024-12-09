@@ -12,8 +12,27 @@ const WishlistPage = ({ user }) => {
     }, [user, getWishlistedProducts]);
 
     return (
+<<<<<<< Updated upstream
         <div className="wishlist-page">
             <h1 className="text-2xl font-bold mb-4">Your Wishlist</h1>
+=======
+        <div style={containerStyle} className="min-h-screen relative">
+            <div className="absolute inset-0 bg-black bg-opacity-60" />
+            
+            <div className="relative z-10 container mx-auto px-4 py-8 flex flex-col items-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full max-w-3xl bg-white bg-opacity-90 p-8 rounded-lg shadow-lg backdrop-blur-md"
+                >
+                    <motion.h1
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-4xl font-bold mb-8 text-center text-[#dc5809]"
+                    >
+                        Your Wishlist
+                    </motion.h1>
+>>>>>>> Stashed changes
 
             {/* Display error message if it exists */}
             {errorMessage && (

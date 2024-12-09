@@ -5,6 +5,12 @@ import toast, { Toaster } from 'react-hot-toast';
 export const useTouristStore = create((set) => ({
     tourist:{},
     wishlistedProducts: [],
+<<<<<<< Updated upstream
+=======
+    bookmarkProducts: [],
+    cartProducts:[],
+    checkoutList: [],
+>>>>>>> Stashed changes
     errorMessage: "",
     settourist: (tourist) => set({tourist}),
     getTourist: async (filter = {}, sort = {}) => {
@@ -256,6 +262,34 @@ export const useTouristStore = create((set) => ({
     
         return { success: true, message: "Added successfully." };
     },
+
+    addActWishlist: async (name, _id) => {
+        const res = await fetch('/api/tourist/addActWishlist', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName: name, _id })
+        });
+    
+        const data = await res.json();
+        console.log("data", data);
+    
+        if (!data.success) {
+            return { success: false, message: data.message };
+        }
+    
+        // Use the updated ProductsWishlist from the response
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                bookmark: data.data // Update with the actual updated wishlist from the server
+            }
+        }));
+    
+        return { success: true, message: "Added successfully." };
+    },
+
     removeProductWishlist: async(name,_id)=>{
         const res = await fetch('/api/tourist/removeProductWishlist',{
             method : "PUT",
@@ -269,6 +303,23 @@ export const useTouristStore = create((set) => ({
             if (!data.success) return {success: false, message: data.message};
           
             set((state) => ({tourist: {...state.tourist,ProductsWishlist:state.tourist.ProductsWishlist?.filter(item => item !==_id)}}))
+            return{success: true, message: "Removed successfully."};
+    },
+
+
+    removeActWishlist: async(name,_id)=>{
+        const res = await fetch('/api/tourist/removeActWishlist',{
+            method : "PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({userName:name, _id})
+        });
+            const data = await res.json();
+            console.log("data remove", data);
+            if (!data.success) return {success: false, message: data.message};
+          
+            set((state) => ({tourist: {...state.tourist,bookmark:state.tourist.bookmark?.filter(item => item !==_id)}}))
             return{success: true, message: "Removed successfully."};
     },
 
@@ -289,6 +340,110 @@ export const useTouristStore = create((set) => ({
           set({ errorMessage: error.message || "Unable to fetch wishlisted products" });
         }
       },
+<<<<<<< Updated upstream
+=======
+
+
+      getActProducts: async (userName) => {
+        try {
+          const response = await fetch(`/api/tourist/getActProducts/${userName}`);
+          console.log("Response", response);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to fetch wishlisted products");
+          }
+    
+          const data = await response.json();
+          set({ bookmarkProducts: data.data, errorMessage: "" }); // Update store state with products
+        } catch (error) {
+          console.error("Error fetching wishlisted products:", error);
+          set({ errorMessage: error.message || "Unable to fetch wishlisted products" });
+        }
+      },
+
+
+      addProductToCart: async (name, _id, quantity) => {
+        const res = await fetch('/api/tourist/addProductToCart', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName: name, _id, quantity }) // Include quantity in the payload
+        });
+    
+        const data = await res.json();
+        console.log("data", data);
+    
+        if (!data.success) {
+            return { success: false, message: data.message };
+        }
+    
+        // Safeguard against undefined ProductsCart
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsCart: [
+                    ...(state.tourist.ProductsCart || []), // Fallback to an empty array if undefined
+                    { productId: _id, quantity: quantity }
+                ]
+            }
+        }));
+    
+        return { success: true, message: "Added successfully." };
+    },
+    
+    removeProductCart: async (name, productId) => {
+        const res = await fetch('/api/tourist/removeProductCart', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userName: name, productId }) // Pass productId, not _id
+        });
+    
+        const data = await res.json();
+        console.log("API Response:", data);
+    
+        if (!data.success) return { success: false, message: data.message };
+    
+        // Safe check for ProductsCart
+        set((state) => ({
+            tourist: {
+                ...state.tourist,
+                ProductsCart: Array.isArray(state.tourist.ProductsCart) // Check if it's an array
+                    ? state.tourist.ProductsCart.filter(item => item.productId !== productId)
+                    : [] // If not an array, reset to an empty array
+            }
+        }));
+    
+        return { success: true, message: "Removed successfully." };
+    },
+   
+    
+    getCartProducts: async (userName) => {
+        try {
+          const response = await fetch(`/api/tourist/getCartProducts/${userName}`);
+          console.log("Response", response);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to fetch cart products");
+          }
+    
+          const data = await response.json();
+          set({ cartProducts: data.data, errorMessage: "" }); // Update store state with products
+          console.log("Cart Products", data.data);
+        } catch (error) {
+          console.error("Error fetching Cart products:", error);
+          set({ errorMessage: error.message || "Unable to fetch Cart products" });
+        }
+      },
+      checkoutProducts: () => {
+        set((state) => ({
+            checkoutList: [...state.cartProducts], // Move all cart products to checkout
+            // cartProducts: [], // Clear the cart
+        }));
+    },
+>>>>>>> Stashed changes
 
 
     }));

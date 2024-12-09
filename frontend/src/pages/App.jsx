@@ -1,6 +1,14 @@
 import React, { useEffect } from 'react';
 import { Link, Route, Routes } from "react-router-dom";
 import { FiLoader } from 'react-icons/fi';
+<<<<<<< Updated upstream
+=======
+import { Route, Routes } from "react-router-dom";
+import BookMarki from '../components/Bookmarki.jsx';
+import BookMarka from '../components/BookMarka.jsx';
+
+import EditProduct from "../components/EditProduct.jsx";
+>>>>>>> Stashed changes
 import Navbar from "../components/Navbar";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
@@ -136,7 +144,18 @@ function App() {
     
         <Route path="/complaints" element={<Complaints/>}/>
         <Route path="/viewDeleteRequests" element={<ViewDeleteRequests/>}/>
+<<<<<<< Updated upstream
 
+=======
+        <Route path="/bookmarka" element={<BookMarka userName={user.userName} />} />
+        <Route path="/bookmarki" element={<BookMarki userName={user.userName} />} />
+
+			 {/* <Route path="/checkoutPage" element={<CheckoutPage />} /> */}
+        <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
+        <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
+        <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
+				<Route path="/governorProfile" element={<GovernorProfilePage/>} />
+>>>>>>> Stashed changes
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
