@@ -250,10 +250,11 @@ const handleSave = () => {
 
   
 
-  return (
-    <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
-        <div className='grid p-2'>
-        <div className="flex items-center justify-center mb-6">
+return (
+  <div className="mb-8 text-black text-left w-full max-w-3xl bg-white mx-auto rounded-lg shadow-lg p-6">
+    <div className="grid gap-6">
+      {/* Image Section */}
+      <div className="flex justify-center mb-6">
         {previewFile ? (
           <img
             className="w-40 h-40 rounded-full object-cover"
@@ -261,96 +262,78 @@ const handleSave = () => {
             alt="Product Image"
           />
         ) : (
-          <div className="text-gray-500">Add image</div>
+          <div className="text-gray-500 text-lg">Add image</div>
         )}
-       
       </div>
 
-      <p>Name: {itinerary.name}</p>
-      <p>Tags: {itinerary.tags?.join(', ') || "No tags"}</p>
-      <p>Language: {itinerary.language}</p>
-      <p>Price: {displayPrice} {user.chosenCurrency}</p>&nbsp; 
-      <p>Activities: </p>
+      {/* Itinerary Information */}
+      <div className="space-y-4">
+        <p className="font-semibold text-lg">Name: {itinerary.name}</p>
+        <p className="text-sm text-gray-700">Tags: {itinerary.tags?.join(', ') || "No tags"}</p>
+        <p className="text-sm text-gray-700">Language: {itinerary.language}</p>
+        <p className="text-sm text-gray-700">Price: {displayPrice} {user.chosenCurrency}</p>
 
-      <ul>
-        {itinerary.activities.map((activity, index) => (
-          <li key={index+1}>
-            <p>{index+1}: {activity.name} </p>   
-             <p> Duration: {activity.duration} hours</p> 
-            
-          </li>
-        ))}
-      </ul>&nbsp; 
-      <p>Pickup location: {itinerary.pickupLocation}</p>
-      <p>Dropoff location: {itinerary.dropoffLocation}</p>
-      <h3>Locations:</h3>
-  <p>{itinerary.tourLocations.join(", ")}</p>
-
-      <h3>Available Dates:</h3>
-      <p>{itinerary.availableDates.map((date) => new Date(date).toLocaleDateString()).join(", ")}</p>
-
-      <h3>Available Times:</h3>
-      <p>{itinerary.availableTimes.join(", ")}</p>
-
-      <p>Accessibility: {itinerary.accessibility}</p>
-      <p>Number Of Bookings: {itinerary.numberOfBookings}</p>
-      <p>creator: {itinerary.creator}</p>
-     
-</div>
-        <div className='flex justify-between'>
-        <div className='flex'>
-        <Link 
-          to='/updateItinerary'
-          onClick={()=>(handleUpdateClick())}
-          className='mr-4 transform transition-transform duration-300 hover:scale-125'
-        >
-          <MdOutlineDriveFileRenameOutline size='18' color='black' />
-        </Link>
-        
-        </div>
-
-        <div className="mt-4">
-          <h3 className="font-bold mb-2">Activities:</h3>
-          <ul className="list-disc pl-5">
+        {/* Activities Section */}
+        <div>
+          <p className="font-semibold text-lg">Activities:</p>
+          <ul className="list-disc pl-5 space-y-2">
             {itinerary.activities.map((activity, index) => (
               <li key={index}>
-                {activity.name} - {activity.duration} hours
+                <p className="text-sm">Activity {index + 1}: {activity.name}</p>
+                <p className="text-xs text-gray-500">Duration: {activity.duration} hours</p>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
-          <Button onClick={handleShare} variant="outline">
-            <FaShareAlt className="mr-2" />
-            Share
-          </Button>
-          <Button onClick={() => setIsModalOpen(true)} variant="outline">
-            Share via Email
-          </Button>
-          <Button onClick={handleUpdateClick} variant="outline">
-            <MdOutlineDriveFileRenameOutline size='18' className="mr-2" />
-            Update
-          </Button>
-          <Button onClick={handleDeleteClick} variant="destructive">
-            <MdDelete size='18' className="mr-2" />
-            Delete
-          </Button>
-          <Button
-            onClick={handleActivateClick}
-            variant={itinerary.isActivated ? "destructive" : "default"}
-          >
-            {itinerary.isActivated ? "Deactivate" : "Activate"}
-          </Button>
-        </div>
+        {/* Locations & Dates */}
+        <div>
+          <p className="font-semibold text-lg">Pickup Location: {itinerary.pickupLocation}</p>
+          <p className="font-semibold text-lg">Dropoff Location: {itinerary.dropoffLocation}</p>
+          <h3 className="font-semibold">Locations:</h3>
+          <p>{itinerary.tourLocations.join(", ")}</p>
 
-    
+          <h3 className="font-semibold">Available Dates:</h3>
+          <p>{itinerary.availableDates.map((date) => new Date(date).toLocaleDateString()).join(", ")}</p>
+
+          <h3 className="font-semibold">Available Times:</h3>
+          <p>{itinerary.availableTimes.join(", ")}</p>
+
+          <p className="font-semibold">Accessibility: {itinerary.accessibility}</p>
+          <p className="font-semibold">Number Of Bookings: {itinerary.numberOfBookings}</p>
+          <p className="font-semibold">Creator: {itinerary.creator}</p>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-wrap justify-between gap-4 mt-6">
+        <Button onClick={handleShare} variant="outline" className="flex items-center">
+          <FaShareAlt className="mr-2" />
+          Share
+        </Button>
+        <Button onClick={() => setIsModalOpen(true)} variant="outline">
+          Share via Email
+        </Button>
+        <Button onClick={handleUpdateClick} variant="outline" className="flex items-center">
+          <MdOutlineDriveFileRenameOutline size="18" className="mr-2" />
+          Update
+        </Button>
+        <Button onClick={handleDeleteClick} variant="destructive" className="flex items-center">
+          <MdDelete size="18" className="mr-2" />
+          Delete
+        </Button>
+        <Button onClick={handleActivateClick} variant={itinerary.isActivated ? "destructive" : "default"}>
+          {itinerary.isActivated ? "Deactivate" : "Activate"}
+        </Button>
+      </div>
+
+      {/* Confirmation Dialogs */}
       <Dialog
         msg={"Are you sure you want to delete this itinerary?"}
         accept={handleDelete}
         reject={() => console.log("Deletion canceled")}
-        acceptButtonText='Delete'
-        rejectButtonText='Cancel'
+        acceptButtonText="Delete"
+        rejectButtonText="Cancel"
       />
 
       <AdjustableDialog
@@ -365,6 +348,7 @@ const handleSave = () => {
         rejectButtonText="Cancel"
       />
 
+      {/* Image Preview Modal */}
       <Modal
         show={showPreview}
         onHide={() => setShowPreview(false)}
@@ -381,11 +365,12 @@ const handleSave = () => {
           <img
             src={itinerary.image || egypt}
             alt={itinerary.name}
-            className="w-full h-auto"
+            className="w-full h-auto rounded-lg"
           />
         </div>
       </Modal>
 
+      {/* Email Share Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -412,10 +397,9 @@ const handleSave = () => {
           </div>
         </div>
       )}
-              </div>
-              </div>
-
-  );
+    </div>
+  </div>
+);
 }
 
 export default ItineraryContainer;
