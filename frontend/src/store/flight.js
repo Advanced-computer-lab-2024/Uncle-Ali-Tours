@@ -55,6 +55,21 @@ export const useFlightStore = create((set,get) => ({
         return {success: true, message: "fetched Flights"};
     },
 
+    deleteBookedFlight: async (id) => {
+        const res = await fetch(`/api/flight-booking/deleteFlight/?id=${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const body = await res.json();
+        if(!body.success){
+            return body;
+        }
+        set((state) => ({userBookedFlights: state.userBookedFlights.filter((flight) => flight._id !== id)}))
+        return {success: true, message: "deleted flight"};
+    },
+
     getOrigin: async (city) => {
         if (city) {
         set({ loading: true, error: null });

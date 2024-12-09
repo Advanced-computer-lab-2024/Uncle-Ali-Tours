@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { IoCloseSharp } from "react-icons/io5";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { FaAngleDown, FaCheck } from "react-icons/fa";
+import { IoCloseSharp } from "react-icons/io5";
+import { Link } from "react-router-dom";
 import { useTagStore } from "../store/tag";
 import { useTouristStore } from "../store/tourist";
-import { toast } from "react-hot-toast";
-import AddAddressPage from "../pages/AddAddressPage";
 const SideMenu = ({ isOpen, onClose }) => {
   const { updateTourist } = useTouristStore();
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -45,6 +44,7 @@ const SideMenu = ({ isOpen, onClose }) => {
       subItems: [
         { name: "Upcoming Itineraries", path: "/upcomingItineraries" },
         { name: "Upcoming Activities", path: "/upcomingActivities" },
+        { name: "Upcoming Transportation Activities", path: "/upcomingTActivities" }
       ],
     },
     {

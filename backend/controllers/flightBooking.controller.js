@@ -19,4 +19,19 @@ export const getFlightBookingByCreator = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+export const deleteFlightBooking = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const flightBooking = await FlightBooking.findByIdAndDelete(id);
+        if (!flightBooking) {
+            res.status(404).json({ message: `No flight booking with id: ${id}` });
+        } else {
+            res.status(200).json({ message: "Flight booking deleted successfully" });
+        }
+    }
+    catch (error) {
+        console.error("Error in deleting Flight Booking", error.message);
+        res.status(500).json({ message: error.message });
+    }
+}
 

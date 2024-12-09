@@ -17,7 +17,7 @@ import { useUserStore } from '../store/user';
 
 const TouristProfile = () => {
   const {user} = useUserStore();
-  const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel ,fetchUpcomingActivities, fetchUpcomingItineraries} = useTouristStore();
+  const {tourist,getTourist,updateTourist , redeemPoints , badgeLevel , fetchUpcomingItems} = useTouristStore();
   const [isRequired, setIsRequired] = useState(true);
   const [updatedTourist, setUpdatedTourist] = useState({});
   const [isWalletVisible, setIsWalletVisible] = useState(false);
@@ -36,6 +36,8 @@ const TouristProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [upcomingItineraries,setUpcomingItineraries]= useState(0);
   const [upcomingActivities,setUpcomingActivities]= useState(0);
+  const [upcomingTActivities,setUpcomingTActivities]= useState(0);
+
 
   
   
@@ -59,11 +61,13 @@ useEffect(() => {
   // Fetch itineraries and activities when the component mounts
   if(user.userName) {
   const fetchData = async () => {
-    const itineraries = await fetchUpcomingItineraries(user.userName);
-    const activities = await fetchUpcomingActivities(user.userName);
+    const itineraries = await fetchUpcomingItems(user.userName , "itinerary");
+    const activities = await fetchUpcomingItems(user.userName , "activity");
+    const tActivities = await fetchUpcomingItems(user.userName , "tActivity");
 
     setUpcomingItineraries(itineraries.length); // Update state with number of itineraries
     setUpcomingActivities(activities.length); // Update state with number of activities
+    setUpcomingTActivities(tActivities.length); // Update state with number of activities
   };
 
   fetchData();
@@ -385,6 +389,16 @@ const getBadgeImage = () => {
             <p className="text-lg font-bold">Upcoming Itineraries</p>
             <p className="text-xl mt-2">{upcomingItineraries}</p>
             <Link to="/upcomingItineraries" className="mx-2 relative">
+              <button className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2">view</button>
+            </Link> 
+          </div>
+          <div className="absolute right-0 h-[80%] w-[1px] bg-white"></div>
+          </div>
+          <div className="flex-1 flex items-center justify-center relative">
+          <div className="text-center">
+            <p className="text-lg font-bold">Upcoming Transportation Activities</p>
+            <p className="text-xl mt-2">{upcomingTActivities}</p>
+            <Link to="/upcomingTActivities" className="mx-2 relative">
               <button className="bg-green-700 text-white cursor-pointer py-2 px-2 rounded hover:bg-green-600 transition-colors mt-2">view</button>
             </Link> 
           </div>

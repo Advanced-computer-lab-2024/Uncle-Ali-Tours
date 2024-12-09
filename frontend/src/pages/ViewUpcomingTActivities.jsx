@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import UpcomingActivitiesContainer from '../components/UpcomingActivitiesContainer';
+import UpcomingTActivitiesContainer from '../components/UpcomingTActivitiesContainer';
 import { useTouristStore } from '../store/tourist';
 import { useUserStore } from '../store/user';
-function ViewUpcomingActivities() {
+function ViewUpcomingTActivities() {
     const { user } = useUserStore();
     const { fetchUpcomingItems } = useTouristStore();
-    const [upcomingActivities, setUpcomingActivities] = useState([]); // Initialize with an empty array
+    const [upcomingTActivities, setUpcomingTActivities] = useState([]); // Initialize with an empty array
 
     // Fetch upcoming itineraries when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             if (user && user.userName) {
-                const data = await fetchUpcomingItems(user.userName, 'activity');  // Await the asynchronous call
-                setUpcomingActivities(data); // Update state with the fetched data
+                const data = await fetchUpcomingItems(user.userName, 'tActivity');  // Await the asynchronous call
+                setUpcomingTActivities(data); // Update state with the fetched data
             }
         };
 
@@ -21,10 +21,10 @@ function ViewUpcomingActivities() {
 
     return (
         <div>
-            <div>View Upcoming Activities</div>
-            {upcomingActivities.length > 0 ? (
+            <div>View Upcoming Transportation Activities</div>
+            {upcomingTActivities.length > 0 ? (
                 <div>
-                <UpcomingActivitiesContainer />
+                <UpcomingTActivitiesContainer />
               </div>) : (
                 <p>No upcoming activities found.</p>
             )}
@@ -32,4 +32,4 @@ function ViewUpcomingActivities() {
     );
 }
 
-export default ViewUpcomingActivities
+export default ViewUpcomingTActivities

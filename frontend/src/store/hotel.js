@@ -50,6 +50,24 @@ export const useHotelStore = create((set) => ({
     return { success: true, message: "fetched Hotels" };
   },
 
+  deleteBookedHotel: async (id) => {
+    const res = await fetch(`/api/hotel-booking/deleteHotel/?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const body = await res.json();
+    if (!body.success) {
+      return body;
+    }
+
+    set((state) => ({
+      userBookedHotels: state.userBookedHotels.filter((hotel) => hotel._id !== id),
+    }));
+    return { success: true, message: "deleted hotel" };
+  },
+
   // Function to search for cities by name
   searchCity: async (city) => {
     if (city) {

@@ -1,5 +1,5 @@
 import express from "express";
-import { addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItineraries, getTourist, getWishlistedProducts, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
+import { addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItems, getTourist, getWishlistedProducts, handleUnBook, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
 
 const router = express.Router();
 
@@ -24,13 +24,15 @@ router.put("/addProductToCart",addProductToCart);
 router.put("/removeProductCart",removeProductCart);
 router.get("/getCartProducts/:userName", getCartProducts);
 router.put("/updatePoints",updateMyPoints);
-router.get("/upcomingItineraries",getMyUpcomingItineraries);
 router.get("/pastItineraries",getMyPastItineraries);
 router.get("/upcomingActivities",getMyUpcomingActivities);
 router.get("/pastActivities",getMyPastActivities);
 router.put("/notifications",markNotificationAsRead);
 router.post("/addDeliveryAddress", addDeliveryAddress);
 router.put("/removeAllProductsCart", removeAllProductsCart);
+router.put("/handleUnBook", handleUnBook);
+router.get("/upcomingItems", getMyUpcomingItems);
+
 router.post("/test", (req, res) => res.send("Test route is working!"));
 
 export default router;

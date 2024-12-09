@@ -7,6 +7,11 @@ export const useTouristStore = create((set) => ({
     cartProducts:[],
     checkoutList: [],
     errorMessage: "",
+    isUpcoming : false,
+    isPast : false,
+
+    setIsUpcoming: (isUpcoming) => set({ isUpcoming }),
+    setIsPast: (isPast) => set({ isPast }),
     settourist: (tourist) => set({tourist}),
     getTourist: async (filter = {}, sort = {}) => {
       const queryString = new URLSearchParams({
@@ -409,25 +414,48 @@ export const useTouristStore = create((set) => ({
     },
 
 
-      fetchUpcomingItineraries: async (userName) => {
+      fetchUpcomingItems: async (userName , type) => {
         try {
-            const response = await fetch(`/api/tourist/upcomingItineraries?userName=${userName}`, {
+            const response = await fetch(`/api/tourist/upcomingItems?userName=${encodeURIComponent(userName)}&type=${encodeURIComponent(type)}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             });
     
             const data = await response.json();
+            console.log("Data", data);
     
             if (data.success) {
-                return data.data; // Return the fetched itineraries
+                return data.data; // Return the fetched items
             } else {
                 toast.error(data.message);
                 return []; // Return an empty array if there's an error
             }
         } catch (error) {
-            console.error("Error fetching upcoming itineraries:", error);
+            console.error("Error fetching upcoming itineraries:", error.message);
             toast.error("Failed to fetch upcoming itineraries.");
             return []; // Return an empty array on error
+        }
+    },
+    handleUnBook : async (userName, id, quantity) => {
+        try {
+            const response = await fetch('/api/tourist/handleUnBook', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userName, id, quantity }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                toast.success(data.message);
+                return true;
+            } else {
+                toast.error(data.message);
+                return false;
+            }
+        } catch (error) {
+            console.error("Error unbooking:", error.message);
+            toast.error("Failed to unbook.");
+            return false;
         }
     },
     

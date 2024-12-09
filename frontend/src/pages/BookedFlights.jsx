@@ -1,16 +1,32 @@
 import React, { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useFlightStore } from "../store/flight";
+import { useTouristStore } from "../store/tourist";
 import { useUserStore } from "../store/user";
 
 function BookedFlights() {
     const { user } = useUserStore();
-    const {  getBookedFlights , userBookedFlights } = useFlightStore();
+    const {  getBookedFlights , userBookedFlights , deleteBookedFlight } = useFlightStore();
+    const { handleUnBook } = useTouristStore();
+
+    const handleUnBookClick = async (id,flightID) => {
+        try {
+          const response = await handleUnBook(user.userName,flightID,1);
+            console.log('id:',id);
+            await deleteBookedFlight(id);
+            toast.success(response.message, { className: "text-white bg-gray-800" });
+         
+        } catch (error) {
+          console.error('Error unbooking flight:', error.message);
+          toast.error('Error unbooking flight', { className: "text-white bg-gray-800" });
+        }
+      };
 
     useEffect(() => {
         getBookedFlights(user.userName);
     }
-    ,[]);
+    ,[userBookedFlights]);
 
     const handleClick = () => {
         console.log('Getting booked flights for user:', user.userName);
@@ -44,6 +60,7 @@ function BookedFlights() {
                 <p>Flight Arrival Date: {flight.data[0].legs[0].arrival}</p>
                 <p>Flight Origin: {flight.data[0].legs[0].origin.city } , {flight.data[0].legs[0].origin.country}</p>
                 <p>Flight Destination: {flight.data[0].legs[0].destination.city} , {flight.data[0].legs[0].destination.country}</p>
+                <button onClick={() => handleUnBookClick(flight._id,flight.data[0].id)} className='bg-black text-white m-6 p-2 rounded' >Cancel Booking</button>
             </div>
         ))}
 
