@@ -79,7 +79,6 @@ useEffect(() => {
                 <TouristItineraryContainer key={index} itineraryChanger={changeitinrary} itinerary={itinerary}/>   
             ))
         }
-        <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
         <FormDialog msg={"Update values"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name","value"]}/>
    
     

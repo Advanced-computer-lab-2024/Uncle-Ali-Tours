@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from 'react-bootstrap';
+// import { Card} from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 import { GoBell, GoBellFill } from "react-icons/go";
@@ -10,6 +10,14 @@ import { useTouristStore } from '../store/tourist.js';
 import { useUserStore } from '../store/user.js';
 import QuantitySelector from './QuantitySelector.jsx';
 import Rating from './Rating';
+import Button from './Button';
+import  { dialog } from './Dialog';
+import { IoClose } from "react-icons/io5";
+import {Card, CardContent, CardFooter } from './Card';
+import { FaHeart, FaRegHeart, FaShoppingCart, FaStar } from 'react-icons/fa';
+import Textarea from './Textarea';
+import { Dialog,DialogContent, DialogHeader, DialogTitle } from '../components/DialogAI';
+
 
 
 
@@ -19,22 +27,86 @@ function TouristItineraryContainer({itinerary, itineraryChanger , accept , rejec
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [dialogType, setDialogType] = useState(null);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { createTourGuideReview } = useGuideStore();
   const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState('');
-const { tourist , isPast , isUpcoming} = useTouristStore();
+// const { tourist , isPast , isUpcoming} = useTouristStore();
+const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [showReviews, setShowReviews] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const { showDialog, hideDialog } = dialog();
+  const [review, setReview] = useState('');
+
 
   const { bookItinerary } = useItineraryStore();
 
   const [quantity, setQuantity] = useState(1);
 
+
+  // const handleReviewClick = (type) => {
+  //   showDialog();
+  //   setReview('');
+  //   setRating(0);
+  // };
+
+  // const handleSubmit = async () => {
+  //   if (dialogType === 'rate' && rating > 5) {
+  //     toast.error("Rating cannot exceed 5", { className: "text-white bg-gray-800" });
+  //     return;
+  //   }
+  //   if (dialogType === 'review' && review === "") {
+  //     toast.error("Please put a review before submitting", { className: "text-white bg-gray-800" });
+  //     return;
+  //   }
+    
+  //   const requestData = {
+  //     user: { userName: tourist.userName },
+  //     [dialogType === 'rate' ? 'rating' : 'reviewText']: dialogType === 'rate' ? rating : review
+  //   };
+
+  //   try {
+  //     const response = await fetch(`/api/product/${product._id}/rate-review`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(requestData),
+  //     });
+
+  //     const data = await response.json();
+  //     if (data.success) {
+  //       toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+  //     } else {
+  //       toast.error(data.message || 'Failed to submit');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error submitting rating/review:', error);
+  //     toast.error('An error occurred. Please try again.', { className: "text-white bg-gray-800" });
+  //   }
+    
+  //   setIsDialogOpen(false);
+  // };
+
+const openDialog = (type) => {
+    setDialogType(type);
+    setIsDialogOpen(true);
+};
+
+// Close dialog
+const closeDialog = () => {
+    setIsDialogOpen(false);
+    setDialogType(null);
+    setRating(0);
+    setReview('');
+};
   const handleRedirectToReviews = () => {
     navigate('/tourguidereviews');
   };
@@ -148,150 +220,389 @@ const handleBookClick = async (itineraryID , quantity) => {
   }
 };
 
+const handleSubmit = async () => {
+  if (dialogType === 'rate' && rating > 5) {
+      toast.error("Rating cannot exceed 5", { className: "text-white bg-gray-800" });
+      closeDialog();
+      return; // Exit without submitting if rating is invalid
+  }
+  if (dialogType === 'review' && review === "") {
+      toast.error("Please put a review before submitting", { className: "text-white bg-gray-800" });
+      return; // Exit without submitting if rating is invalid
+  }
+  
+  const requestData = { user: { userName: tourist.userName } };
+
+  // Add rating or reviewText based on dialogType
+  if (dialogType === 'rate') {
+      requestData.rating = rating;
+  } else if (dialogType === 'review') {
+      requestData.reviewText = review;
+  }
+
+  try {
+      const response = await fetch(`/api/itinerary/${itinerary._id}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData),
+      });
+      console.log(response);
+      // const data = await response.json();
+      // if (data.success) {
+      //     toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+      // } else {
+      //     toast.error(data.message || 'Failed to submit');
+      // }
+  } catch (error) {
+      console.error('Error submitting rating/review:', error);
+      toast.error('An error occurred. Please try again.', { className: "text-white bg-gray-800" });
+  }
+  
+  closeDialog();
+};
+
+// Handle eligibility check for rate or review
+const handleReviewClick = async (type , itineraryId) => {
+  try {
+      const response = await fetchPastItineraries(tourist.userName);
+      // const data = await response.json();
+      // console.log(itineraryId)
+      const specificItinerary = response.find(itinerary => itinerary._id === itineraryId);
+      // console.log(specificItinerary)
+      if (specificItinerary) {
+          openDialog(type);
+      } else {
+          toast.error(data.message, { className: "text-white bg-gray-800" });
+      }
+  } catch (error) {
+      console.error('Error checking itinerary booking', error);
+      toast.error('There was an error checking itinerary booking. Please try again.', { className: "text-white bg-gray-800" });
+  }
+};
+
+
 const handleQuantityChange = (newQuantity) => {
   setQuantity(newQuantity);
 };
 
   return (
-    <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
-        <div className='grid p-2'>
-        {!itinerary.bookingOpen && (itinerary.interstedIn.includes(tourist._id)?
-         <GoBellFill size={20} onClick={() => (handleNotIntersted(itinerary._id))}/>:     
-         <GoBell size={20} onClick={() => (handleIntersted(itinerary._id))}/>     
-         )} 
-       
-      <h2>{itinerary.name}</h2>
-      <p>Preference Tag: {itinerary.preferenceTag}</p>
-      <p>Language: {itinerary.language}</p>
-      <p>Price: {displayPrice} {user.chosenCurrency}</p>
-      <h3>Activities:</h3>
-      <ul>
-        {itinerary.activities.map((activity, index) => (
-          <li key={index+1}>
-            <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
-            
-          </li>
-        ))}
-      </ul>
-      <p>pickup location: {itinerary.pickupLocation}</p>
-      <p>dropoff location: {itinerary.dropoffLocation}</p>
-      <h3>Locations:</h3>
-      <ul>
-        {itinerary.tourLocations.map((loc, index) => (
-          <li key={index}>
-            <p>{loc}</p>
-          </li>
-        ))}
-      </ul>
-      <h3>Available Dates:</h3>
-      <ul>
-        {itinerary.availableDates.map((date, index) => (
-          <li key={index}>
-            <p>{date}</p>
-          </li>
-        ))}
-      </ul>
-      <h3>Available Times:</h3>
-      <ul>
-        {itinerary.availableTimes.map((time, index) => (
-          <li key={index}>
-            <p>{time}</p>
-          </li>
-        ))}
-      </ul>
-      <p>Accessibility: {itinerary.accessibility}</p>
-      <p>creator: {itinerary.creator}</p>
-      <div>
-      {itinerary ? (
-        <p>Booked: {itinerary.isBooked ? 'Yes' : 'No'}</p>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-</div>
-{!isPast && !isUpcoming && (
-  <QuantitySelector onChange={handleQuantityChange} maxValue={100} />
-)}
-<button 
-  onClick={handleRedirectToReviews} 
-  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
->
-  View Tour Guide Reviews
-</button>
-<div>
-        <h3>Rate and Review the Creator</h3>
-        <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
-        <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
-        <button onClick={handleSubmitTourGuideReview}>Submit</button>
-      </div>
-<Card.Text as='div'>
-          <Rating
-            value={itinerary.rating}
-            text={`${itinerary.numReviews} reviews`}
-          />
-        </Card.Text>
-<div>
-<h3>Add a Review</h3>
-      <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
-      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
-      <button onClick={handleSubmitItineraryReview}>Submit</button>
-    </div> 
-    <div>
-        <button 
-          onClick={handleViewReviewsClick}
-          className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105'>
-          View Reviews
-        </button>
-      </div>
-      <div className='flex justify-between'>
-      {/* {   !tourist?.itineraryBookings?.some(booking => booking._id === itinerary._id) ? */}
-      {!isPast && (
-  !isUpcoming ? (
-    <button onClick={() => handleBookClick(itinerary._id, quantity)} className="p-2 bg-blue-500 text-white">
-      Book
-    </button>
-  ) : (
-    <button onClick={() => handleUnBook(itinerary._id)} className="p-2 bg-blue-500 text-white">
-      Unbook
-    </button>
-  )
-)}
-         </div>
-        <div className='flex justify-between'>
-        <div className='flex'>
-        </div>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(itinerary._id)}>copy link</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
-        Share via Mail
-        </button>
-        {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
-          <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
-            <h3 className="text-xl mb-4">Share Itinerary via Email</h3>
-            <label className="block mb-2">
-              To:
-              <input 
-                type="email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                className="w-full p-2 border rounded mt-1"
-                placeholder="Recipient's email"
+    <Card className="w-full max-w-[700px] mx-auto">
+      <CardContent>
+        <div className="flex flex-col md:flex-row gap-6 items-center justify-center w-auto max-w-[650px] mx-auto">
+          <div className="w-full flex items-center justify-center">
+            <div className="aspect-square overflow-hidden transform scale-110 ml-12 mt-12">
+              <img
+                src={itinerary.image || "/placeholder.svg"}
+                alt="Itinerary"
+                className="w-[75%] h-[75%] object-cover cursor-pointer"
+                onClick={() => setShowPreview(true)}
               />
-            </label>
-            <div className="flex justify-end mt-4">
-              <button className="p-2 bg-red-500 text-white rounded mr-2" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </button>
-              <button className="p-2 bg-green-500 text-white rounded w-[8ch]" onClick={() => handleShareViaMail(itinerary._id)}>
-                {isLoading ? <FiLoader className='mx-auto animate-spin'/> : "Send"}
-              </button>
+            </div>
+          </div>
+
+          <div className="w-full md:w-2/3 flex flex-col items-center justify-center text-center">
+            <div>
+              <h2 className="font-bold mb-2">{itinerary.name}</h2>
+              <p className="mb-1">Preference Tag: {itinerary.preferenceTag}</p>
+              <p className="mb-1">Language: {itinerary.language}</p>
+              <p className="mb-1">Price: {displayPrice} {user.chosenCurrency}</p>
+              <p className="mb-1">Creator: {itinerary.creator}</p>
+            </div>
+
+            <div className="flex justify-center mb-4">
+              <span className="mr-2">Rating:</span>
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} className={i < Math.round(itinerary.rating) ? "text-yellow-400" : "text-gray-300"} />
+              ))}
+              <span className="ml-2">({itinerary.rating.toFixed(1)})</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {/* <Button variant="outline" onClick={handleWishlist}>
+                {isWishlisted ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+              </Button> */}
+              <QuantitySelector onChange={setQuantity} maxValue={100} />
+              <Button variant="outline" onClick={() => handleBookClick(itinerary._id, quantity)}>
+                <FaShoppingCart className={itinerary.isBooked ? "text-green-500" : ""} />
+              </Button>
             </div>
           </div>
         </div>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button variant="secondary" onClick={() => setShowReviews(!showReviews)}>
+          {showReviews ? "Hide Details" : "Show Details"}
+        </Button>
+        <div>
+          <Button variant="outline" className="mr-2" onClick={() => handleShare(itinerary._id)}>
+            Copy Link
+          </Button>
+          <Button variant="outline" onClick={() => setIsModalOpen(true)}>
+            Share via Email
+          </Button>
+          {isModalOpen && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
+            <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
+              <h3 className="text-xl mb-4">Share Itinerary via Email</h3>
+              <label className="block mb-2">
+                To:
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  className="w-full p-2 border rounded mt-1"
+                  placeholder="Recipient's email"
+                />
+              </label>
+              <div className="flex justify-end mt-4">
+                <button className="p-2 bg-red-500 text-white rounded mr-2" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </button>
+                <button className="p-2 bg-green-500 text-white rounded w-[8ch]" onClick={() => handleShareViaMail(itinerary._id)}>
+                  {isLoading ? <FiLoader className='mx-auto animate-spin'/> : "Send"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        </div>
+      </CardFooter>
+      {showReviews && (
+        <CardContent>
+          <h3 className="font-semibold mb-2">Activities:</h3>
+          <ul className="list-disc list-inside mb-4">
+            {itinerary.activities.map((activity, index) => (
+              <li key={index}>
+                {activity.name} - Duration: {activity.duration} hours
+              </li>
+            ))}
+          </ul>
+          <p className="mb-2">Pickup location: {itinerary.pickupLocation}</p>
+          <p className="mb-2">Dropoff location: {itinerary.dropoffLocation}</p>
+          <h3 className="font-semibold mb-2">Locations:</h3>
+          <ul className="list-disc list-inside mb-4">
+            {itinerary.tourLocations.map((loc, index) => (
+              <li key={index}>{loc}</li>
+            ))}
+          </ul>
+          <h3 className="font-semibold mb-2">Available Dates:</h3>
+          <ul className="list-disc list-inside mb-4">
+            {itinerary.availableDates.map((date, index) => (
+              <li key={index}>{date}</li>
+            ))}
+          </ul>
+          <h3 className="font-semibold mb-2">Available Times:</h3>
+          <ul className="list-disc list-inside mb-4">
+            {itinerary.availableTimes.map((time, index) => (
+              <li key={index}>{time}</li>
+            ))}
+          </ul>
+          <p className="mb-2">Accessibility: {itinerary.accessibility}</p>
+          <button onClick={() => handleReviewClick('review',itinerary._id)} className="bg-blue-500 text-white px-2 py-1 rounded">
+                  Review
+                </button>
+                <button onClick={() => handleReviewClick('rate',itinerary._id)} className="bg-green-500 text-white px-2 py-1 rounded">
+                  Rate
+                </button>
+        </CardContent>
       )}
+
+      {showPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="relative bg-white p-4 rounded-lg">
+            <Button
+              variant="outline"
+              className="absolute top-2 right-2"
+              onClick={() => setShowPreview(false)}
+            >
+              <IoClose size={24} />
+            </Button>
+            <img
+              src={itinerary.image || "/placeholder.svg"}
+              alt="Itinerary Preview"
+              className="max-h-[80vh] max-w-full object-contain"
+            />
+          </div>
         </div>
+      )}
+
+<div>
+              {isDialogOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-md w-80">
+            <h2 className="text-lg font-bold mb-4 text-black">
+              {dialogType === 'rate' ? 'Rate the Product' : 'Write a Review'}
+            </h2>
+            {dialogType === 'rate' && (
+              <div className="mb-4">
+                <label className="block mb-2 text-black">Rating (out of 5):</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  className="border border-gray-300 p-2 rounded w-full text-black"
+                />
+              </div>
+            )}
+            {dialogType === 'review' && (
+              <div className="mb-4">
+                <label className="block mb-2 text-black">Your Review:</label>
+                <textarea
+                  value={review}
+                  onChange={(e) => setReview(e.target.value)}
+                  className="border border-gray-300 p-2 rounded w-full text-black"
+                  rows="4"
+                />
+              </div>
+            )}
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-500 text-white p-2 rounded mr-2"
+            >
+              Submit
+            </button>
+            <button
+              onClick={closeDialog}
+              className="bg-gray-300 text-black p-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-  )
+      )}
+            </div>
+    </Card>
+  );
+//     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto rou h-fit rounded'>
+//         <div className='grid p-2'>
+//         {!itinerary.bookingOpen && (itinerary.interstedIn.includes(tourist._id)?
+//          <GoBellFill size={20} onClick={() => (handleNotIntersted(itinerary._id))}/>:     
+//          <GoBell size={20} onClick={() => (handleIntersted(itinerary._id))}/>     
+//          )} 
+       
+//       <h2>{itinerary.name}</h2>
+//       <p>Preference Tag: {itinerary.preferenceTag}</p>
+//       <p>Language: {itinerary.language}</p>
+//       <p>Price: {displayPrice} {user.chosenCurrency}</p>
+//       <h3>Activities:</h3>
+//       <ul>
+//         {itinerary.activities.map((activity, index) => (
+//           <li key={index+1}>
+//             <p>Activity{index+1}: {activity.name}  &nbsp;  Duration: {activity.duration} hours</p> 
+            
+//           </li>
+//         ))}
+//       </ul>
+//       <p>pickup location: {itinerary.pickupLocation}</p>
+//       <p>dropoff location: {itinerary.dropoffLocation}</p>
+//       <h3>Locations:</h3>
+//       <ul>
+//         {itinerary.tourLocations.map((loc, index) => (
+//           <li key={index}>
+//             <p>{loc}</p>
+//           </li>
+//         ))}
+//       </ul>
+//       <h3>Available Dates:</h3>
+//       <ul>
+//         {itinerary.availableDates.map((date, index) => (
+//           <li key={index}>
+//             <p>{date}</p>
+//           </li>
+//         ))}
+//       </ul>
+//       <h3>Available Times:</h3>
+//       <ul>
+//         {itinerary.availableTimes.map((time, index) => (
+//           <li key={index}>
+//             <p>{time}</p>
+//           </li>
+//         ))}
+//       </ul>
+//       <p>Accessibility: {itinerary.accessibility}</p>
+//       <p>creator: {itinerary.creator}</p>
+//       <div>
+//       {itinerary ? (
+//         <p>Booked: {itinerary.isBooked ? 'Yes' : 'No'}</p>
+//       ) : (
+//         <p>Loading...</p>
+//       )}
+//     </div>
+// </div>
+// <QuantitySelector onChange={handleQuantityChange} maxValue={100} />
+// <button 
+//   onClick={handleRedirectToReviews} 
+//   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+// >
+//   View Tour Guide Reviews
+// </button>
+// <div>
+//         <h3>Rate and Review the Creator</h3>
+//         <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
+//         <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
+//         <button onClick={handleSubmitTourGuideReview}>Submit</button>
+//       </div>
+// <Card.Text as='div'>
+//           <Rating
+//             value={itinerary.rating}
+//             text={`${itinerary.numReviews} reviews`}
+//           />
+//         </Card.Text>
+// <div>
+// <h3>Add a Review</h3>
+//       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
+//       <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
+//       <button onClick={handleSubmitItineraryReview}>Submit</button>
+//     </div> 
+//     <div>
+//         <button 
+//           onClick={handleViewReviewsClick}
+//           className='px-1 py-0.5 bg-blue-700 text-white cursor-pointer border-none m-1 p-0.5 rounded transform transition-transform duration-300 hover:scale-105'>
+//           View Reviews
+//         </button>
+//       </div>
+//       <div className='flex justify-between'>
+//       {   !tourist?.itineraryBookings?.includes(itinerary._id) ?
+//          <button onClick={() => (handleBookClick(itinerary._id , quantity))} className="p-2 bg-blue-500 text-white">book</button>  :   
+//          <button onClick={() => (handleUnBook(itinerary._id))} className="p-2 bg-blue-500 text-white">unbook</button>     
+//          }
+//          </div>
+//         <div className='flex justify-between'>
+//         <div className='flex'>
+//         </div>
+//         <button className="p-2 bg-blue-500 text-white" onClick={() => handleShare(itinerary._id)}>copy link</button>
+//         <button className="p-2 bg-blue-500 text-white" onClick={() => setIsModalOpen(true)}>
+//         Share via Mail
+//         </button>
+//         {isModalOpen && (
+//         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 mt-[30vh] w-fit mx-auto flex h-fit justify-center">
+//           <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
+//             <h3 className="text-xl mb-4">Share Itinerary via Email</h3>
+//             <label className="block mb-2">
+//               To:
+//               <input 
+//                 type="email" 
+//                 value={email} 
+//                 onChange={(e) => setEmail(e.target.value)} 
+//                 className="w-full p-2 border rounded mt-1"
+//                 placeholder="Recipient's email"
+//               />
+//             </label>
+//             <div className="flex justify-end mt-4">
+//               <button className="p-2 bg-red-500 text-white rounded mr-2" onClick={() => setIsModalOpen(false)}>
+//                 Cancel
+//               </button>
+//               <button className="p-2 bg-green-500 text-white rounded w-[8ch]" onClick={() => handleShareViaMail(itinerary._id)}>
+//                 {isLoading ? <FiLoader className='mx-auto animate-spin'/> : "Send"}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//         </div>
+//         </div>
+//   )
   
 }
 export default TouristItineraryContainer

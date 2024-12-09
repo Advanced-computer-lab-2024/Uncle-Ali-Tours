@@ -84,17 +84,24 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  reviews: [reviewSchema],
-     rating: {
-       type: Number,
-       required: false,
-       default: 0,
-     },
-     numReviews: {
-       type: Number,
-       required: false,
-       default: 0,
-     },
+  rate: [
+    {
+      rating: Number,
+      user: {
+        userName: String,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+    },
+  ],
+  review: [
+    {
+      reviewText: String,
+      user: {
+        userName: String,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+    },
+  ],
      tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
      interstedIn:{
       type:[String]
