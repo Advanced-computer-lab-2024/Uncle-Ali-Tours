@@ -19,6 +19,7 @@ import { Dialog,DialogContent, DialogHeader, DialogTitle } from '../components/D
 import { Reviews } from '@mui/icons-material';
 
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import TourGuide from '../../../backend/models/tourGuide.model.js';
 
 
 function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject,onBookmarkToggle = () => {},isBookmarked}) {
@@ -194,6 +195,7 @@ const handleNotIntersted = async (id) =>{
         toast.error(message, {className: "text-white bg-gray-800"})
 }
 
+
 const handleSubmitTourGuideReview = async (e) => {
   e.preventDefault();
   const tourGuideName = itinerary.creator;  
@@ -216,15 +218,6 @@ if (!itinerary.isBooked) {
     alert('Failed to add review: ' + message);
   }
 };
-const handleBookClick = async (itineraryID , quantity) => {
-  try{
-    navigate(`/payment/itinerary/${itineraryID}` , {state : {quantity:quantity} });
-  }
-  catch(error){
-    console.error('Error:', error);
-  }
-};
-
 const handleSubmit = async () => {
   if (dialogType === 'rate' && rating > 5) {
       toast.error("Rating cannot exceed 5", { className: "text-white bg-gray-800" });
@@ -323,6 +316,16 @@ const handleToggleBookmark = async () => {
   }
 };
 
+const handleBookClick = async (itineraryID , quantity) => {
+  try{
+    navigate(`/payment/itinerary/${itineraryID}` , {state : {quantity:quantity} });
+  }
+  catch(error){
+    console.error('Error:', error);
+  }
+};
+
+
   return (
     <Card className="w-full max-w-[700px] mx-auto">
         <p>Average Rating: {itinerary.rating} (from {itinerary.numReviews} reviews)</p>
@@ -393,9 +396,19 @@ const handleToggleBookmark = async () => {
             </div>
 
             <div className="flex justify-center mb-4">
-              <span className="mr-2">Rating:</span>
               
-             
+              <div>
+        <h3>Rate and Review the Creator</h3>
+        <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
+        <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
+        <button onClick={handleSubmitTourGuideReview}>Submit</button>
+      </div>
+      <button 
+  onClick={handleRedirectToReviews} 
+  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+>
+  View Tour Guide Reviews
+</button>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {/* <Button variant="outline" onClick={handleWishlist}>
@@ -534,31 +547,15 @@ const handleToggleBookmark = async () => {
               {dialogType === 'rate' ? 'Rate the Product' : 'Write a Review'}
             </h2>
             {dialogType === 'rate' && (
-              <div className="mb-4">
-                <label className="block mb-2 text-black">Rating (out of 5):</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                  className="border border-gray-300 p-2 rounded w-full text-black"
-                />
-              </div>
-            )}
-            {dialogType === 'review' && (
-              <div className="mb-4">
-                <label className="block mb-2 text-black">Your Review:</label>
-                <textarea
-                  value={review}
-                  onChange={(e) => setReview(e.target.value)}
-                  className="border border-gray-300 p-2 rounded w-full text-black"
-                  rows="4"
-                />
-              </div>
+               <div>
+               <h3>Rate and Review the Creator</h3>
+               <input type="number" value={tourGuideRating} onChange={(e) => setTourGuideRating(Number(e.target.value))} placeholder="Rating" min="1" max="5" />
+               <input type="text" value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} placeholder="Comment" />
+               <button onClick={handleSubmitTourGuideReview}>Submit</button>
+             </div>
             )}
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmitTourGuideReview}
               className="bg-blue-500 text-white p-2 rounded mr-2"
             >
               Submit

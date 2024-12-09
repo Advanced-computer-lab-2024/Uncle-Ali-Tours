@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-export const useGuideStore = create((set) => ({
+export const useGuideStore = create((set,get) => ({
     guide: {},
     setGuide: (guide) => set({ guide }),
-
+    allGuides: [],
     // Fetch a tour guide's data by userName
     getGuide: async ({ userName }) => {
         try {
@@ -183,5 +183,20 @@ export const useGuideStore = create((set) => ({
             return { success: false, message: data.message || 'Could not add review' };
         }
     
-}
+},
+
+fetchAllGuides: async () => {
+    try {
+        const response = await fetch('/api/tourGuide/all'); // Adjust the URL if needed
+        if (!response.ok) {
+            throw new Error('Failed to fetch tour guides');
+        }
+        const guides = await response.json(); // Parse the response
+        set({ allGuides: guides }); // Update the store with fetched guides
+    } catch (error) {
+        console.error('Error fetching tour guides:', error);
+        set({ allGuides: [] }); // Reset to empty if there's an error
+    }
+},
+
 }));

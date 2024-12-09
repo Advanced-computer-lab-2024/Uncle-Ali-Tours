@@ -321,3 +321,12 @@ export const getTourGuideReport = async (req, res) => {
       res.status(500).json({ error: 'Failed to generate report' });
   }
 };
+
+export const getAllTourGuides = async (req, res) => {
+  try {
+      const guides = await TourGuide.find(); // Fetch all guides
+      res.status(200).json(guides);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching tour guides', error });
+  }
+};
