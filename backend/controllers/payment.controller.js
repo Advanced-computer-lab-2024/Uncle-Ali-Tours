@@ -3,6 +3,7 @@ import Itinerary from '../models/itinerary.model.js';
 import Product from '../models/product.model.js';
 import Tourist from '../models/tourist.model.js';
 import TransportationActivity from '../models/transportationActivity.model.js';
+import User from '../models/user.model.js';
 import { sendEmail } from "../util/email.js";
 import { createFlightBooking } from './flightBooking.controller.js';
 import { createHotelBooking } from './hotelBooking.controller.js';
@@ -181,6 +182,19 @@ export const handleSuccessfulPaymentForTourist = async (req, res) => {
                     tourist.purchasedProducts.push(product._id);
                     product.sales++;
                     product.Available_quantity -= item.quantity;
+                    console.log(product.creator);
+                    const x = await User.findOne({userName:product.creator});
+                    console.log(x.email);
+                    console.log();
+                    if(product.Available_quantity <= 0){
+                        const mailOptions = {
+                            from: EMAIL,
+                            to: x.email,
+                            subject:`your product ${product.name} is out of stock`,
+                        };
+                        console.log(mailOptions);
+                        const {success, message : emailMessage} = await sendEmail(mailOptions);
+                    }
                     await product.save();
                 }));
                 break;

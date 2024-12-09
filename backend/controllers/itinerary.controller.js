@@ -247,29 +247,45 @@ export const updateItinerary = async (req, res) => {
 
 // Create a review for an itinerary
 export const createItineraryReview = async (req, res) => {
-    const { rating, comment, name } = req.body;
-    const itinerary = await Itinerary.findById(req.params.id);
+    const { id } = req.params;
+    const { rating, reviewText, user } = req.body;
 
-    if (itinerary) {
-        const review = {
-            rating: Number(rating),
-            comment,
-            name,
-        };
+    try {
+        const itinerary = await Itinerary.findById(id);
+        console.log(id)
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "itinerary not found." });
+        }
+            //     const review = {
+            //     rating: Number(rating),
+            //     comment,
+            //     name,
+            // };
 
-        itinerary.reviews.push(review);
-        itinerary.numReviews = itinerary.reviews.length;
-        itinerary.rating = itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) / itinerary.reviews.length;
+        // Update based on the presence of rating or reviewText
+        if (rating) {
+            itinerary.rate.push({ user: user.userName, rating });
+        }
+        if (reviewText) {
+            itinerary.review.push({ user: user.userName, reviewText });
+        }
+        // itinerary.reviews.push(review);
+        // itinerary.numReviews = itinerary.reviews.length;
+        // itinerary.rating = itinerary.reviews.reduce((acc, item) => item.rating + acc, 0) / itinerary.reviews.length;
+        // await itinerary.save();
+        // res.status(201).json({
+        //     success: true,
+        //     message: 'Review added',
+        //     review,
+        //     numReviews: itinerary.numReviews,
+        //     rating: itinerary.rating,
+        // });
+
         await itinerary.save();
-        res.status(201).json({
-            success: true,
-            message: 'Review added',
-            review,
-            numReviews: itinerary.numReviews,
-            rating: itinerary.rating,
-        });
-    } else {
-        res.status(404).json({ success: false, message: 'Itinerary not found' });
+        res.status(200).json({ success: true, message: 'Rating/Review submitted successfully.' });
+    } catch (error) {
+        console.error("Error updating itinerary:", error);
+        res.status(500).json({ success: false, message: "Server error." });
     }
 };
 
