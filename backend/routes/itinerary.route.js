@@ -1,5 +1,5 @@
 import express from "express";
-import { activateItinerary, bookItinerary, createItinerary, createItineraryReview, deactivateItinerary, deleteItinerary, flagItinerary, getItinerary, getItineraryById, updateItinerary,interestedIn,removeInterestedIn } from "../controllers/itinerary.controller.js";
+import { activateItinerary, bookItinerary, createItinerary, createItineraryReview, deactivateItinerary, deleteItinerary, flagItinerary, getItinerary, getItineraryById, updateItinerary,interestedIn,removeInterestedIn , removeBookmark,getBookmarkedItinerariesForUser,addBookmark,toggleBookmark} from "../controllers/itinerary.controller.js";
 
 const router = express.Router();
 
@@ -15,4 +15,8 @@ router.put('/:id/book', bookItinerary);
 router.put("/flag",flagItinerary);
 router.put('/intrestedIn',interestedIn);
 router.put('/notIntrestedIn',removeInterestedIn);
+router.post('/bookmark', addBookmark);
+router.get('/bookmarkedItineraries/:userName', getBookmarkedItinerariesForUser);
+router.put('/toggleBookmark', toggleBookmark);
+router.delete('/bookmark', removeBookmark);
 export default router;

@@ -88,6 +88,8 @@ function ItineraryContainer({ itinerary, itineraryChanger }) {
     }
   };
 
+  
+
   const handleSubmitItineraryReview = async (e) => {
     e.preventDefault();
     if (!tourist?.itineraryBookings?.includes(itinerary._id)) {
@@ -151,6 +153,9 @@ function ItineraryContainer({ itinerary, itineraryChanger }) {
     const { success, message } = await deactivateItinerary(itinerary._id);
     success ? toast.success(message) : toast.error(message);
   };
+
+
+  
 
   return (
     <Card className="w-full max-w-[700px] mx-auto">

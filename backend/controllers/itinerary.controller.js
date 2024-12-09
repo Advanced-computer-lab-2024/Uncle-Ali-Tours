@@ -5,7 +5,7 @@ const { EMAIL } = process.env;
 import { sendEmail } from "../util/email.js";
 import Notification from "../models/notification.model.js";
 import Tourist from "../models/tourist.model.js";
-
+import Bookmark from "../models/bookmark.model.js";
 
 // Create a new itinerary
 export const createItinerary = async (req, res) => {
@@ -346,3 +346,87 @@ export const removeInterestedIn = async(req, res) => {
     }
 }
 
+export const addBookmark = async (req, res) => {
+    const { userName, itineraryId } = req.body;
+
+    if (!userName || !itineraryId) {
+        return res.status(400).json({ message: "User name and Itinerary ID are required" });
+    }
+
+    try {
+        const existingBookmark = await Bookmark.findOne({ userName, itineraryId });
+        if (existingBookmark) {
+            return res.status(400).json({ message: "itinerary already bookmarked" });
+        }
+
+        const bookmark = new Bookmark({ userName, itineraryId });
+        await bookmark.save();
+        res.status(201).json({ message: "itinerary bookmarked successfully", bookmark });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getBookmarkedItinerariesForUser = async (req, res) => {
+    const { userName } = req.params;
+
+    if (!userName) {
+        return res.status(400).json({ message: "User name is required" });
+    }
+
+    try {
+        const bookmarks = await Bookmark.find({ userName }).populate("itineraryId");
+        res.status(200).json({ bookmarks });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+export const toggleBookmark = async (req, res) => {
+    const { itineraryId } = req.body;
+
+    if (!itineraryId) {
+        return res.status(400).json({ success: false, message: "Itinerary ID is required" });
+    }
+
+    try {
+        // Find the activity
+        const itinerary = await Itinerary.findById(itineraryId);
+        if (!itinerary) {
+            return res.status(404).json({ success: false, message: "Itinerary not found" });
+        }
+
+        // Toggle the isBookmarked flag
+        itinerary.isBookmarked = !itinerary.isBookmarked;
+        await itinerary.save();
+
+        res.status(200).json({
+            success: true,
+            message: itinerary.isBookmarked ? "Itinerary bookmarked" : "Bookmark removed",
+            itinerary,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export const removeBookmark = async (req, res) => {
+    const { userName, itineraryId } = req.body;
+
+    if (!userName || !itineraryId) {
+        return res.status(400).json({ message: "User name and Itinerary ID are required" });
+    }
+
+    try {
+        const deletedBookmark = await Bookmark.findOneAndDelete({ userName, itineraryId });
+        if (!deletedBookmark) {
+            return res.status(404).json({ message: "Bookmark not found" });
+        }
+
+        res.status(200).json({ message: "Bookmark removed successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
