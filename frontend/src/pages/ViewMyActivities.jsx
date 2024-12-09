@@ -56,7 +56,7 @@ function ViewMyActivities() {
                     <ActivityContainer key={index} activity={activity} />
                 ))
             ) : (
-                <p>No upcoming itineraries found.</p>
+                <p>No activities found.</p>
             )}
             </div>
           </div>
