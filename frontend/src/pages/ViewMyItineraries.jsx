@@ -15,12 +15,12 @@ function ViewMyItineraries() {
     const fetchItineraries = async () => {
         const result = upcomingButton
           ? await fetchPastItineraries(user.userName)
-          : await fetchUpcomingItems(user.userName , "itinerary");  
+          : await fetchUpcomingItems(user.userName , "itinerary");
         setMyItineraries(result);
     };
     
     if (!myItineraries){
-      console.log("loading", myItineraries)  
+      console.log("loading", myItineraries)
         return null}
 
         console.log("loaded")

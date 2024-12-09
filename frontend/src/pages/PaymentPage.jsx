@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import TouristPromos from '../components/TouristPromos.jsx';
 import { useActivityStore } from '../store/activity';
 import { useItineraryStore } from '../store/itinerary';
 import { usePaymentStore } from '../store/payment';
 import { useTouristStore } from '../store/tourist';
 import { useTransportationActivityStore } from '../store/transportationActivity';
 import { useUserStore } from '../store/user';
-import TouristPromos from '../components/TouristPromos.jsx';
-import axios from 'axios';
 function PaymentPage() {
   const location = useLocation();
   const { bookedHotel, bookedFlight } = location.state || {};
@@ -203,6 +202,12 @@ function PaymentPage() {
                     Total Price: {price.toFixed(2)} {user.chosenCurrency}
                   </h2>
                   <p className="text-orange-600">Discount: {discount}%</p>
+                  {selectedPaymentMethod === 'wallet' && (
+          <div>
+          <p className="text-orange-600">Price: {(price).toFixed(2)} {user.chosenCurrency}</p>
+          <p className="text-orange-600">Remaining Balance: {((tourist.myWallet *  user.currencyRate) - price).toFixed(2)} {user.chosenCurrency}</p>
+          </div>
+          )}
                 </div>
 
                 <div className="space-y-2">
