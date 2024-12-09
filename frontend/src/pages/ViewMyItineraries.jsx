@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useUserStore } from '../store/user';
+import React, { useEffect, useState } from 'react';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
+import UpcomingItinerariesContainer from '../components/UpcomingItinerariesContainer';
 import { useTouristStore } from '../store/tourist';
-import ItineraryContainer from '../components/ItineraryContainer';
 
 function ViewMyItineraries() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const { fetchUpcomingItineraries,fetchPastItineraries } = useTouristStore();
+    const { fetchUpcomingItems,fetchPastItineraries } = useTouristStore();
     const [myItineraries, setMyItineraries] = useState([]); // Initialize with an empty array
     const [upcomingButton, setUpcomingButton] = useState(false);
     useEffect(() => {
@@ -15,7 +15,7 @@ function ViewMyItineraries() {
     const fetchItineraries = async () => {
         const result = upcomingButton
           ? await fetchPastItineraries(user.userName)
-          : await fetchUpcomingItineraries(user.userName);  
+          : await fetchUpcomingItems(user.userName , "itinerary");  
         setMyItineraries(result);
     };
     
@@ -52,12 +52,12 @@ function ViewMyItineraries() {
                     </button>
                   </div>
             <div className="mt-24">
-            {myItineraries.length > 0 ? (
+            {myItineraries.length > 0 && upcomingButton ? (
                 myItineraries.map((itinerary, index) => (
-                    <ItineraryContainer key={index} itinerary={itinerary} />
+                    <TouristItineraryContainer key={index} itinerary={itinerary} />
                 ))
             ) : (
-                <p>No itineraries found.</p>
+                <UpcomingItinerariesContainer itineraries={myItineraries} />
             )}
             </div>
           </div>
