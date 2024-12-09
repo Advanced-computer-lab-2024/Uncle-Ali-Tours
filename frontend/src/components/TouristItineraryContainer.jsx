@@ -17,6 +17,7 @@ import {Card, CardContent, CardFooter } from './Card';
 import { FaHeart, FaRegHeart, FaShoppingCart, FaStar } from 'react-icons/fa';
 import Textarea from './Textarea';
 import { Dialog,DialogContent, DialogHeader, DialogTitle } from '../components/DialogAI';
+import { Reviews } from '@mui/icons-material';
 
 
 
@@ -46,11 +47,14 @@ const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
   const [showPreview, setShowPreview] = useState(false);
   const { showDialog, hideDialog } = dialog();
   const [review, setReview] = useState('');
+  const [reviews,setReviews] = useState(false);
 
 
   const { bookItinerary } = useItineraryStore();
 
   const [quantity, setQuantity] = useState(1);
+
+  let avRating = itinerary.rate.reduce((sum, r) => sum + r.rating, 0) / (itinerary.rate.length || 1);
 
 
   // const handleReviewClick = (type) => {
@@ -288,7 +292,7 @@ const handleQuantityChange = (newQuantity) => {
   return (
     <Card className="w-full max-w-[700px] mx-auto">
       <CardContent>
-        <div className="flex flex-col md:flex-row gap-6 items-center justify-center w-auto max-w-[650px] mx-auto">
+        <div className="flex flex-col md:flex-row gap-6 items-center justify-center w-auto max-w-[650px] mx-auto mb-4">
           <div className="w-full flex items-center justify-center">
             <div className="aspect-square overflow-hidden transform scale-110 ml-12 mt-12">
               <img
@@ -312,9 +316,9 @@ const handleQuantityChange = (newQuantity) => {
             <div className="flex justify-center mb-4">
               <span className="mr-2">Rating:</span>
               {[...Array(5)].map((_, i) => (
-                <FaStar key={i} className={i < Math.round(itinerary.rating) ? "text-yellow-400" : "text-gray-300"} />
+                <FaStar key={i} className={i < Math.round(avRating) ? "text-yellow-400" : "text-gray-300"} />
               ))}
-              <span className="ml-2">({itinerary.rating.toFixed(1)})</span>
+              <span className="ml-2">({avRating.toFixed(1)})</span>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {/* <Button variant="outline" onClick={handleWishlist}>
@@ -328,6 +332,26 @@ const handleQuantityChange = (newQuantity) => {
           </div>
         </div>
       </CardContent>
+      <CardFooter className="flex justify-between">
+      <Button variant="link" onClick={() => setReviews(!reviews)}>
+          {reviews ? "Hide Reviews" : "Show Reviews"}
+          </Button>
+          {reviews && (
+        <div className="px-6 pb-6">
+          {itinerary.review.length > 0 ? (
+            itinerary.review.map((r, index) => (
+              <div key={index} className="mb-2 p-2 bg-gray-100 rounded">
+                <p className="font-semibold">{r.user?.userName || "Anonymous"}</p> 
+                <p>{r.reviewText}</p>
+              </div>
+            ))
+          ) : (
+            <p>No reviews yet.</p>
+          )}
+
+        </div>
+      )}
+      </CardFooter>
       <CardFooter className="flex justify-between">
         <Button variant="secondary" onClick={() => setShowReviews(!showReviews)}>
           {showReviews ? "Hide Details" : "Show Details"}
