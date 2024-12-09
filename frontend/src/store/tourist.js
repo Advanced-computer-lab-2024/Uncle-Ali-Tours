@@ -424,7 +424,6 @@ export const useTouristStore = create((set) => ({
                 toast.success(data.message);
                 return true;
             } else {
-                toast.error(data.message);
                 return false;
             }
         } catch (error) {
@@ -454,8 +453,28 @@ export const useTouristStore = create((set) => ({
             toast.error("Failed to fetch past itineraries.");
             return []; // Return an empty array on error
         }
+    }, 
+    fetchUpcomingItineraries: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/upcomingItineraries?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching upcoming itineraries:", error);
+            toast.error("Failed to fetch upcoming itineraries.");
+            return []; // Return an empty array on error
+        }
     },
-   
     fetchUpcomingActivities: async (userName) => {
         try {
             const response = await fetch(`/api/tourist/upcomingActivities?userName=${userName}`, {
