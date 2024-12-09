@@ -57,7 +57,7 @@ function ViewMyItineraries() {
                     <ItineraryContainer key={index} itinerary={itinerary} />
                 ))
             ) : (
-                <p>No upcoming itineraries found.</p>
+                <p>No itineraries found.</p>
             )}
             </div>
           </div>

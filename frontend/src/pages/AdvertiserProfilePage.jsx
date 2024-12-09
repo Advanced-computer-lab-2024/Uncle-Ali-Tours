@@ -268,6 +268,39 @@ const AdvertiserProfile = () => {
       ],
   };
 
+  const handleSaveProfilePicture = async () => {
+    if (editorRef.current && profilePic) {
+      const canvas = editorRef.current.getImageScaledToCanvas();
+      const dataUrl = canvas.toDataURL();
+      const blob = await fetch(dataUrl).then((res) => res.blob());
+      const formData = new FormData();
+      formData.append("profilePicture", blob, "profile-photo.png");
+      formData.append("userName", user.userName);
+
+      try {
+        const response = await uploadProfilePicture(formData);
+        if (response.success) {
+          setPreviewFile(response.profilePicture);
+          localStorage.setItem("profilePicture", response.profilePicture);
+          setIsEditing(false);
+          setProfilePic(null);
+          toast.success("Profile picture updated successfully", {
+            className: "text-white bg-gray-800",
+          });
+          await getSeller({ userName: user.userName }, {});
+        } else {
+          toast.error("Failed to update profile picture", {
+            className: "text-white bg-gray-800",
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading profile photo:", error);
+        toast.error("Error uploading profile photo", {
+          className: "text-white bg-gray-800",
+        });
+      }
+    }
+  };
 
   if (!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
@@ -385,6 +418,52 @@ const AdvertiserProfile = () => {
           </div>
         </div>
       </div>
+      {profilePic && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setProfilePic(null)}
+            >
+              <IoClose size={24} />
+            </button>
+            <AvatarEditor
+              ref={editorRef}
+              image={profilePic}
+              width={250}
+              height={250}
+              border={50}
+              borderRadius={125}
+              color={[255, 255, 255, 0.6]}
+              scale={scale}
+              rotate={rotate}
+            />
+            <div className="mt-4 flex items-center justify-between">
+              <input
+                type="range"
+                min="1"
+                max="2"
+                step="0.01"
+                value={scale}
+                onChange={(e) => setScale(parseFloat(e.target.value))}
+                className="w-1/2"
+              />
+              <button
+                className="bg-gray-200 text-gray-700 p-2 rounded-full"
+                onClick={() => setRotate((prev) => prev + 90)}
+              >
+                <FaArrowRotateRight />
+              </button>
+            </div>
+            <button
+              className="mt-4 w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition-colors"
+              onClick={handleSaveProfilePicture}
+            >
+              Save Profile Picture
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
   

@@ -355,31 +355,6 @@ export const useTouristStore = create((set) => ({
     
         return { success: true, message: "Removed successfully." };
     },
-
-    removeAllProductsCart: async (userName) => {
-        const res = await fetch('/api/tourist/removeAllProductsCart', {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ userName }) // Pass userName
-        });
-
-        const data = await res.json();
-        console.log("API Response:", data);
-
-        if (!data.success) return { success: false, message: data.message };
-
-        // Safe check for ProductsCart
-        set((state) => ({
-            tourist: {
-                ...state.tourist,
-                ProductsCart: [] // Reset to an empty array
-            }
-        }));
-
-        return { success: true, message: "Removed all products successfully." };
-    },
    
     
     getCartProducts: async (userName) => {
@@ -478,8 +453,28 @@ export const useTouristStore = create((set) => ({
             toast.error("Failed to fetch past itineraries.");
             return []; // Return an empty array on error
         }
+    }, 
+    fetchUpcomingItineraries: async (userName) => {
+        try {
+            const response = await fetch(`/api/tourist/upcomingItineraries?userName=${userName}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                return data.data; // Return the fetched itineraries
+            } else {
+                toast.error(data.message);
+                return []; // Return an empty array if there's an error
+            }
+        } catch (error) {
+            console.error("Error fetching upcoming itineraries:", error);
+            toast.error("Failed to fetch upcoming itineraries.");
+            return []; // Return an empty array on error
+        }
     },
-   
     fetchUpcomingActivities: async (userName) => {
         try {
             const response = await fetch(`/api/tourist/upcomingActivities?userName=${userName}`, {
