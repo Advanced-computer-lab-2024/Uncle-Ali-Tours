@@ -8,6 +8,7 @@ import ItineraryContainer from '../components/ItineraryContainer.jsx';
 import { useItineraryStore } from '../store/itinerary.js';
 import { useUserStore } from '../store/user.js';
 import AdjustableDialog, { adjustableDialog } from '../components/AdjustableDialog.jsx';
+import { IoClose } from 'react-icons/io5';
 
 function ItineraryPage(itinerary, itineraryChanger) {
   const { user } = useUserStore();

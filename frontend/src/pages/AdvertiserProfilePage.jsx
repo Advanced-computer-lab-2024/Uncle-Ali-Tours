@@ -313,7 +313,7 @@ const AdvertiserProfile = () => {
   }
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-       />
+       
       <img src={egypt} className="fixed top-0 left-0 w-full h-full object-cover opacity-10 pointer-events-none" />
       <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">

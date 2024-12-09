@@ -55,7 +55,7 @@ const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
 
   const [quantity, setQuantity] = useState(1);
 
-  let avRating = itinerary.rate.reduce((sum, r) => sum + r.rating, 0) / (itinerary.rate.length || 1);
+  
 
 
   // const handleReviewClick = (type) => {
@@ -80,7 +80,7 @@ const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
   //   };
 
   //   try {
-  //     const response = await fetch(`/api/product/${product._id}/rate-review`, {
+  //     const response = await fetch(/api/product/${product._id}/rate-review, {
   //       method: 'POST',
   //       headers: { 'Content-Type': 'application/json' },
   //       body: JSON.stringify(requestData),
@@ -88,7 +88,7 @@ const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
 
   //     const data = await response.json();
   //     if (data.success) {
-  //       toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+  //       toast.success(dialogType === 'rate' ? Rating submitted: ${rating}/5 : Review submitted: "${review}", { className: "text-white bg-gray-800" });
   //     } else {
   //       toast.error(data.message || 'Failed to submit');
   //     }
@@ -119,10 +119,10 @@ const closeDialog = () => {
     setCurrentItinerary(itinerary);
     navigate('/viewReviews');       
   };
-  const keys = Object.keys(itinerary)
-  keys.map((key)=> (
-    `${key}: ${itinerary[key]}`
-  ))
+  const keys = Object.keys(itinerary);
+keys.map((key) => (
+  `${key}: ${itinerary[key]}`
+));
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2);
   const handleShare = (id) => {
     const link = `${window.location.origin}/itineraryDetail/${id}`;
@@ -254,7 +254,7 @@ const handleSubmit = async () => {
       console.log(response);
       // const data = await response.json();
       // if (data.success) {
-      //     toast.success(dialogType === 'rate' ? `Rating submitted: ${rating}/5` : `Review submitted: "${review}"`, { className: "text-white bg-gray-800" });
+      //     toast.success(dialogType === 'rate' ? Rating submitted: ${rating}/5 : Review submitted: "${review}", { className: "text-white bg-gray-800" });
       // } else {
       //     toast.error(data.message || 'Failed to submit');
       // }
@@ -325,8 +325,29 @@ const handleToggleBookmark = async () => {
 
   return (
     <Card className="w-full max-w-[700px] mx-auto">
+       <div className="flex items-center justify-between mb-2">
+       <div>
+<h3>Add a Review</h3>
+       <input type="number" value={rating} onChange={(e) => setRating(Number(e.target.value))}  placeholder="Rating" />
+      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment" />
+      <button onClick={handleSubmitItineraryReview}>Submit</button>
+   </div> 
+                <h3 className="text-lg font-bold"></h3>
+                <button
+                    onClick={handleToggleBookmark}
+                    className="ml-2"
+                    aria-label="Bookmark Itinerary"
+                >
+                    {localIsBookmarked ? (
+                        <AiFillStar className="text-yellow-500" size={28} />
+                    ) : (
+                        <AiOutlineStar className="text-gray-500" size={28} />
+                    )}
+                </button>
+            </div>
       <CardContent>
         <div className="flex flex-col md:flex-row gap-6 items-center justify-center w-auto max-w-[650px] mx-auto mb-4">
+          
           <div className="w-full flex items-center justify-center">
             <div className="aspect-square overflow-hidden transform scale-110 ml-12 mt-12">
               <img
@@ -349,10 +370,8 @@ const handleToggleBookmark = async () => {
 
             <div className="flex justify-center mb-4">
               <span className="mr-2">Rating:</span>
-              {[...Array(5)].map((_, i) => (
-                <FaStar key={i} className={i < Math.round(avRating) ? "text-yellow-400" : "text-gray-300"} />
-              ))}
-              <span className="ml-2">({avRating.toFixed(1)})</span>
+              
+             
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {/* <Button variant="outline" onClick={handleWishlist}>
@@ -604,7 +623,7 @@ const handleToggleBookmark = async () => {
 // <Card.Text as='div'>
 //           <Rating
 //             value={itinerary.rating}
-//             text={`${itinerary.numReviews} reviews`}
+//             text={${itinerary.numReviews} reviews}
 //           />
 //         </Card.Text>
 // <div>

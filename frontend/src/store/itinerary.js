@@ -245,6 +245,7 @@ export const useItineraryStore = create((set, get) => ({
     }
   },
 
+
   bookItinerary: async (itineraryId) => {
     try {
       const { data } = await axios.put(`/api/itinerary/${itineraryId}/book`);
@@ -288,7 +289,8 @@ export const useItineraryStore = create((set, get) => ({
       console.error('Error flagging itinerary:', error);
       return { success: false, message: 'Error flagging itinerary' };
     }
-  },interestedIn: async(touristId,itineraryId) =>{
+  },
+  interestedIn: async(touristId,itineraryId) =>{
     try {
       const res = await fetch(`/api/itinerary/intrestedIn`, {
         method: "PUT",

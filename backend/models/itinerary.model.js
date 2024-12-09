@@ -88,28 +88,17 @@ const itinerarySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  rate: [
-    {
-      rating: Number,
-      user: {
-        userName: String,
-        userId: mongoose.Schema.Types.ObjectId,
-      },
-    },
-  ],
-  review: [
-    {
-      reviewText: String,
-      user: {
-        userName: String,
-        userId: mongoose.Schema.Types.ObjectId,
-      },
-    },
-  ],profilePicture: {
-    type: String, 
-    required: false,
-        default: "" // This will store the path to the uploaded picture
-},
+  reviews: [reviewSchema],
+     rating: {
+       type: Number,
+       required: false,
+       default: 0,
+     },
+     numReviews: {
+       type: Number,
+       required: false,
+       default: 0,
+     },
      tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
      interstedIn:{
       type:[String]
