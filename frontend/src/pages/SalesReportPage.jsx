@@ -3,6 +3,10 @@ import { useUserStore } from '../store/user';
 import { useActivityStore } from "../store/activity";
 import { toast, Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
+import { Bar, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const SalesReportPage = () => {
   const { user } = useUserStore();
@@ -11,6 +15,8 @@ const SalesReportPage = () => {
   const [salesReport, setSalesReport] = useState([]);
   const [filteredReport, setFilteredReport] = useState([]);
   const [filters, setFilters] = useState({ product: "", dateRange: { start: "", end: "" }, month: "" });
+  const [showBarChart, setShowBarChart] = useState(true); // Default to Bar Chart
+  const [showPieChart, setShowPieChart] = useState(false);
 
   useEffect(() => {
     fetchSalesReport();
@@ -50,6 +56,30 @@ const SalesReportPage = () => {
     setFilteredReport(filtered);
   };
 
+  const chartData = {
+    labels: filteredReport.map((item) => item.name),
+    datasets: [
+      {
+        label: "Revenue",
+        data: filteredReport.map((item) => item.revenue),
+        backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+        borderColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const pieChartData = {
+    labels: filteredReport.map((item) => item.name),
+    datasets: [
+      {
+        label: "Revenue",
+        data: filteredReport.map((item) => item.revenue),
+        backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+      },
+    ],
+  };
+
   if (!user.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
   return (
@@ -58,6 +88,7 @@ const SalesReportPage = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Sales Report</h1>
         <div className="bg-white shadow-xl rounded-lg overflow-hidden p-6">
+          {/* Filter Section */}
           <div className="mb-4 flex gap-4">
             <input
               type="date"
@@ -78,6 +109,51 @@ const SalesReportPage = () => {
               Apply Filters
             </button>
           </div>
+
+          {/* Toggle Buttons */}
+          <div className="flex justify-center gap-4 mb-8">
+            <button
+              onClick={() => {
+                setShowBarChart(true);
+                setShowPieChart(false);
+              }}
+              className={`px-4 py-2 rounded-lg ${showBarChart ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            >
+              Bar Chart
+            </button>
+            <button
+              onClick={() => {
+                setShowPieChart(true);
+                setShowBarChart(false);
+              }}
+              className={`px-4 py-2 rounded-lg ${showPieChart ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            >
+              Pie Chart
+            </button>
+          </div>
+
+          {/* Charts and Table Section */}
+          <div className="flex gap-8 mb-8">
+            {/* Bar and Pie Charts in the Same Div */}
+            <div className="w-full lg:w-1/2">
+              {showBarChart && (
+                <>
+                  <h3 className="text-xl font-semibold mb-4">Bar Chart</h3>
+                  <Bar data={chartData} />
+                </>
+              )}
+            </div>
+            <div className="w-full lg:w-1/2">
+              {showPieChart && (
+                <>
+                  <h3 className="text-xl font-semibold mb-4">Pie Chart</h3>
+                  <Pie data={pieChartData} />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Sales Data Table */}
           <table className="w-full text-left text-sm border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
@@ -111,4 +187,3 @@ const SalesReportPage = () => {
 };
 
 export default SalesReportPage;
-

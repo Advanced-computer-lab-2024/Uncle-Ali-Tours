@@ -85,7 +85,8 @@ import ViewMyItineraries from './ViewMyItineraries.jsx';
 import ViewMyActivities from './ViewMyActivities.jsx';
 import SalesReportPage from './SalesReportPage.jsx';
 import TouristReportPage from './TouristReportPage.jsx';
-
+import GovernorProfilePage from "./GovernorProfilePage.jsx"; 
+import GovernorPreferencesTag from './GovernerPrefernceTags.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -185,12 +186,12 @@ function App() {
         <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
         <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
         <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
-						
+				<Route path="/governorProfile" element={<GovernorProfilePage/>} />
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
         <Route path="/orderDetails/:id" element={<ViewOrderDetails/>}/>
-
+        <Route path="GovernorPreferencesTag" element={<GovernorPreferencesTag/>}/>
         <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/TransportationActivityPage" element={<TransportationActivityPage />} />
