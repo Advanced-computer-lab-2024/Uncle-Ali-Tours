@@ -5,7 +5,7 @@ import {
     updateProduct,
     deleteProduct,
     archiveProduct,
-    uploadProfilePicture ,
+    uploadProductPicture ,
     upload,
     addRatingReview,
     getProductById
@@ -26,7 +26,7 @@ router.put('/:id', updateProduct);
 
 // Delete product by ID
 router.delete('/:id', deleteProduct);
-router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePicture);
+router.put('/uploadPicture/:id', upload.single('profilePicture'), uploadProductPicture);
 
 
 router.put('/archiveProduct/:id', archiveProduct);

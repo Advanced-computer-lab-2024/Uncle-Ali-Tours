@@ -5,6 +5,73 @@ import Notification from "../models/notification.model.js";
 import Tourist from "../models/tourist.model.js";
 import { sendEmail } from "../util/email.js";
 const { EMAIL } = process.env;
+import dotenv from "dotenv";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDirectory = path.join(__dirname, "../uploads");
+
+if (!fs.existsSync(uploadDirectory)) {
+    fs.mkdirSync(uploadDirectory, { recursive: true });
+  }
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDirectory);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+    },
+  });
+  
+  export const upload = multer({ storage: storage });
+  export const uploadMiddleware = upload.single("profilePicture");
+  
+
+  export const uploadProductPicture = async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided." });
+    }
+  
+    const { id } = req.params;
+    const filePath = `/uploads/${req.file.filename}`;
+  
+    try {
+      const activity = await Activity.findById(id);
+      if (!activity) {
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: " not found." });
+      }
+  
+      // Remove old profile picture file if it exists
+      if (activity.profilePicture && fs.existsSync(path.join(__dirname, `../${activity.profilePicture}`))) {
+        fs.unlinkSync(path.join(__dirname, `../${activity.profilePicture}`));
+      }
+  
+      // Update seller's profile picture path in the database
+      activity.profilePicture = filePath;
+      await activity.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: "activity picture uploaded successfully",
+        profilePicture: `${process.env.SERVER_URL || 'http://localhost:5000'}${filePath}`, // Return the full URL
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      return res.status(500).json({ message: "Profile picture upload failed", error });
+    }
+  };
+
+  
+
 
 export const addBookmark = async (req, res) => {
     const { userName, activityId } = req.body;
@@ -255,9 +322,16 @@ const notifyIntrest = async(touristId,bookingOpen,activityId)=> {
 // Update Activity (including isAppropriate flag)
 export const updateActivity = async (req, res) => {
     const { id, newActivity } = req.body;
+
+    if (req.file) {
+        newActivity.profilePicture = `/uploads/${req.file.filename}`;
+      }
+    
     try {
         const activityExists = await Activity.exists({ _id: id });
-        
+        if (req.file && activityExists.profilePicture && fs.existsSync(path.join(__dirname, `../${activityExists.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${activityExists.profilePicture}`));
+          }
 
         if (!activityExists) {
             return res.status(404).json({ success: false, message: "Activity not found" });
@@ -284,12 +358,19 @@ export const updateActivity = async (req, res) => {
 export const deleteActivity = async (req, res) => {
     const { id } = req.body;
     try {
-        await Activity.findOneAndDelete({ _id: id });
+        const deleted=   await Activity.findOneAndDelete({ _id: id });
+
+        if (deleted.profilePicture && fs.existsSync(path.join(__dirname, `../${deleted.profilePicture}`))) {
+            fs.unlinkSync(path.join(__dirname, `../${deleted.profilePicture}`));
+          }
         return res.json({ success: true, message: 'Activity deleted successfully' });
+        
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
-};
+  
+
+    } 
 
 // Create Activity Review
 export const createActivityReview = async (req, res) => {
@@ -313,6 +394,7 @@ export const createActivityReview = async (req, res) => {
     } else {
         return res.status(404).json({ message: 'Activity not found' });
     }
+   
 };
 export const getAllActivities = async (req, res) => {
     try {

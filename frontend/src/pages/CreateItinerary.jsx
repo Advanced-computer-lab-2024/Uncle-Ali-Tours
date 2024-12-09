@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useItineraryStore } from '../store/itinerary';
 import { useTagStore } from '../store/tag';
 import { useUserStore } from '../store/user';
-
-function CreateItinerary() {
+import { FaEye, FaEdit } from 'react-icons/fa';
+import AvatarEditor from 'react-avatar-editor';
+import { Modal } from 'react-bootstrap';
+function CreateItinerary({itinerary}) {
     const { user } = useUserStore();
     const { newItinerary, addItineraries } = useItineraryStore(); 
     const { tags, getTags } = useTagStore();
-
+    const [isEditing, setIsEditing] = useState(false);
+    const [profilePic, setProfilePic] = useState(null);
+    const [showPreview, setShowPreview] = useState(false);
+    const [scale, setScale] = useState(1.2);
+    const [rotate, setRotate] = useState(0);
+    const editorRef = useRef(null);
+  
     useEffect(() => {
         getTags()
     }, [])
@@ -64,6 +72,11 @@ function CreateItinerary() {
         setDateFields(dateFields.filter((_, index) => index !== indexToDelete));
         setTimeFields(timeFields.filter((_, index) => index !== indexToDelete));
     };
+
+    
+      
+ 
+
 
     const [availableDates, setDate] = useState('');
     const [availableTimes, setTime] = useState('');

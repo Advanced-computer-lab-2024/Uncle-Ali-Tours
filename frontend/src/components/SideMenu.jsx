@@ -27,6 +27,13 @@ const SideMenu = ({ isOpen, onClose }) => {
         { name: "My Itineraries", path: "/viewMyItineraries" },
       ],
     },
+
+    {
+      title: "bookmarks",
+      subItems: [
+        { name: "View bookmarks", path: "/bookmarks" },
+      ],
+    },
     {
       title: "Activities",
       subItems: [
@@ -81,6 +88,7 @@ const SideMenu = ({ isOpen, onClose }) => {
         { name: "View Itineraries", path: "/itineraryPage" },
       ],
     },
+   
     {
       title: "Reports",
       subItems: [
@@ -159,9 +167,10 @@ const SideMenu = ({ isOpen, onClose }) => {
       title: "Users Settings",
       subItems: [
         { name: "Manage", path: "/userManagment" },
-
         { name: "Complaints", path: "/complaints" },
+        { name: "View User Documents", path: "/userDocuments" },
         { name: "View Delete Requests", path: "/viewDeleteRequests" },
+
 
       ],
     },

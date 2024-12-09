@@ -27,7 +27,7 @@ router.delete('/', deleteSeller); // Delete a seller
 // Route for uploading profile picture
 router.put('/uploadPicture', upload.single('profilePicture'), uploadProfilePicture);
 // router.post('/uploadDocuments', uploadDocuments);
-router.post('/uploadDocuments', uploadMiddleware, uploadDocuments);
+router.post("/uploadDocuments", uploadMiddleware, uploadDocuments);
 router.get('/getUploadedDocuments', getUploadedDocuments);
 router.get('/getAllUploadedDocuments', getAllUploadedDocuments);  // Ensure this line is in your seller routes file
 

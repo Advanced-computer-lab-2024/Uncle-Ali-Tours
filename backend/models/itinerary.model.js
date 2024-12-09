@@ -34,6 +34,10 @@ const itinerarySchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  isBookmarked: {
+     type: Boolean, 
+    default: false 
+}, 
   language: {
     type: String,
     required: true,
@@ -101,7 +105,11 @@ const itinerarySchema = new mongoose.Schema({
         userId: mongoose.Schema.Types.ObjectId,
       },
     },
-  ],
+  ],profilePicture: {
+    type: String, 
+    required: false,
+        default: "" // This will store the path to the uploaded picture
+},
      tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
      interstedIn:{
       type:[String]

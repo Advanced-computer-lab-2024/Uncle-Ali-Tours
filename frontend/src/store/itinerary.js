@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { create } from 'zustand';
+import axios from 'axios';
 
 
 export const useItineraryStore = create((set, get) => ({
@@ -8,6 +8,38 @@ export const useItineraryStore = create((set, get) => ({
 
   itineraries: [],
   setItineraries: (itineraries) => set({ itineraries }),
+   // Upload profile picture for a 
+
+   uploadProductPicture: async (id, profilePicture) => {
+    const formData = new FormData();
+    formData.append("profilePicture", profilePicture);
+  
+    try {
+      const response = await axios.put(`http://localhost:3000/api/itinerary/uploadPicture/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+  
+      console.log("Upload response:", response.data);
+  
+      const data = response.data;
+      if (data.success && data.profilePicture) {
+        const profileImagePath = data.profilePicture;
+  
+        set((state) => ({
+          itineraries: state.itineraries.map((itinerary) =>
+            itinerary._id === id ? { ...itinerary, profilePicture: profileImagePath } : itinerary
+          ),
+        }));
+  
+        return { success: true, message: "itineraries picture uploaded successfully", profilePicture: profileImagePath };
+      } else {
+        return { success: false, message: data.message || "No itineraries picture path returned" };
+      }
+    } catch (error) {
+      console.error("Error uploading itineraries picture:", error);
+      return { success: false, message: "Error uploading itineraries picture" };
+    }
+  },
 
   addItineraries: async (newItinerary) => {
     try {
@@ -296,6 +328,65 @@ export const useItineraryStore = create((set, get) => ({
       // console.error("Error updating itinerary:", error);
       return { success: false, message: body.message };
     }
-  }
+  },
+  bookmarkItinerary: async (itineraryId, userName) => {
+    console.log('Itinerayr ID:', itineraryId);
+    console.log('User name:', userName);
+    
+    try {
+        const res = await fetch('/api/itinerary/bookmark', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itineraryId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error bookmarking Itinerary:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+removeBookmark: async (itineraryId, userName) => {
+    try {
+        const res = await fetch('/api/itinerary/bookmark', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itineraryId, userName }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            return { success: true, message: data.message };
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error removing bookmark:", error);
+        return { success: false, message: error.message };
+    }
+},
+
+getBookmarkedItineraries: async (userName) => {
+    try {
+      const res = await fetch(`/api/itinerary/bookmarkedItineraries/${userName}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+        const data = await res.json();
+        console.log("Bookmarked Itineraries:", data.bookmarks);
+        if (res.ok) {
+          return data.bookmarks;
+        } else {
+            return { success: false, message: data.message };
+        }
+    } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+        return { success: false, message: error.message };
+    }
+},
 
 }));

@@ -22,6 +22,11 @@ const activitySchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    profilePicture: {
+        type: String, 
+        required: false,
+            default: "" // This will store the path to the uploaded picture
+    },
     time: {
         type: String,
         required: true

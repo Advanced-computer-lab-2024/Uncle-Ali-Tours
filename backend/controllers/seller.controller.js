@@ -15,32 +15,29 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const uploadDirectory = path.join(__dirname, "../uploads");
-console.log("Upload directory path:", uploadDirectory);
+const uploadDocsDirectory = path.join(__dirname, "../uploads/docs");
 
-// Ensure the uploads directory exists
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory, { recursive: true });
+// Ensure the uploads/docs directory exists
+if (!fs.existsSync(uploadDocsDirectory)) {
+  fs.mkdirSync(uploadDocsDirectory, { recursive: true });
 }
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log("Saving file to:", uploadDirectory);  // Log the directory
-    cb(null, uploadDirectory);  // Save files to the correct directory
+    console.log("Saving file to:", uploadDocsDirectory);
+    cb(null, uploadDocsDirectory);
   },
   filename: (req, file, cb) => {
     const uniqueName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-    console.log("Saving file with name:", uniqueName);  // Log the filename
-    cb(null, uniqueName);  // Use a unique name to avoid overwriting
+    console.log("Saving file with name:", uniqueName);
+    cb(null, uniqueName);
   },
 });
 
-
 export const upload = multer({ storage: storage });
 export const uploadMiddleware = upload.fields([
-  { name: "profilePicture", maxCount: 1 },
-  { name: "sellerID", maxCount: 1 },
+  { name: "taxID", maxCount: 1 },
   { name: "taxationRegistryCard", maxCount: 1 },
 ]);
 // Upload Profile Picture for Seller
@@ -194,10 +191,20 @@ export const deleteSeller = async (req, res) => {
 
   
 };
+// const docsUploadDirectory = path.join(
+//   "C:/Users/loaym/Documents/GitHub/Uncle-Ali-Tours/backend/uploads/docs"
+// );
 
+// Ensure the uploads/docs directory exists
+// if (!fs.existsSync(docsUploadDirectory)) {
+//   fs.mkdirSync(docsUploadDirectory, { recursive: true });
+// }
 export const uploadDocuments = async (req, res) => {
+  console.log("Received files:", req.files); // Log the received files
+  console.log("Received body:", req.body);   // Log the received body
+
   if (!req.files) {
-    console.log("No files received:", req.body);  // Log the received data to check if files are coming
+    console.log("No files received:", req.body);
     return res.status(400).json({ message: "No files provided." });
   }
 
@@ -205,33 +212,29 @@ export const uploadDocuments = async (req, res) => {
 
   // Get the paths for the uploaded files
   const taxIDPath = req.files["taxID"]
-    ? `/uploads/${req.files["taxID"][0].filename}`
+    ? `/uploads/docs/${req.files["taxID"][0].filename}`
     : null;
+
   const taxationRegistryCardPath = req.files["taxationRegistryCard"]
-    ? `/uploads/${req.files["taxationRegistryCard"][0].filename}`
+    ? `/uploads/docs/${req.files["taxationRegistryCard"][0].filename}`
     : null;
+
+  console.log("Tax ID Path:", taxIDPath);
+  console.log("Taxation Registry Card Path:", taxationRegistryCardPath);
 
   try {
     const seller = await Seller.findOne({ userName });
     if (!seller) {
       console.log("Seller not found:", userName);
-      
+
       // Delete the files if the seller is not found
-      if (taxIDPath) fs.unlinkSync(path.join(__dirname, `../${taxIDPath}`));
-      if (taxationRegistryCardPath) fs.unlinkSync(path.join(__dirname, `../${taxationRegistryCardPath}`));
+      if (taxIDPath) fs.unlinkSync(path.join(__dirname, "..", taxIDPath));
+      if (taxationRegistryCardPath) fs.unlinkSync(path.join(__dirname, "..", taxationRegistryCardPath));
 
       return res.status(404).json({ message: "Seller not found." });
     }
 
-    // Remove old files if necessary
-    if (taxIDPath && seller.taxID && fs.existsSync(path.join(__dirname, `../${seller.taxID}`))) {
-      fs.unlinkSync(path.join(__dirname, `../${seller.taxID}`));
-    }
-    if (taxationRegistryCardPath && seller.taxationRegistryCard && fs.existsSync(path.join(__dirname, `../${seller.taxationRegistryCard}`))) {
-      fs.unlinkSync(path.join(__dirname, `../${seller.taxationRegistryCard}`));
-    }
-
-    // Update seller's documents
+    // Update seller's documents in the database
     if (taxIDPath) seller.taxID = taxIDPath;
     if (taxationRegistryCardPath) seller.taxationRegistryCard = taxationRegistryCardPath;
 
@@ -240,14 +243,16 @@ export const uploadDocuments = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Documents uploaded successfully",
-      taxID: taxIDPath,
+      sellerID: taxIDPath,
       taxationRegistryCard: taxationRegistryCardPath,
     });
   } catch (error) {
-    console.error("Error uploading documents:", error);  // Log the error
+    console.error("Error uploading documents:", error);
     return res.status(500).json({ message: "Document upload failed", error });
   }
 };
+
+
 
 export const getUploadedDocuments = async (req, res) => {
   const { userName } = req.query; // Get username from query string

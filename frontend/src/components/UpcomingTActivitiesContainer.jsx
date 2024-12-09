@@ -8,21 +8,21 @@ const UpcomingTActivitiesContainer = () => {
   const { user } = useUserStore();
   const [upcomingTActivities, setUpcomingTActivities] = useState([]);
 
+  const fetchUpcomingTActivities = async () => {
+    try {
+      const response = await fetchUpcomingItems(user.userName, 'tActivity');
+      console.log('API Response:', response); // Log the API response
+      
+        console.log('Setting upcoming transportation activities:', response.data); // Log the data being set
+          setUpcomingTActivities(response);
+
+    } catch (error) {
+      console.error('Error fetching upcoming activities:', error.message);
+      toast.error('Error fetching upcoming activities', { className: "text-white bg-gray-800" });
+    }
+  };
+
   useEffect(() => {
-    const fetchUpcomingTActivities = async () => {
-      try {
-        const response = await fetchUpcomingItems(user.userName, 'tActivity');
-        console.log('API Response:', response); // Log the API response
-        
-          console.log('Setting upcoming transportation activities:', response.data); // Log the data being set
-            setUpcomingTActivities(response);
-
-      } catch (error) {
-        console.error('Error fetching upcoming activities:', error.message);
-        toast.error('Error fetching upcoming activities', { className: "text-white bg-gray-800" });
-      }
-    };
-
     fetchUpcomingTActivities();
   }, [user.userName, fetchUpcomingItems]);
 
@@ -31,9 +31,9 @@ const UpcomingTActivitiesContainer = () => {
       const response = await handleUnBook(user.userName, activityID, quantity);
       if (response.success) {
         toast.success(response.message, { className: "text-white bg-gray-800" });
-        setUpcomingTActivities(prevActivities => prevActivities.filter(activity => activity.itemDetails._id !== activityID));
+        fetchUpcomingTActivities();
       } else {
-        toast.error(response.message, { className: "text-white bg-gray-800" });
+        console.error(response.message, { className: "text-white bg-gray-800" });
       }
     } catch (error) {
       console.error('Error unbooking T activity:', error.message);

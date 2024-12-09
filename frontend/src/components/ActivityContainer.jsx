@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
@@ -9,6 +9,9 @@ import { useTouristStore } from '../store/tourist.js';
 import { useUserStore } from '../store/user.js';
 import { formdialog } from './FormDialog.jsx';
 import Rating from './Rating';
+import AvatarEditor from 'react-avatar-editor';
+import { Modal } from 'react-bootstrap';
+import { FaEye, FaEdit ,FaTimes  } from 'react-icons/fa';
 
 function ActivityContainer({ activity, activityChanger }) {
   const [email, setEmail] = useState("");
@@ -16,6 +19,12 @@ function ActivityContainer({ activity, activityChanger }) {
   const { showFormDialog } = formdialog();
   const { createActivityReview } = useActivityStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+  const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
+  const [showPreview, setShowPreview] = useState(false);
+  const [scale, setScale] = useState(1.2);
+  const [rotate, setRotate] = useState(0);
+  const editorRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const [rating, setRating] = useState(0);
@@ -23,6 +32,7 @@ function ActivityContainer({ activity, activityChanger }) {
   const displayPrice = (activity.price * user.currencyRate).toFixed(2);
   const {tourist, updateRealActivityBookings,unRealActivityBook} = useTouristStore();
   const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleClick = () => {
     showDialog()
@@ -102,10 +112,129 @@ function ActivityContainer({ activity, activityChanger }) {
         success ? toast.success(message, {className: "text-white bg-gray-800"}) : toast.error(message, {className: "text-white bg-gray-800"})
   }
 
+  const handleBookClick = async (activityID) => {
+    try{
+      navigate(`/payment/activity/${activityID}`);
+    }
+    catch(error){
+      console.error('Error:', error);
+    }
+  };
+  useEffect(() => {
+    const savedImages = JSON.parse(localStorage.getItem("aImages")) || [];
+    const aImage = savedImages.find(img => img.id === activity._id);
+    if (aImage) {
+      setPreviewFile(aImage.image);
+    }
+  }, [activity]);
+
+
+  const toggleEdit = () => {
+    setIsEditing((prev) => !prev);
+    setProfilePic(null);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setProfilePic(file);
+      //localStorage.removeItem("profilePicture");
+    }
+  };
+
+  const handleSave = () => {
+    if (editorRef.current && profilePic) {
+      const canvas = editorRef.current.getImageScaledToCanvas();
+      const dataUrl = canvas.toDataURL();
+
+      try {
+        const savedImages = JSON.parse(localStorage.getItem("aImages")) || [];
+        const uImages = savedImages.filter(img => img.id !== activity._id);
+        uImages.push({ id: activity._id, image: dataUrl });
+
+        localStorage.setItem("aImages", JSON.stringify(uImages));
+        setPreviewFile(dataUrl);
+        setIsEditing(false);
+        setProfilePic(null);
+        toast.success("Profile picture saved locally", { className: "text-white bg-gray-800" });
+      } catch (error) {
+        toast.error("Error saving profile photo locally", { className: "text-white bg-gray-800" });
+      }
+    } else {
+      toast.error("No file selected for upload", { className: "text-white bg-gray-800" });
+    }
+  };
+
+
+
   return (
     <div className='mb-6 text-black text-left w-fit min-w-[45ch] bg-white mx-auto h-fit rounded'>
       
       <div className='grid p-2'>
+      <div className="flex items-center justify-center mb-6">
+        {previewFile ? (
+          <img
+            className="w-40 h-40 rounded-full object-cover"
+            src={previewFile}
+            alt="Product Image"
+          />
+        ) : (
+          <div className="text-gray-500">Add image</div>
+        )}
+        <div className="icon-buttons ml-4">
+          <button className="p-2" onClick={() => setShowPreview(true)}>
+            <FaEye className="h-4 w-4" />
+          </button>
+          <button className="p-2" onClick={toggleEdit}>
+            <FaEdit className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {isEditing && (
+        <>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="mb-4 p-2 border rounded"
+          />
+          {profilePic && (
+            <div className="avatar-editor">
+              <AvatarEditor
+                ref={editorRef}
+                image={profilePic}
+                width={150}
+                height={150}
+                border={30}
+                borderRadius={75}
+                color={[255, 255, 255, 0.6]}
+                scale={scale}
+                rotate={rotate}
+                className="mx-auto mb-4"
+              />
+              <div className="controls mt-3 space-y-4">
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={scale}
+                  onChange={(e) => setScale(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+               
+                <button 
+                  onClick={handleSave}
+                  className="bg-green-500 text-white p-2 rounded w-full"
+                >
+                  Save Image
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
         <p>Name: {activity.name}</p>
         <p>Date: {new Date(activity.date).toLocaleDateString()}</p>
         <p>Time: {activity.time}</p>

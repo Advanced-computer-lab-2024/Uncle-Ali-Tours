@@ -1,88 +1,98 @@
 import React, { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useUserStore } from "../store/user";
-import { useSellerStore } from "../store/seller"; // Import the useSellerStore hook
-import axios from 'axios';
+import { useSellerStore } from "../store/seller";
+import egypt from "../images/egypt.jpg";
 
-function UnVerified() {
+const UnVerified = () => {
   const { uploadDocuments } = useSellerStore();
   const { user } = useUserStore();
-  const [idFile, setIdFile] = useState();
-  const [taxationCardFile, setTaxationCardFile] = useState();
+  const [idFile, setIdFile] = useState(null);
+  const [taxationCardFile, setTaxationCardFile] = useState(null);
 
   const handleFileUpload = async () => {
-    console.log("File upload triggered");  // Debugging point
-
-    // Check if both files are selected
     if (!idFile || !taxationCardFile) {
       toast.error("Please upload both ID and Taxation Registry Card.");
       return;
     }
 
-    // Create the FormData object after files are selected
-  // Include userName or other necessary data
-  const formData = new FormData();
-  // Ensure correct field names
-  
-formData.append("taxID", taxIDFile);  // Ensure the correct file field name
-formData.append("taxationRegistryCard", taxationCardFile);  // Ensure the correct file field name
-formData.append("userName", user.userName);
+    const formData = new FormData();
+    formData.append("taxID", idFile);
+    formData.append("taxationRegistryCard", taxationCardFile);
+    formData.append("userName", user.userName);
+
     try {
-      // Call the uploadDocuments function (which handles the file upload)
       const result = await uploadDocuments(user.userName, formData);
-      console.log('Upload result:', result);  // Check the result
+      console.log("Upload result:", result);
+
       if (result.success) {
         toast.success("Documents uploaded successfully.");
       } else {
         toast.error(result.message || "Failed to upload documents.");
       }
     } catch (error) {
-      console.error('Error during upload:', error);  // Log the error
+      console.error("Error during upload:", error);
       toast.error("An error occurred during the upload.");
     }
-
-   
   };
 
   return (
-    <div className="mt-12">
-        
-      <p className="text-4xl">You are not verified yet</p>
-      <div className="relative p-6 w-[70vh] mx-auto mt-4 backdrop-blur-lg bg-[#161821f0] h-[37vh] max-w-3xl rounded-lg shadow-lg text-white">
-        <p className="text-2xl">Please upload the required documents</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 relative">
+      <Toaster />
+      {/* Background Image with Overlay */}
+      <img
+        src={egypt}
+        alt="Background"
+        className="fixed top-0 left-0 w-full h-full object-cover opacity-30 pointer-events-none"
+      />
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
 
-        <div className="mt-6">
-          <label className="block my-2">
-            ID:
-          </label>
-          <input
-  type="file"
-  onChange={(e) => {
-    setIdFile(e.target.files[0]);
-    console.log("Selected file for ID:", e.target.files[0]);
-  }}
-  className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
+      <div className="relative max-w-lg w-full bg-white p-8 rounded-lg shadow-2xl">
+        <h2 className="text-3xl font-bold mb-4 text-center text-gray-800">
+          Account Verification Required
+        </h2>
+        <p className="text-gray-600 mb-6 text-center">
+          To access your dashboard, please upload your identification documents. This step ensures the security and authenticity of our marketplace.
+        </p>
 
-  
-/>
+        <div className="space-y-6">
+          {/* ID Document Upload Field */}
+          <div>
+            <label htmlFor="idFile" className="block text-gray-700 font-medium mb-2">
+              Upload ID Document
+            </label>
+            <input
+              type="file"
+              id="idFile"
+              onChange={(e) => setIdFile(e.target.files[0])}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
 
-<input
-  type="file"
-  onChange={(e) => {setTaxationCardFile(e.target.files[0]);
-    console.log("Selected file for tax:", e.target.files[0]);
-  }}
-  className="bg-gray-700 text-white border border-gray-600 rounded-md px-2 py-1 mt-1"
-/>
+          {/* Taxation Registry Card Upload Field */}
+          <div>
+            <label htmlFor="taxationCardFile" className="block text-gray-700 font-medium mb-2">
+              Upload Taxation Registry Card
+            </label>
+            <input
+              type="file"
+              id="taxationCardFile"
+              onChange={(e) => setTaxationCardFile(e.target.files[0])}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button
+            onClick={handleFileUpload}
+            className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-300"
+          >
+            Submit Documents
+          </button>
         </div>
-        <button
-          onClick={handleFileUpload}
-          className="bg-green-600 p-2 mt-4 rounded"
-        >
-          Submit Documents
-        </button>
       </div>
     </div>
   );
-}
+};
 
 export default UnVerified;

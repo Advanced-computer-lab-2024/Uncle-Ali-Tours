@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-// import { Card} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 import { GoBell, GoBellFill } from "react-icons/go";
@@ -19,11 +18,11 @@ import Textarea from './Textarea';
 import { Dialog,DialogContent, DialogHeader, DialogTitle } from '../components/DialogAI';
 import { Reviews } from '@mui/icons-material';
 
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 
 
-
-function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
-  const {currentItinerary, setCurrentItinerary,interestedIn,removeInterestedIn} = useItineraryStore();
+function TouristItineraryContainer({itinerary, itineraryChanger , accept , reject,onBookmarkToggle = () => {},isBookmarked}) {
+  const {currentItinerary, setCurrentItinerary,interestedIn,removeInterestedIn,bookmarkItinerary,getBookmarkeditineraries, removeBookmarks} = useItineraryStore();
   const [email,setEmail]=useState("");  
   const { createItineraryReview } = useItineraryStore();
   const [rating, setRating] = useState(0);
@@ -49,6 +48,8 @@ const { tourist , fetchPastItineraries,isPast , isUpcoming} = useTouristStore();
   const [review, setReview] = useState('');
   const [reviews,setReviews] = useState(false);
 
+  const [ setIsBookmarked] = useState(false);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
 
   const { bookItinerary } = useItineraryStore();
 
@@ -287,6 +288,39 @@ const handleReviewClick = async (type , itineraryId) => {
 
 const handleQuantityChange = (newQuantity) => {
   setQuantity(newQuantity);
+};
+
+useEffect(() => {
+  // Check if the activity is already bookmarked
+  if (user?.bookmarkerItineraries?.includes(itinerary._id)) {
+      setIsBookmarked(true);
+  }
+}, [user, itinerary]);
+
+const handleToggleBookmark = async () => {
+  try {
+      const response = await fetch('/api/itinerary/toggleBookmark', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itineraryId: itinerary._id }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+          toast.success(data.message);
+          onBookmarkToggle(itinerary._id, data.itinerary.isBookmarked); // Update parent state
+          const newIsBookmarked = data.itinerary.isBookmarked;
+
+          // Update both local and parent states
+          setLocalIsBookmarked(newIsBookmarked);
+          onBookmarkToggle(itinerary._id, newIsBookmarked);
+      } else {
+          toast.error(data.message);
+      }
+  } catch (error) {
+      toast.error('Failed to update bookmark');
+      console.error('Error toggling bookmark:', error);
+  }
 };
 
   return (

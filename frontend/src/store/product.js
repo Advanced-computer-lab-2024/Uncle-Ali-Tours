@@ -127,34 +127,36 @@ getProducts: async (filter = {}, sort = {}) => {
   },
 
   // Upload profile picture for a product
-  uploadProfilePicture: async (name, profilePicture) => {
+  uploadProductPicture: async (id, profilePicture) => {
     const formData = new FormData();
     formData.append("profilePicture", profilePicture);
-    formData.append("name", name);
-
+  
     try {
-      const response = await axios.put(`http://localhost:3000/api/product/uploadPicture`, formData, {
+      const response = await axios.put(`http://localhost:3000/api/product/uploadPicture/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
+  
       console.log("Upload response:", response.data);
-
+  
       const data = response.data;
       if (data.success && data.profilePicture) {
         const profileImagePath = data.profilePicture;
-        
+  
         set((state) => ({
-          products: { ...state.products, profilePicture: profileImagePath },
+          products: state.products.map((product) =>
+            product._id === id ? { ...product, profilePicture: profileImagePath } : product
+          ),
         }));
-
-        return { success: true, message: "Profile picture uploaded successfully", profilePicture: profileImagePath };
+  
+        return { success: true, message: "Product picture uploaded successfully", profilePicture: profileImagePath };
       } else {
-        return { success: false, message: data.message || "No profile picture path returned" };
+        return { success: false, message: data.message || "No product picture path returned" };
       }
     } catch (error) {
-      console.error("Error uploading profile picture:", error);
-      return { success: false, message: "Error uploading profile picture" };
+      console.error("Error uploading product picture:", error);
+      return { success: false, message: "Error uploading product picture" };
     }
   },
+  
 
 }));
