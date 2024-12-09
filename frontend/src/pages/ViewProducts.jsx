@@ -1,74 +1,127 @@
-import React from 'react'
-import { useState } from 'react'
-import { useProductStore } from '../store/product';
-import { useTouristStore } from '../store/tourist'
-import ProductContainer
- from '../components/productContainer';
- import Dialog from '../components/Dialog.jsx'
- import FormDialog from '../components/FormDialog.jsx'
+import React, { useState, useEffect } from "react";
+import { useProductStore } from "../store/product";
+import { useTouristStore } from "../store/tourist";
+import ProductContainer from "../components/productContainer";
+import Slider from "../components/Slider";
+import Button from "../components/Button";
+import { Select, SelectItem } from "../components/Select";
 function ViewProducts() {
-    const {tourist} = useTouristStore()
-    console.log(tourist)
-    const [filter, setFilter] = useState(
-        {}
+  const { tourist } = useTouristStore();
+  const [filter, setFilter] = useState({});
+  const [sort, setSort] = useState({});
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const { getProducts, products } = useProductStore();
+
+  useEffect(() => {
+    handlePress();
+  }, []);
+
+  const handlePress = async () => {
+    await getProducts(
+      {
+        ...filter,
+        Available_quantity: { $gt: 0 },
+        price: { $gte: priceRange[0], $lte: priceRange[1] },
+      },
+      sort,
     );
-    const [sort, setSort] = useState(
-      {}
-  );
-    const [visibillity, setVisibillity] = useState(
-      false
-  );
-  const [previewFile, setPreviewFile] = useState(localStorage.getItem("profilePicture") || "");
+  };
+  const handleSort = (value) => {
+    setSort({ [value]: value.includes("High") ? -1 : 1 });
+    handlePress();
+  };
 
- 
-    const {getProducts, products} = useProductStore();
-
-   const handlePress = async () => {
-    await getProducts(filter , sort);
-   };
-   const handleSort = async () => {
-    setVisibillity((prev)=> !prev);
-   };
-
-
-   return (
-    <div className='text-black'>
-      
-        <input className='w-[15ch] m-2 pl-1' name={"name"} placeholder='Name' onChange={(e) => setFilter({ ...filter, name: e.target.value})}/>
-        <input className='w-[15ch] m-2 pl-1' name={"price"} placeholder='Price' onChange={(e) => setFilter({ ...filter, cat: e.target.value})}/>
-        <button className='p-2 bg-black text-white' onClick={() => (handlePress())}>search</button>
-        <div className={` grid w-fit mx-auto`} >
-        <div>
-      <div className='mb-4 text-xl'>
-            Available Products   
-        </div>
-        
-        <div className='bg-gradient-to-b shadow-xl rounded-xl relative fro-100% from-[#FA7070] w-[95vw] p-8 grid grid-cols-2'>
-        {
-            products.map((product, index)=> (
-                !product.archive && <ProductContainer key={index} tourist={tourist}  product={product}/>   
-            ))
-        }
-        </div>
-        <Dialog msg={"Are you sure you want to delete this itinerary?"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Delete' rejectButtonText='Cancel'/>
-        <FormDialog msg={"Update values"} accept={() => del()} reject={() => (console.log("rejected"))} acceptButtonText='Update' rejectButtonText='Cancel' inputs={["name","value"]}/>
-   
-    
-    </div>
-       </div>
-        
-        <div><button onClick={() => (handleSort())}>{Object.keys(sort)[0]? "sorted by " + Object.keys(sort)[0] : "Sort"}</button>
-        <div className={`${visibillity ? '' : 'hidden' }`} >
-         <div> <button onClick={()=>(setSort({'rating' : -1}))}>{"Rating High to Low"}</button></div>
-         <div> <button onClick={()=>(setSort({'rating' : 1}))}>{"Rating Low to High"}</button></div>
-          
-         <div> <button onClick={()=>(setSort({'price' : -1}))}>{"Price High to Low"}</button></div>
-                <button onClick={()=>(setSort({'price' : 1}))}>{"Price Low to High"}</button>
+  return (
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 sm:p-10">
+            <h1 className="text-3xl font-bold text-white">
+              Available Products
+            </h1>
           </div>
-        </div>
-        </div>
-        
-  )
+          <div className="p-6 sm:p-10">
+            <div className="flex shadow-md items-center w-fit mx-auto h-fit px-2 rounded-lg flex-wrap gap-4 mb-6">
+              <input
+                className="border h-[3ch] rounded-md p-2"
+                name="name"
+                placeholder="Name"
+                onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+              />
+              <div className="w-full md:w-64">
+								<div className="relative h-[100px] flex flex-col justify-end">
+                <p className="mb-2">Price Range</p>
+                <input
+                  type="range"
+										className="absolute top-0 scale-x-[-1] left-0"
+                  min={products.reduce(
+                    (acc, product) => Math.min(acc, product.price),
+                    0,
+                  )}
+                  max={products.reduce(
+                    (acc, product) => Math.max(acc, product.price),
+                    1000,
+                  )/2}
+                  step={10}
+                  value={products.reduce(
+                    (acc, product) => Math.max(acc, product.price),
+                    1000,
+                  )/2 - priceRange[0]}
+                  onChange={(e) =>
+                    setPriceRange([e.target.max - e.target.value, priceRange[1]])
+                  }
+                />
+                <input
+                  type="range"
+										className="absolute top-0 left-0 translate-x-[90%]"
+                  min={products.reduce(
+                    (acc, product) => Math.max(acc, product.price),
+                    1000,
+                  )/2}
+                  max={products.reduce(
+                    (acc, product) => Math.max(acc, product.price),
+                    1000,
+                  )}
+                  step={10}
+                  value={priceRange[1]}
+                  onChange={(e) =>
+                    setPriceRange([priceRange[0], e.target.value])
+                  }
+                />
+                <p className="mt-2">
+                  ${priceRange[0]} - ${priceRange[1]}
+                </p>
+								</div>
+              </div>
+              <Select onValueChange={handleSort}>
+                <option value="" disabled selected hidden>
+                  Please Choose...
+                </option>
+                <SelectItem value="ratingHigh">Rating High to Low</SelectItem>
+                <SelectItem value="ratingLow">Rating Low to High</SelectItem>
+                <SelectItem value="priceHigh">Price High to Low</SelectItem>
+                <SelectItem value="priceLow">Price Low to High</SelectItem>
+              </Select>
+              <Button onClick={handlePress}>Search</Button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 container">
+              {products.map(
+                (product, index) =>
+                  !product.archive && (
+                    <ProductContainer
+                      key={index}
+                      tourist={tourist}
+                      product={product}
+                    />
+                  ),
+              )}
+            </div>
+          </div>
+          </div>
+          </div>
+          </div>
+  );
 }
 
-export default ViewProducts
+export default ViewProducts;
