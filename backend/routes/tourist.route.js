@@ -1,5 +1,5 @@
 import express from "express";
-import { handleSuccessfulPaymentForTourist,checkUpcomingItineraryNotifications,addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingActivities, getMyUpcomingItineraries, getTourist, getWishlistedProducts, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
+import { addDeliveryAddress, addProductToCart, addProductWishlist, badgeLevel, bookActivity, bookRealActivity, bookitineraryActivity, checkPurchaseStatusByUsername, checkUpcomingItineraryNotifications, createTourist, deleteTourist, getCartProducts, getMyPastActivities, getMyPastItineraries, getMyPromos, getMyUpcomingItineraries, getMyUpcomingActivities, getMyUpcomingItems, getTourist, getWishlistedProducts, handleSuccessfulPaymentForTourist, handleUnBook, hasPurchasedProduct, markNotificationAsRead, redeemPoints, removeAllProductsCart, removeProductCart, removeProductWishlist, unBook, unBookRealActivity, unItiniraryBook, updateMyPoints, updateTourist } from "../controllers/tourist.controller.js";
 
 const router = express.Router();
 
@@ -24,13 +24,17 @@ router.put("/addProductToCart",addProductToCart);
 router.put("/removeProductCart",removeProductCart);
 router.get("/getCartProducts/:userName", getCartProducts);
 router.put("/updatePoints",updateMyPoints);
-router.get("/upcomingItineraries",getMyUpcomingItineraries);
 router.get("/pastItineraries",getMyPastItineraries);
 router.get("/upcomingActivities",getMyUpcomingActivities);
+router.get("/upcomingItineraries",getMyUpcomingItineraries);
 router.get("/pastActivities",getMyPastActivities);
 router.put("/notifications",markNotificationAsRead);
 router.post("/addDeliveryAddress", addDeliveryAddress);
 router.put("/removeAllProductsCart", removeAllProductsCart);
+router.put("/handleUnBook", handleUnBook);
+router.get("/upcomingItems", getMyUpcomingItems);
+
+router.get('/:userName/:productId/purchased', hasPurchasedProduct);
 router.post("/test", (req, res) => res.send("Test route is working!"));
 router.get('/:userName/check-upcoming-itinerary', checkUpcomingItineraryNotifications);
 router.put("/handleSuccessfulPayment",handleSuccessfulPaymentForTourist);

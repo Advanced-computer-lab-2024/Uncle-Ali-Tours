@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEdit, FaCheck, FaEye } from 'react-icons/fa';
-import { IoSaveOutline } from 'react-icons/io5';
+import { FaEdit, FaCheck } from "react-icons/fa";
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { IoSaveOutline, IoClose } from "react-icons/io5";
 import { toast, Toaster } from 'react-hot-toast';
 import { useUserStore } from '../store/user';
 import { useAdvertiserstore } from '../store/advertiser';
@@ -19,6 +20,10 @@ import { Modal } from 'react-bootstrap';
 import AvatarEditor from 'react-avatar-editor';
 import axios from 'axios';
 import { FiLoader } from 'react-icons/fi';
+import { Bar, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const AdvertiserProfile = () => {
   const { user } = useUserStore();
@@ -238,7 +243,66 @@ const AdvertiserProfile = () => {
     showDialog();
   };
 
+  const [showBarChart, setShowBarChart] = useState(true); // Default to Bar Chart
+  const [showPieChart, setShowPieChart] = useState(false);
 
+  const chartData = {
+      labels: filteredReport.map((item) => item.name),
+      datasets: [
+          {
+              label: "Revenue",
+              data: filteredReport.map((item) => item.revenue),
+              backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+              borderColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+              borderWidth: 1,
+          },
+      ],
+  };
+
+  const pieChartData = {
+      labels: filteredReport.map((item) => item.name),
+      datasets: [
+          {
+              label: "Revenue",
+              data: filteredReport.map((item) => item.revenue),
+              backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336", "#9c27b0"],
+          },
+      ],
+  };
+
+  const handleSaveProfilePicture = async () => {
+    if (editorRef.current && profilePic) {
+      const canvas = editorRef.current.getImageScaledToCanvas();
+      const dataUrl = canvas.toDataURL();
+      const blob = await fetch(dataUrl).then((res) => res.blob());
+      const formData = new FormData();
+      formData.append("profilePicture", blob, "profile-photo.png");
+      formData.append("userName", user.userName);
+
+      try {
+        const response = await uploadProfilePicture(formData);
+        if (response.success) {
+          setPreviewFile(response.profilePicture);
+          localStorage.setItem("profilePicture", response.profilePicture);
+          setIsEditing(false);
+          setProfilePic(null);
+          toast.success("Profile picture updated successfully", {
+            className: "text-white bg-gray-800",
+          });
+          await getSeller({ userName: user.userName }, {});
+        } else {
+          toast.error("Failed to update profile picture", {
+            className: "text-white bg-gray-800",
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading profile photo:", error);
+        toast.error("Error uploading profile photo", {
+          className: "text-white bg-gray-800",
+        });
+      }
+    }
+  };
 
   if (!advertiser.userName) return <FiLoader size={50} className="animate-spin mx-auto mt-[49vh]" />;
 
@@ -277,176 +341,139 @@ const AdvertiserProfile = () => {
               </div>
             </div>
           </div>
-          
-
-          
-          <div className="p-6 sm:p-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-gray-900">Company Information</h2>
-                {['userName', 'email', 'companyName', 'website', 'hotline', 'industry', 'address'].map((field) => (
-                  <div key={field} className="flex items-center justify-between">
-                    <span className="text-gray-600 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                    <input
-                      type="text"
-                      name={field}
-                      defaultValue={advertiser[field] || ''}
-                      className={`${isEditing ? 'bg-gray-100' : 'bg-transparent'} transition-colors focus:outline-none border-b border-gray-300 px-2 py-1 w-2/3 text-right`}
-                      readOnly={!isEditing}
-                      onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, [field]: e.target.value })}
-                    />
+  
+          {/* Main Content */}
+          <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Company Information */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Company Information</h2>
+              {['userName', 'email', 'companyName', 'website', 'hotline', 'industry', 'address'].map((field) => (
+                <div key={field} className="flex items-center justify-between">
+                  <span className="text-gray-600 capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                  <input
+                    type="text"
+                    name={field}
+                    defaultValue={advertiser[field] || ''}
+                    className={`${isEditing ? 'bg-gray-100' : 'bg-transparent'} transition-colors focus:outline-none border-b border-gray-300 px-2 py-1 w-2/3 text-right`}
+                    readOnly={!isEditing}
+                    onChange={(e) => setUpdatedAdvertiser({ ...updatedAdvertiser, [field]: e.target.value })}
+                  />
+                </div>
+              ))}
+              {!isEditing ? (
+                <button className="text-orange-500 hover:text-orange-600 transition-colors" onClick={() => setIsEditing(true)}>
+                  <FaEdit size={20} />
+                </button>
+              ) : (
+                <button className="text-green-500 hover:text-green-600 transition-colors" onClick={handleSaveClick}>
+                  <IoSaveOutline size={20} />
+                </button>
+              )}
+            </div>
+  
+            {/* Sales Report Graphs */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Sales Report</h2>
+              {/* Filter and Chart Toggle Buttons */}
+              <div className="flex justify-center gap-4 mb-6">
+                <button
+                  onClick={() => {
+                    setShowBarChart(true);
+                    setShowPieChart(false);
+                  }}
+                  className={`px-4 py-2 rounded-lg ${showBarChart ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                >
+                  Bar Chart
+                </button>
+                <button
+                  onClick={() => {
+                    setShowPieChart(true);
+                    setShowBarChart(false);
+                  }}
+                  className={`px-4 py-2 rounded-lg ${showPieChart ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                >
+                  Pie Chart
+                </button>
+              </div>
+  
+              {/* Bar and Pie Charts */}
+              <div className="flex flex-col items-center">
+                {showBarChart && (
+                  <div className="w-full h-64">
+                    <h3 className="text-xl font-semibold mb-4 text-center">Bar Chart</h3>
+                    <Bar data={chartData} options={{ maintainAspectRatio: false }} />
                   </div>
-                ))}
-                {!isEditing ? (
-                  <button className="text-orange-500 hover:text-orange-600 transition-colors" onClick={() => setIsEditing(true)}>
-                    <FaEdit size={20} />
-                  </button>
-                ) : (
-                  <button className="text-green-500 hover:text-green-600 transition-colors" onClick={handleSaveClick}>
-                    <IoSaveOutline size={20} />
-                  </button>
+                )}
+                {showPieChart && (
+                  <div className="w-full h-64">
+                    <h3 className="text-xl font-semibold mb-4 text-center">Pie Chart</h3>
+                    <Pie data={pieChartData} options={{ maintainAspectRatio: false }} />
+                  </div>
                 )}
               </div>
-              <div className="space-y-6">
-                
-              </div>
             </div>
-            
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-              </div>
-              
-            </div>
-
-            <div className="mt-10 border-t pt-6">
-              <button
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
-                onClick={handleDeleteClick}
-              >
-                Delete Account
-              </button>
-            </div>
+          </div>
+  
+          {/* Footer */}
+          <div className="mt-10 border-t pt-6">
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+              onClick={handleDeleteAccountRequest}
+            >
+              Delete Account
+            </button>
           </div>
         </div>
       </div>
-
-      <Modal show={showPreview} onHide={() => setShowPreview(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Profile Picture Preview</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center">
-          <img
-            src={previewFile}
-            alt="Profile Preview"
-            className="img-fluid"
-            style={{ maxWidth: "100%", borderRadius: "50%" }}
-          />
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={isEditing} onHide={() => setIsEditing(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Profile Picture</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="mb-4 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-violet-50 file:text-violet-700
-                      hover:file:bg-violet-100"
-          />
-          
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            onClick={() => setIsEditing(false)}
-            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors"
-          >
-            Save Changes
-          </button>
-        </Modal.Footer>
-      </Modal>
-
-      {isDeleteVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">Confirm Account Deletion</h2>
-            <p className="mb-4">Are you sure you want to request to delete your account? This action cannot be undone.</p>
-            <div className="flex justify-end space-x-4">
+      {profilePic && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setProfilePic(null)}
+            >
+              <IoClose size={24} />
+            </button>
+            <AvatarEditor
+              ref={editorRef}
+              image={profilePic}
+              width={250}
+              height={250}
+              border={50}
+              borderRadius={125}
+              color={[255, 255, 255, 0.6]}
+              scale={scale}
+              rotate={rotate}
+            />
+            <div className="mt-4 flex items-center justify-between">
+              <input
+                type="range"
+                min="1"
+                max="2"
+                step="0.01"
+                value={scale}
+                onChange={(e) => setScale(parseFloat(e.target.value))}
+                className="w-1/2"
+              />
               <button
-                onClick={() => setIsDeleteVisible(false)}
-                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+                className="bg-gray-200 text-gray-700 p-2 rounded-full"
+                onClick={() => setRotate((prev) => prev + 90)}
               >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccountRequest}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
-              >
-                Confirm Deletion
+                <FaArrowRotateRight />
               </button>
             </div>
+            <button
+              className="mt-4 w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition-colors"
+              onClick={handleSaveProfilePicture}
+            >
+              Save Profile Picture
+            </button>
           </div>
         </div>
       )}
-        {profilePic && (
-  <div className="fixed top-0 right-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg">
-      <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        onClick={() => setProfilePic(null)}
-      >
-        <IoClose size={24} />
-      </button>
-      <AvatarEditor
-        ref={editorRef}
-        image={profilePic}
-        width={250}
-        height={250}
-        border={50}
-        borderRadius={125}
-        color={[255, 255, 255, 0.6]}
-        scale={scale}
-        rotate={rotate}
-      />
-      <div className="mt-4 flex items-center justify-between">
-        <input
-          type="range"
-          min="1"
-          max="2"
-          step="0.01"
-          value={scale}
-          onChange={(e) => setScale(parseFloat(e.target.value))}
-          className="w-1/2"
-        />
-        <button
-          className="bg-gray-200 text-gray-700 p-2 rounded-full"
-          onClick={() => setRotate((prev) => prev + 90)}
-        >
-          <FaArrowRotateRight />
-        </button>
-      </div>
-      <button
-        className="mt-4 w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition-colors"
-        onClick={handleSaveProfilePicture}
-      >
-        Save Profile Picture
-      </button>
-    </div>
-  </div>
-)}
     </div>
   );
+  
 };
 
 export default AdvertiserProfile;

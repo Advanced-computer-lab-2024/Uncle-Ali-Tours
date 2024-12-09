@@ -1,23 +1,22 @@
 import React, { useEffect } from 'react';
-import sun from "../images/sun.png";
-import umbrella from "../images/umbrella.png";
-import pyramid from "../images/pyramid.png";
-import plane from "../images/plane.png";
-import { FaSun } from "react-icons/fa6";
 import { FiLoader } from 'react-icons/fi';
 import { Route, Routes } from "react-router-dom";
 import BookMark from '../components/BookMark';
 import EditProduct from "../components/EditProduct.jsx";
 import Navbar from "../components/Navbar";
+import plane from "../images/plane.png";
+import pyramid from "../images/pyramid.png";
+import sun from "../images/sun.png";
+import umbrella from "../images/umbrella.png";
 import { useAdvertiserstore } from "../store/advertiser";
 import { useSellerStore } from "../store/seller";
 import { useGuideStore } from "../store/tourGuide";
 import { useTouristStore } from "../store/tourist";
 import { useUserStore } from "../store/user";
-import EditProfile from "./EditProfile";
 import ActivityCategory from "./ActivityCategory";
 import ActivityDetail from "./ActivityDetail";
 import ActivityPage from "./ActivityPage";
+import AddAddressPage from './AddAddressPage.jsx';
 import AdminActivitiesPage from './AdminActivitiesPage';
 import AdminDashboard from "./AdminDashboardPage";
 import AdminItineraryPage from './AdminItineraryPage';
@@ -25,12 +24,14 @@ import AdvertiserProfile from "./AdvertiserProfilePage";
 import BookedFlights from "./BookedFlights";
 import BookedHotels from "./BookedHotels";
 import CancelledPaymentPage from './CancelledPayment';
+import CartPage from "./CartPage.jsx";
 import ChangeCurrency from "./ChangeCurrency";
 import ChangePassword from "./ChangePassword";
 import Complaints from "./Complaints";
 import CreateActivity from "./CreateActivity";
 import CreateItinerary from "./CreateItinerary";
 import CreateTransportationActivity from "./CreateTransportationActivity.jsx";
+import EditProfile from "./EditProfile";
 import FileComplaint from "./FileComplaint";
 import FlightBookingPage from "./FlightBookingPage";
 import HomePage from "./HomePage";
@@ -60,30 +61,32 @@ import ViewActivities from "./ViewActivities";
 import ViewAttractions from "./ViewAttractions";
 import ViewDeleteRequests from "./ViewDeleteRequests";
 import ViewItineraries from "./ViewItineraries";
+import ViewOrderDetails from './ViewOrderDetails.jsx';
 import ViewPastActivities from './ViewPastActivities.jsx';
 import ViewPastItineraries from './ViewPastItineraries.jsx';
 import ViewProducts from "./ViewProducts";
 import ViewReviews from "./ViewReviews";
-import CartPage from "./CartPage.jsx";
-import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
-import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
 import ViewTransportationActivity from './ViewTransportationActivity.jsx';
+import ViewUpcomingActivities from './ViewUpcomingActivities.jsx';
+import ViewUpcomingItineraries from './ViewUpcomingItineraries.jsx';
+import ViewUpcomingTActivities from './ViewUpcomingTActivities.jsx';
 import WishlistPage from "./WishlistPage";
-import AddAddressPage from './AddAddressPage.jsx';
-import ViewOrderDetails from './ViewOrderDetails.jsx';
 //import CheckoutPage from './CheckOutPage.jsx';
+import SellerSalesReport from './SellerSalesReport.jsx';
 import TourGuideSalesReport from './TourGuideSalesReport.jsx';
 import TourGuideTouristReport from './TourGuideTouristReport.jsx';
-import SellerSalesReport from './SellerSalesReport.jsx';
 import UserManagment from './UserManagment.jsx';
-import UserDocuments from './userDocuments.jsx';
+import Terms from './Terms.jsx';import UserDocuments from './userDocuments.jsx';
 import { Toaster } from 'react-hot-toast';
 
-import ViewMyComplaints from './ViewMyComplaints.jsx';
-import ViewMyOrders from './ViewMyOrders.jsx';
+import GovernorPreferencesTag from './GovernerPrefernceTags.jsx';
+import GovernorProfilePage from "./GovernorProfilePage.jsx";
 import SalesReportPage from './SalesReportPage.jsx';
 import TouristReportPage from './TouristReportPage.jsx';
-
+import ViewMyActivities from './ViewMyActivities.jsx';
+import ViewMyComplaints from './ViewMyComplaints.jsx';
+import ViewMyItineraries from './ViewMyItineraries.jsx';
+import ViewMyOrders from './ViewMyOrders.jsx';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -183,12 +186,12 @@ function App() {
         <Route path="/tourGuideTouristReport" element={<TourGuideTouristReport />} /> 
         <Route path="/tourGuideSalesReport" element={<TourGuideSalesReport />} />
         <Route path="/sellerSalesReport" element={<SellerSalesReport />} />
-						
+				<Route path="/governorProfile" element={<GovernorProfilePage/>} />
         <Route path="/itineraryDetail/:id" element={<ItineraryDetail/>}/>
         <Route path="/activityDetail/:id" element={<ActivityDetail/>}/>
         <Route path="/transportationActivityDetail/:id" element={<TransportationActivityDetail/>}/>
         <Route path="/orderDetails/:id" element={<ViewOrderDetails/>}/>
-
+        <Route path="GovernorPreferencesTag" element={<GovernorPreferencesTag/>}/>
         <Route path="/CreateTransportationActivity" element={<CreateTransportationActivity/>}/>
         <Route path="/viewReviews" element={<ViewReviews />} />
         <Route path="/TransportationActivityPage" element={<TransportationActivityPage />} />
@@ -201,13 +204,17 @@ function App() {
         <Route path="/upcomingItineraries" element={<ViewUpcomingItineraries/>} />
         <Route path="/pastItineraries" element={<ViewPastItineraries/>} />
         <Route path="/upcomingActivities" element={<ViewUpcomingActivities/>} />
+        <Route path="/upcomingTActivities" element={<ViewUpcomingTActivities/>} />
         <Route path="/pastActivities" element={<ViewPastActivities/>} />
         <Route path="/viewMyComplaints" element={<ViewMyComplaints/>} />
         <Route path="/userManagment" element={<UserManagment/>} />
+        <Route path="/terms" element={<Terms/>} />
         <Route path="/userDocuments" element={<UserDocuments/>} />
 
 
         <Route path="/viewMyOrders" element={<ViewMyOrders/>} />
+        <Route path="/viewMyItineraries" element={<ViewMyItineraries/>} />
+        <Route path="/viewMyActivities" element={<ViewMyActivities/>} />
 
         <Route path="/product/edit/:id" element={<EditProduct />} />
 

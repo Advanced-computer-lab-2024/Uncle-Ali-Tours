@@ -7,7 +7,7 @@ import { useTouristStore } from '../store/tourist';
 
 
 function TouristViewItineraries() {
-  const { tourist } = useTouristStore(); 
+  const { tourist , setIsUpcoming , setIsPast} = useTouristStore(); 
     const [filter, setFilter] = useState({});
     const [curActivity, setCuritinrary] = useState(-1);
     const changeitinrary = (id) => ( setCuritinrary(id))
@@ -30,6 +30,8 @@ useEffect(() => {
       return rest;
     });
   }
+  setIsUpcoming(false);
+  setIsPast(false);
 }, [applyPreferences, tourist]);
 
 useEffect(() => {

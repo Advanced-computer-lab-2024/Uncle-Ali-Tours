@@ -8,6 +8,7 @@ import { Modal } from 'react-bootstrap';
 import UnVerified  from "../components/UnVerified";
 
 import axios from 'axios';
+import { useRequestStore } from '../store/requests';
 import { IoSaveOutline } from 'react-icons/io5';
 import egypt from '../images/egypt.jpg';
 import {
@@ -42,7 +43,7 @@ const TourGuideProfilePage = () => {
   const [totalTouristsForMonth, setTotalTouristsForMonth] = useState(0); // State to track tourists count for the selected month
   const [showBarChart, setShowBarChart] = useState(true); // Show Bar Chart by default
   const [showPieChart, setShowPieChart] = useState(false);
-
+  const { createRequest } = useRequestStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,6 +136,21 @@ const TourGuideProfilePage = () => {
     }
   };
   const isVerified = guide?.verified;
+  const handleDeleteAccountRequest = async () => {
+    const deleteRequest = {
+      userName: user.userName,
+      userType: user.type,
+      userID: user._id,
+      type: 'delete',
+    };
+    const { success, message } = await createRequest(deleteRequest);
+    if (success) {
+      toast.success('Account deletion request submitted successfully.');
+      setIsDeleteVisible(false);
+    } else {
+      toast.error(message);
+    }
+  };
 
   if (!isVerified) {
     return <UnVerified />;
@@ -265,6 +281,14 @@ const TourGuideProfilePage = () => {
           </button>
         </Modal.Footer>
       </Modal>
+      <div className="mt-10 border-t pt-6">
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+              onClick={handleDeleteAccountRequest}
+            >
+              Delete Account
+            </button>
+          </div>
     </div>
   );
 };

@@ -14,7 +14,7 @@ import { Bar } from "react-chartjs-2";
 import AvatarEditor from "react-avatar-editor";
 import egypt from "../images/egypt.jpg";
 import avatar from "/avatar.png";
-
+import { useRequestStore } from '../store/requests';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,6 +38,7 @@ const SellerProfilePage = () => {
   const { user } = useUserStore();
   const { sell, getSeller, updateSeller, uploadProfilePicture } = useSellerStore();
   const { getProducts, products } = useProductStore();
+  const { createRequest } = useRequestStore();
   const [isEditing, setIsEditing] = useState(false);
   const [updatedSeller, setUpdatedSeller] = useState({});
   const [profilePic, setProfilePic] = useState(null);
@@ -141,6 +142,21 @@ const SellerProfilePage = () => {
   if (!isVerified) {
     return <UnVerified />;
   }
+  const handleDeleteAccountRequest = async () => {
+    const deleteRequest = {
+      userName: user.userName,
+      userType: user.type,
+      userID: user._id,
+      type: 'delete',
+    };
+    const { success, message } = await createRequest(deleteRequest);
+    if (success) {
+      toast.success('Account deletion request submitted successfully.');
+      setIsDeleteVisible(false);
+    } else {
+      toast.error(message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -325,6 +341,14 @@ const SellerProfilePage = () => {
           </div>
         </div>
       )}
+      <div className="mt-10 border-t pt-6">
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+              onClick={handleDeleteAccountRequest}
+            >
+              Delete Account
+            </button>
+          </div>
     </div>
   );
 };

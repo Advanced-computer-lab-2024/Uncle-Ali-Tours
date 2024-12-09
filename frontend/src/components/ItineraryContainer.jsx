@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart, FaShareAlt, FaStar } from 'react-icons/fa';
-import { MdLocationOn, MdDateRange, MdAccessTime, MdPerson } from 'react-icons/md';
+import { MdLocationOn, MdDateRange, MdAccessTime, MdPerson, MdDelete, MdOutlineDriveFileRenameOutline } from 'react-icons/md';
 import { IoClose } from "react-icons/io5";
 import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,11 @@ import { useItineraryStore } from '../store/itinerary';
 import { useGuideStore } from '../store/tourGuide';
 import { Modal } from "react-bootstrap";
 import egypt from '../images/egypt.jpg';
+import Dialog, { dialog } from '../components/Dialog.jsx';
+import { formdialog } from '../components/FormDialog.jsx';
+import AdjustableDialog, { adjustableDialog } from '../components/AdjustableDialog.jsx';
+import { Card, CardContent, CardFooter } from '../components/Card';
+import Button from '../components/Button';
 
 function ItineraryContainer({ itinerary, itineraryChanger }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -24,7 +29,7 @@ function ItineraryContainer({ itinerary, itineraryChanger }) {
   const navigate = useNavigate();
   const { user } = useUserStore();
   const { tourist, updateItineraryBookings, unItiniraryBook, updateMyPoints } = useTouristStore();
-  const { createItineraryReview, bookItinerary, updateItinerary } = useItineraryStore();
+  const { createItineraryReview, bookItinerary, updateItinerary, deleteItinerary, activateItinerary, deactivateItinerary } = useItineraryStore();
   const { createTourGuideReview } = useGuideStore();
 
   const displayPrice = (itinerary.price * user.currencyRate).toFixed(2);
@@ -113,90 +118,202 @@ function ItineraryContainer({ itinerary, itineraryChanger }) {
     }
   };
 
+  const { showDialog } = dialog();
+  const { showFormDialog } = formdialog();
+  const { showAdjustableDialog } = adjustableDialog();
+
+  const handleUpdateClick = () => {
+    showFormDialog();
+    itineraryChanger(itinerary);
+  };
+
+  const handleDeleteClick = () => {
+    showDialog();
+    itineraryChanger(itinerary);
+  };
+
+  const handleActivateClick = () => {
+    showAdjustableDialog();
+    itineraryChanger(itinerary);
+  };
+
+  const handleDelete = async () => {
+    const { success, message } = await deleteItinerary(itinerary._id);
+    success ? toast.success(message) : toast.error(message);
+  };
+
+  const handleActivate = async () => {
+    const { success, message } = await activateItinerary(itinerary._id);
+    success ? toast.success(message) : toast.error(message);
+  };
+
+  const handleDeactivate = async () => {
+    const { success, message } = await deactivateItinerary(itinerary._id);
+    success ? toast.success(message) : toast.error(message);
+  };
+
   return (
-    <div className="relative p-6 w-[650px] h-auto flex flex-col backdrop-blur-lg bg-[#FEFDED]/75 mx-auto m-4 rounded-lg shadow-lg text-black">
+    <Card className="w-full max-w-[700px] mx-auto">
       <Toaster />
-      <div className="flex mb-4">
-        <div className="w-1/2 pr-4">
-          <img
-            src={itinerary.image || egypt}
-            alt={itinerary.name}
-            className="w-full h-48 object-cover rounded-lg cursor-pointer"
-            onClick={() => setShowPreview(true)}
-          />
-        </div>
-        <div className="w-1/2 flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">{itinerary.name}</h2>
-            <p className="mb-2 flex items-center">
-              <MdPerson className="mr-2" />
-              {itinerary.creator}
-            </p>
-            <p className="mb-2 flex items-center">
-              <MdLocationOn className="mr-2" />
-              {itinerary.tourLocations.join(", ")}
-            </p>
-            <p className="mb-2 flex items-center">
-              <MdDateRange className="mr-2" />
-              {itinerary.availableDates.map(date => new Date(date).toLocaleDateString()).join(", ")}
-            </p>
-            <p className="mb-2 flex items-center">
-              <MdAccessTime className="mr-2" />
-              {itinerary.availableTimes.join(", ")}
-            </p>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/2">
+            <img
+              src={itinerary.image || egypt}
+              alt={itinerary.name}
+              className="w-full h-48 object-cover rounded-lg cursor-pointer"
+              onClick={() => setShowPreview(true)}
+            />
           </div>
-          <div className="flex justify-between items-center">
-            <p className="text-xl font-bold">{displayPrice} {user.chosenCurrency}</p>
-            <div className="flex items-center">
-              <FaStar className="text-yellow-400 mr-1" />
-              <span>{itinerary.rating.toFixed(1)} ({itinerary.numReviews} reviews)</span>
+          <div className="w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">{itinerary.name}</h2>
+              <p className="mb-2 flex items-center">
+                <MdPerson className="mr-2" />
+                {itinerary.creator}
+              </p>
+              <p className="mb-2 flex items-center">
+                <MdLocationOn className="mr-2" />
+                {itinerary.tourLocations.join(", ")}
+              </p>
+              <p className="mb-2 flex items-center">
+                <MdDateRange className="mr-2" />
+                {itinerary.availableDates.map(date => new Date(date).toLocaleDateString()).join(", ")}
+              </p>
+              <p className="mb-2 flex items-center">
+                <MdAccessTime className="mr-2" />
+                {itinerary.availableTimes.join(", ")}
+              </p>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="text-xl font-bold">{displayPrice} {user.chosenCurrency}</p>
+              <div className="flex items-center">
+                <FaStar className="text-yellow-400 mr-1" />
+                <span>{itinerary.rating.toFixed(1)} ({itinerary.numReviews} reviews)</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mb-4">
-        <h3 className="font-bold mb-2">Activities:</h3>
-        <ul className="list-disc pl-5">
-          {itinerary.activities.map((activity, index) => (
-            <li key={index}>
-              {activity.name} - {activity.duration} hours
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div className="mt-4">
+          <h3 className="font-bold mb-2">Activities:</h3>
+          <ul className="list-disc pl-5">
+            {itinerary.activities.map((activity, index) => (
+              <li key={index}>
+                {activity.name} - {activity.duration} hours
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={isWishlisted ? handleUnBook : handleBook}
-          className="flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-        >
-          {isWishlisted ? (
-            <>
-              <FaHeart className="mr-2" />
-              Unbook
-            </>
-          ) : (
-            <>
-              <FaRegHeart className="mr-2" />
-              Book
-            </>
-          )}
-        </button>
-        <button
-          onClick={handleShare}
-          className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          <FaShareAlt className="mr-2" />
-          Share
-        </button>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-        >
-          Share via Email
-        </button>
-      </div>
+        <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
+          <Button
+            onClick={isWishlisted ? handleUnBook : handleBook}
+            variant={isWishlisted ? "destructive" : "default"}
+          >
+            {isWishlisted ? (
+              <>
+                <FaHeart className="mr-2" />
+                Unbook
+              </>
+            ) : (
+              <>
+                <FaRegHeart className="mr-2" />
+                Book
+              </>
+            )}
+          </Button>
+          <Button onClick={handleShare} variant="outline">
+            <FaShareAlt className="mr-2" />
+            Share
+          </Button>
+          <Button onClick={() => setIsModalOpen(true)} variant="outline">
+            Share via Email
+          </Button>
+          <Button onClick={handleUpdateClick} variant="outline">
+            <MdOutlineDriveFileRenameOutline size='18' className="mr-2" />
+            Update
+          </Button>
+          <Button onClick={handleDeleteClick} variant="destructive">
+            <MdDelete size='18' className="mr-2" />
+            Delete
+          </Button>
+          <Button
+            onClick={handleActivateClick}
+            variant={itinerary.isActivated ? "destructive" : "default"}
+          >
+            {itinerary.isActivated ? "Deactivate" : "Activate"}
+          </Button>
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex flex-col gap-4">
+        <div className="w-full">
+          <h3 className="font-bold mb-2">Add a Review</h3>
+          <div className="flex items-center mb-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                className={`cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                onClick={() => setRating(star)}
+              />
+            ))}
+          </div>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Write your review here..."
+            className="w-full p-2 border rounded mb-2"
+            rows="3"
+          />
+          <Button onClick={handleSubmitItineraryReview}>
+            Submit Review
+          </Button>
+        </div>
+
+        <div className="w-full">
+          <h3 className="font-bold mb-2">Review the Tour Guide</h3>
+          <div className="flex items-center mb-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                className={`cursor-pointer ${star <= tourGuideRating ? 'text-yellow-400' : 'text-gray-300'}`}
+                onClick={() => setTourGuideRating(star)}
+              />
+            ))}
+          </div>
+          <textarea
+            value={tourGuideComment}
+            onChange={(e) => setTourGuideComment(e.target.value)}
+            placeholder="Write your review for the tour guide here..."
+            className="w-full p-2 border rounded mb-2"
+            rows="3"
+          />
+          <Button onClick={handleSubmitTourGuideReview}>
+            Submit Tour Guide Review
+          </Button>
+        </div>
+      </CardFooter>
+
+      <Dialog
+        msg={"Are you sure you want to delete this itinerary?"}
+        accept={handleDelete}
+        reject={() => console.log("Deletion canceled")}
+        acceptButtonText='Delete'
+        rejectButtonText='Cancel'
+      />
+
+      <AdjustableDialog
+        state={itinerary.isActivated}
+        msg1="Are you sure that you want to activate this itinerary?"
+        msg2="Are you sure that you want to deactivate this itinerary?"
+        accept1={handleActivate}
+        accept2={handleDeactivate}
+        reject1={() => console.log("Activation canceled")}
+        reject2={() => console.log("Deactivation canceled")}
+        acceptButtonText="Yes"
+        rejectButtonText="Cancel"
+      />
 
       <Modal
         show={showPreview}
@@ -231,77 +348,22 @@ function ItineraryContainer({ itinerary, itineraryChanger }) {
               placeholder="Recipient's email"
             />
             <div className="flex justify-end">
-              <button
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded mr-2"
+              <Button
+                variant="outline"
                 onClick={() => setIsModalOpen(false)}
+                className="mr-2"
               >
                 Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={handleShareViaMail}
-              >
+              </Button>
+              <Button onClick={handleShareViaMail}>
                 Send
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
-
-      <div className="mt-6">
-        <h3 className="font-bold mb-2">Add a Review</h3>
-        <div className="flex items-center mb-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <FaStar
-              key={star}
-              className={`cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
-              onClick={() => setRating(star)}
-            />
-          ))}
-        </div>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Write your review here..."
-          className="w-full p-2 border rounded mb-2"
-          rows="3"
-        />
-        <button
-          onClick={handleSubmitItineraryReview}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Submit Review
-        </button>
-      </div>
-
-      <div className="mt-6">
-        <h3 className="font-bold mb-2">Review the Tour Guide</h3>
-        <div className="flex items-center mb-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <FaStar
-              key={star}
-              className={`cursor-pointer ${star <= tourGuideRating ? 'text-yellow-400' : 'text-gray-300'}`}
-              onClick={() => setTourGuideRating(star)}
-            />
-          ))}
-        </div>
-        <textarea
-          value={tourGuideComment}
-          onChange={(e) => setTourGuideComment(e.target.value)}
-          placeholder="Write your review for the tour guide here..."
-          className="w-full p-2 border rounded mb-2"
-          rows="3"
-        />
-        <button
-          onClick={handleSubmitTourGuideReview}
-          className="px-4 py-2 bg-green-500 text-white rounded"
-        >
-          Submit Tour Guide Review
-        </button>
-      </div>
-    </div>
+    </Card>
   );
 }
 
 export default ItineraryContainer;
-

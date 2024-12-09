@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useUserStore } from '../store/user';
+import React, { useEffect, useState } from 'react';
+import TouristItineraryContainer from '../components/TouristItineraryContainer';
 import { useTouristStore } from '../store/tourist';
-import ItineraryContainer from '../components/ItineraryContainer';
+import { useUserStore } from '../store/user';
 
 function ViewPastItineraries() {
     const { user } = useUserStore();
-    const { fetchPastItineraries } = useTouristStore();
+    const { fetchPastItineraries , setIsPast} = useTouristStore();
     const [pastItineraries, setPastItineraries] = useState([]); // Initialize with an empty array
 
     // Fetch upcoming itineraries when the component mounts
@@ -18,6 +18,7 @@ function ViewPastItineraries() {
         };
 
         fetchData(); // Call the function
+        setIsPast(true);
     }, [user, fetchPastItineraries]);
 
     return (
@@ -25,7 +26,7 @@ function ViewPastItineraries() {
             <div>View Past Itineraries</div>
             {pastItineraries.length > 0 ? (
                 pastItineraries.map((itinerary, index) => (
-                    <ItineraryContainer key={index} itinerary={itinerary} />
+                    <TouristItineraryContainer key={index} itinerary={itinerary} />
                 ))
             ) : (
                 <p>No Past itineraries found.</p>

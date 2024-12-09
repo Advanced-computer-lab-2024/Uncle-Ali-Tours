@@ -35,20 +35,28 @@ function ViewMyOrders() {
       <div className="bg-gradient-to-b shadow-xl relative from-[#C1BAA1] min-h-[60vh] w-full mx-auto rounded-lg p-6">
       <h1 className='justify-center text-2xl'>My Orders</h1>
       <br/>
-        <div className="absolute top-17 shadow-md bg-[#FEFDED]/90 rounded-full left-1/2 translate-x-[-50%]">
-          <button
-            className={`${!currentButton ? "shadow-md scale-[1]" : "hover:scale-[0.985] scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800`}
-            onClick={() => setCurrentButton(false)}
-          >
-            Current
-          </button>
-          <button
-            className={`${currentButton ? "shadow-md scale-[1]" : "hover:scale-[0.985] scale-[0.9]"} focus:outline-none text-2xl m-2 shadow-lg hover:shadow-md transition-all bg-[#FEFDED] py-2 px-4 rounded-full text-pink-800`}
-            onClick={() => setCurrentButton(true)}
-          >
-            Past
-          </button>
-        </div>
+      <div className="flex justify-center mb-4">
+                <button
+                  className={`px-4 py-2 rounded-l-lg ${
+                    !currentButton
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                  onClick={() => setCurrentButton(false)}
+                >
+                  Current
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-r-lg ${
+                    currentButton
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                  onClick={() => setCurrentButton(true)}
+                >
+                  Past
+                </button>
+              </div>
         <div className="mt-24">
           {orders.length > 0 ? (
             orders.map((order) => (
