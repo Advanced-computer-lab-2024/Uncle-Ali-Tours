@@ -2,218 +2,150 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHotelStore } from '../store/hotel';
 import { useUserStore } from '../store/user';
+import Button from '../components/Button'; // Custom Button component to unify styles
 
 function HotelBookingPage() {
-  const [cityName, setcityName] = useState('');
-  const [hotelName, setHotelName] = useState('');
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
-  const [bookedHotel, setBookedHotel] = useState({data : {}, creator : ''});
-  const [loading, setLoading] = useState(false);
-  const [viewingOffers, setViewingOffers] = useState(false);
-  const { user } = useUserStore();
-const {cityCode,searchCity ,getHotelListByCity ,hotels ,getHotelOffers ,offers ,addBookedHotels } = useHotelStore();
-const navigate = useNavigate();
-  
-const handleSearch = async () => {
-    setLoading(true);
-    console.log('Searching for city:', cityName);
-     await searchCity(cityName);
-    console.log('cityCode:',cityCode);
-     await getHotelListByCity(cityCode);
-     console.log('hotels:',hotels);
-    setLoading(false);
-  };
+    const [cityName, setCityName] = useState('');
+    const [checkInDate, setCheckInDate] = useState('');
+    const [checkOutDate, setCheckOutDate] = useState('');
+    const [bookedHotel, setBookedHotel] = useState({ data: {}, creator: '' });
+    const [loading, setLoading] = useState(false);
+    const [viewingOffers, setViewingOffers] = useState(false);
+    const [selectedHotel, setSelectedHotel] = useState(null);
+    const { user } = useUserStore();
+    const { cityCode, searchCity, getHotelListByCity, hotels, getHotelOffers, offers, addBookedHotels } = useHotelStore();
+    const navigate = useNavigate();
 
-  const handleViewOffers = async (hotelName ,hotelId ,checkInDate ,checkOutDate) => {
-    setLoading(true);
-    console.log('Viewing offers for hotel:', hotelId);
-    await getHotelOffers(hotelId ,checkInDate ,checkOutDate);
-    setHotelName(hotelName);
-    console.log('offers:',offers);
-    console.log('hotels:' , hotels);
-    setViewingOffers(true);
-    setLoading(false);
-  };
+    const handleSearch = async () => {
+        setLoading(true);
+        await searchCity(cityName);
+        await getHotelListByCity(cityCode);
+        setLoading(false);
+    };
 
-  const handleAddBookHotel = async (hotelName, data) => {
-    console.log('Adding hotel:', data);
-    setBookedHotel((prevBookedHotel) => ({
-      ...prevBookedHotel,
-      data: data,
-      creator: user.userName,
-      name: hotelName,
-    }));
-  }
+    const handleViewOffers = async (hotel) => {
+        setLoading(true);
+        await getHotelOffers(hotel.hotelId, checkInDate, checkOutDate);
+        setSelectedHotel(hotel);
+        setViewingOffers(true);
+        setLoading(false);
+    };
 
-  const handlePayHotel = async () => {
-    // setBookedHotel((prevBookedHotel) => ({
-    //   ...prevBookedHotel,
-    //   isPaid: true,
-    // }));
-    try{
-      navigate(`/payment/hotel/${bookedHotel.data.id}` , { state: { bookedHotel : bookedHotel } });
+    const handleAddBookHotel = async (hotelName, data) => {
+        setBookedHotel((prevBookedHotel) => ({
+            ...prevBookedHotel,
+            data: data,
+            creator: user.userName,
+            name: hotelName,
+        }));
     }
-    catch(error){
-      console.error('Error:', error);
-    }
-    // ----to be added to the payment page when successful payment is done
-    // await addBookedHotels(bookedHotel);
-    console.log('bookedHotel data:',bookedHotel.data);
-    // console.log('bookedHotel:',bookedHotel);
-  }
 
-  return (
-    <div>
-      <h1>Hotel Booking Page</h1>
-      {!viewingOffers && (
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <input
-            type="text"
-            placeholder="Enter city"
-            value={cityName}
-            onChange={(e) => setcityName(e.target.value)}
-            style={{
-              width: '70%',
-              padding: '10px',
-              marginRight: '10px',
-              color: 'black',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Enter check-in date"
-            value={checkInDate}
-            onChange={(e) => setCheckInDate(e.target.value)}
-            style={{
-              width: '70%',
-              padding: '10px',
-              marginRight: '10px',
-              color: 'black',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Enter check-out date"
-            value={checkOutDate}
-            onChange={(e) => setCheckOutDate(e.target.value)}
-            style={{
-              width: '70%',
-              padding: '10px',
-              marginRight: '10px',
-              color: 'black',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          <button onClick={handleSearch}  style={{
-              padding: '10px 20px',
-              backgroundColor: '#007BFF',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-            >
-            Search
-          </button>
-        </div>
-      )}
-      {loading && <p>Loading...</p>}
-      {!viewingOffers && hotels.length > 0 && (
-        <div>
-          {hotels.map((hotel) => (
-            <div key={hotel.hotelId} style={{
-              backgroundColor: 'grey',
-              padding: '20px',
-              margin: '10px 0',
-              borderRadius: '8px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            }}
-            >
-              <p style={{ margin: '0 0 10px 0', fontSize: '18px', fontWeight: 'bold' }}>{hotel.name}</p>
-              <button onClick={() => handleViewOffers(hotel.name , hotel.hotelId, checkInDate, checkOutDate)} style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#28A745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-                >
-                View Offers
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      {viewingOffers && (
-        <div>
-          <button onClick={() => setViewingOffers(false)}  style={{
-              padding: '10px 20px',
-              backgroundColor: '#DC3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              marginBottom: '20px',
-            }}
-            >
-            Back to Hotels
-          </button>
-          {offers && offers.length>0 ? (
-            <div>
-              {offers.map((offer) => (
-                <div key={offer.id}  style={{
-                  backgroundColor: 'grey',
-                  padding: '20px',
-                  margin: '10px 0',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                }}
-                >
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>{hotelName}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Offer ID: {offer.id}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Price: {offer.price.total} {offer.price.currency}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Room Type: {offer.room.type}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Check-in: {offer.checkInDate}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Check-out: {offer.checkOutDate}</p>
-                  <button onClick={() => handleAddBookHotel(hotelName, offer)}  style={{
-                    padding: '10px 20px',
-                    backgroundColor: '#28A745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    }}
-                    >
-                    Book Offer
-                </button>
-                <button onClick={() => handlePayHotel()}  style={{
-                    padding: '10px 20px',
-                    backgroundColor: 'red',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    }}
-                    >
-                    checkout
-                </button>
+    const handlePayHotel = async () => {
+        try {
+            navigate(`/payment/hotel/${bookedHotel.data.id}`, { state: { bookedHotel: bookedHotel } });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    return (
+        <div className="flex flex-col items-center py-8">
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">Hotel Booking</h1>
+
+            {!viewingOffers && (
+                <div className="max-w-xl w-full px-4 py-6 bg-white shadow-lg rounded-lg">
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Enter city"
+                            value={cityName}
+                            onChange={(e) => setCityName(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                        />
+                        <input
+                            type="date"
+                            placeholder="Check-in date"
+                            value={checkInDate}
+                            onChange={(e) => setCheckInDate(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                        />
+                        <input
+                            type="date"
+                            placeholder="Check-out date"
+                            value={checkOutDate}
+                            onChange={(e) => setCheckOutDate(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                        />
+                        <Button
+                            onClick={handleSearch}
+                            className="w-full py-3 bg-blue-600 text-white rounded-lg mb-4 hover:bg-blue-700 transition duration-300"
+                        >
+                            Search
+                        </Button>
+                    </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p>No offers available for this hotel.</p>
-          )}
+            )}
+
+            {loading && <p className="text-lg text-gray-600">Loading...</p>}
+
+            {!viewingOffers && hotels.length > 0 && (
+                <div className="w-full px-4 py-6 bg-white shadow-lg rounded-lg mt-6">
+                    <h2 className="text-2xl font-semibold mb-4">Available Hotels</h2>
+                    {hotels.map((hotel) => (
+                        <div key={hotel.hotelId} className="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
+                            <h3 className="text-xl font-semibold mb-2">{hotel.name}</h3>
+                            <Button
+                                onClick={() => handleViewOffers(hotel)}
+                                className="py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300"
+                            >
+                                View Offers
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {viewingOffers && (
+                <div className="w-full px-4 py-6 bg-white shadow-lg rounded-lg">
+                    <Button
+                        onClick={() => setViewingOffers(false)}
+                        className="py-2 px-4 bg-red-600 text-white rounded-lg mb-6 hover:bg-red-700 transition duration-300"
+                    >
+                        Back to Hotels
+                    </Button>
+                    <h2 className="text-2xl font-semibold mb-4">Offers for {selectedHotel.name}</h2>
+                    {offers && offers.length > 0 ? (
+                        offers.map((offer) => (
+                            <div key={offer.id} className="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
+                                <h3 className="text-xl font-semibold mb-2">Offer ID: {offer.id}</h3>
+                                <p className="mb-2">Price: {offer.price.total} {offer.price.currency}</p>
+                                <p className="mb-2">Room Type: {offer.room.type}</p>
+                                <p className="mb-2">Check-in: {offer.checkInDate}</p>
+                                <p className="mb-2">Check-out: {offer.checkOutDate}</p>
+                                <div className="flex space-x-2 mt-4">
+                                    <Button
+                                        onClick={() => handleAddBookHotel(selectedHotel.name, offer)}
+                                        className="py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300"
+                                    >
+                                        Book Offer
+                                    </Button>
+                                    <Button
+                                        onClick={handlePayHotel}
+                                        className="py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                                    >
+                                        Checkout
+                                    </Button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-lg text-gray-600">No offers available for this hotel.</p>
+                    )}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
 
 export default HotelBookingPage;
+

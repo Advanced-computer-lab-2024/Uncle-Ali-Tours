@@ -14,7 +14,7 @@ import { useUserStore } from '../store/user';
 
 const TouristProfilePage = () => {
   const { user } = useUserStore();
-  const { tourist, getTourist, updateTourist, redeemPoints, badgeLevel, fetchUpcomingActivities, fetchUpcomingItineraries } = useTouristStore();
+  const { tourist, getTourist, updateTourist, redeemPoints, badgeLevel, fetchUpcomingItems } = useTouristStore();
   const { tags, getTags } = useTagStore();
   const [isEditing, setIsEditing] = useState(false);
   const [updatedTourist, setUpdatedTourist] = useState({});
@@ -22,6 +22,7 @@ const TouristProfilePage = () => {
   const [badge, setBadge] = useState('');
   const [upcomingItineraries, setUpcomingItineraries] = useState(0);
   const [upcomingActivities, setUpcomingActivities] = useState(0);
+  const [upcomingTActivities, setUpcomingTActivities] = useState(0);
   const { showDialog } = dialog();
 
   const handleRedeemClick = () => {
@@ -53,17 +54,20 @@ const TouristProfilePage = () => {
 
   const fetchUpcomingData = async () => {
     try {
-      const [itineraries, activities] = await Promise.all([
-        fetchUpcomingItineraries(user.userName),
-        fetchUpcomingActivities(user.userName),
+      const [itineraries, activities , tActivities] = await Promise.all([
+        fetchUpcomingItems(user.userName , 'itinerary'),
+        fetchUpcomingItems(user.userName , 'activity'),
+        fetchUpcomingItems(user.userName , 'tActivity')
       ]);
   
       setUpcomingItineraries(itineraries.length || 0);
       setUpcomingActivities(activities.length || 0);
+      setUpcomingTActivities(tActivities.length || 0);
     } catch (error) {
-      console.error("Error fetching upcoming data:", error);
+      console.error("Error fetching upcoming data:", error.message);
       setUpcomingItineraries(0);
       setUpcomingActivities(0);
+      setUpcomingTActivities(0);
     }
   };
   
@@ -181,12 +185,19 @@ const TouristProfilePage = () => {
                     <span className="text-gray-600">Activities:</span>
                     <span className="text-2xl font-bold text-indigo-600">{upcomingActivities}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Transportation Activities:</span>
+                    <span className="text-2xl font-bold text-indigo-600">{upcomingTActivities}</span>
+                  </div>
                   <div className="mt-4 flex justify-between">
                     <Link to="/upcomingItineraries" className="bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition-colors">
                       View Itineraries
                     </Link>
                     <Link to="/upcomingActivities" className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
                       View Activities
+                    </Link>
+                    <Link to="/upcomingTActivities" className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
+                      View Transportation Activities
                     </Link>
                   </div>
                 </div>

@@ -17,7 +17,7 @@ function ViewUpcomingActivities() {
         };
 
         fetchData(); // Call the function
-    }, [user, fetchUpcomingItems]);
+    }, [user, fetchUpcomingItems , UpcomingActivitiesContainer]);
 
     return (
         <div>

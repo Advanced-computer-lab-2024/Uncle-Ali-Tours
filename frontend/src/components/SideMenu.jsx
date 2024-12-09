@@ -21,13 +21,19 @@ const SideMenu = ({ isOpen, onClose }) => {
 
   const menuItemsTourist = [
     {
-      title: "Book",
+      title: "Itienraries",
       subItems: [
-        { name: "Itinerary", path: "/touristviewitineraries" },
-        { name: "Activity", path: "/touristviewActivities" },
-        { name: "Transportation", path: "/ViewTransportationActivity" },
-        { name: "Flight", path: "/bookedFlights" },
-        { name: "Hotel", path: "/bookedHotels" },
+        { name: "Book Itinerary", path: "/touristviewitineraries" },
+        { name: "My Itineraries", path: "/viewMyItineraries" },
+      ],
+    },
+    {
+      title: "Activities",
+      subItems: [
+        { name: "Book Activity", path: "/touristviewactivities" },
+        { name: "Book Transportation", path: "/ViewTransportationActivity" },
+        { name: "My Activities", path: "/viewMyActivities" },
+        { name: "My Transportations", path: "/upcomingTActivities" },
       ],
     },
     {
@@ -40,18 +46,17 @@ const SideMenu = ({ isOpen, onClose }) => {
       ],
     },
     {
-      title: "My Bookings",
+      title: "Flights",
       subItems: [
-        { name: "Upcoming Itineraries", path: "/upcomingItineraries" },
-        { name: "Upcoming Activities", path: "/upcomingActivities" },
-        { name: "Upcoming Transportation Activities", path: "/upcomingTActivities" }
+        { name: "Book Flight", path: "/flightBooking" },
+        { name: "My Flights", path: "/BookedFlights" },
       ],
     },
     {
-      title: "History",
+      title: "Hotels",
       subItems: [
-        { name: "Past Itineraries", path: "/pastItineraries" },
-        { name: "Past Activities", path: "/pastActivities" },
+        { name: "Book Hotel", path: "/hotelBooking" },
+        { name: "My Hotels", path: "/bookedHotels" },
       ],
     },
     {

@@ -11,12 +11,14 @@ const deliveryAddressSchema = new mongoose.Schema({
   zipCode: { type: String, required: true },
   country: { type: String, required: true },
 
+
   isDefault: { type: Boolean, default: false },
   creator: {
     type: String,
     required: true
 },  // to mark default address
   // to mark default address
+
 });
 
 const DeliveryAddress = mongoose.model('DeliveryAddress', deliveryAddressSchema);

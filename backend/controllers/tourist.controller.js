@@ -800,6 +800,38 @@ export const getMyPastItineraries = async (req,res) => {
         }
 }
 
+export const getMyUpcomingItineraries = async (req,res) => {
+    const {userName} = req.query;
+    try{
+        const allItineraries = await Tourist.findOne({ userName }).select('itineraryBookings -_id').populate('itineraryBookings');
+        if (!allItineraries) {
+            return res.status(404).json({ success: false, message: "Tourist or itineraries not found" });
+        }
+
+        // Get the current date
+        const now = new Date();
+
+        // Filter itineraries to include only those with upcoming dates
+        const upcomingItineraries = allItineraries.itineraryBookings.filter(itinerary => {
+            if (itinerary.availableDates && itinerary.availableDates.length > 0) {
+                const firstAvailableDate = new Date(itinerary.availableDates[0]);
+                return firstAvailableDate > now;
+            }
+            return false; // Exclude itineraries without valid dates
+        });
+
+        res.status(200).json({
+            success: true,
+            data: upcomingItineraries,
+            message: 'Upcoming itineraries fetched successfully',
+        });
+    } catch (error) {
+            console.log("Error getting upcoming itineraries:", error);
+            res.status(500).json({ success: false, message: "Server error fetching upcoming itineraries" });
+        }
+}
+
+
 export const getMyUpcomingActivities = async (req,res) => {
     const {userName} = req.query;
     try{
