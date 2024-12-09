@@ -1,11 +1,11 @@
 import Address from "../models/address.model.js";
 export const addAddress = async (req, res) => {
-    const addresstData = req.body;
-    if (!addresstData.userName || !addresstData.address || !addresstData.city || !addresstData.country) {
+    const addressData = req.body;
+    if (!addressData.creator || !addressData.addressLine || !addressData.city || !addressData.country) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    const newAddress = new Address(addresstData);
+    const newAddress = new Address(addressData);
 
     try {
         await newAddress.save();

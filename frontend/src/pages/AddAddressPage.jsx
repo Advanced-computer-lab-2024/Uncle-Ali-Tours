@@ -1,22 +1,21 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useAddressStore } from "../store/address";
+import { useUserStore } from "../store/user";
 
 const AddAddressPage = () => {
   const navigate = useNavigate();
+  const { user } = useUserStore();
+  const { createAddress } = useAddressStore();
 
   // Define the state for the form fields
   const [newAddress, setNewAddress] = useState({
-    addressLine1: "",
-    addressLine2: "",
+    creator: user.userName,
+    addressLine: "",
     city: "",
-    state: "",
-    zipCode: "",
     country: "",
-    isDefault: false,
-    username: "",  // Add a state for the username (creator)
-  });
+    });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,24 +25,19 @@ const AddAddressPage = () => {
     }));
   };
 
-  const handleAddAddress = async (e) => {
-    e.preventDefault();  // Prevent the default form submit behavior
-
-    try {
-      // Assuming `username` is part of the state, and is sent as the `creator` field
-      const response = await axios.post("/api/tourist/addDeliveryAddress", {
-        ...newAddress,  // Spread the address fields
-        creator: newAddress.username // Pass the username as the creator
-      });
-
-      if (response.status === 201) {
-        toast.success("Address added successfully!");
-        // Optionally, navigate to another page after the address is added
-        // navigate("/someOtherPage");
+  const handleAddAddress = async () => {
+    try{
+      const response = await createAddress(newAddress);
+      if (response.success) {
+        toast.success(response.message, { className: "text-white bg-gray-800" });
+      } else {
+        console.error(response.message);
+        toast.error(response.message, { className: "text-white bg-gray-800" });
       }
-    } catch (error) {
-      console.error("Error details:", error);  // Log the error details for better debugging
-      toast.error("Error adding address");
+    }
+    catch (error) {
+      console.error('Error adding address:', error.message);
+      toast.error('Error adding address', { className: "text-white bg-gray-800" });
     }
   };
 
@@ -53,47 +47,18 @@ const AddAddressPage = () => {
       
       <form onSubmit={handleAddAddress} className="space-y-4">
         
-        {/* Username (Creator) */}
-        <div>
-          <label htmlFor="username" className="text-gray-700">Username (Creator)</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            placeholder="Enter Username"
-            value={newAddress.username}
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
-            required
-          />
-        </div>
-
         {/* Address Line 1 */}
         <div>
-          <label htmlFor="addressLine1" className="text-gray-700">Address Line 1</label>
+          <label htmlFor="addressLine" className="text-gray-700">Address Line 1</label>
           <input
             type="text"
-            name="addressLine1"
-            id="addressLine1"
+            name="addressLine"
+            id="addressLine"
             placeholder="Enter Address Line 1"
-            value={newAddress.addressLine1}
+            value={newAddress.addressLine}
             onChange={handleInputChange}
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
             required
-          />
-        </div>
-
-        {/* Address Line 2 */}
-        <div>
-          <label htmlFor="addressLine2" className="text-gray-700">Address Line 2</label>
-          <input
-            type="text"
-            name="addressLine2"
-            id="addressLine2"
-            placeholder="Enter Address Line 2 (Optional)"
-            value={newAddress.addressLine2}
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
           />
         </div>
 
@@ -106,36 +71,6 @@ const AddAddressPage = () => {
             id="city"
             placeholder="Enter City"
             value={newAddress.city}
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
-            required
-          />
-        </div>
-
-        {/* State */}
-        <div>
-          <label htmlFor="state" className="text-gray-700">State</label>
-          <input
-            type="text"
-            name="state"
-            id="state"
-            placeholder="Enter State"
-            value={newAddress.state}
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
-            required
-          />
-        </div>
-
-        {/* Zip Code */}
-        <div>
-          <label htmlFor="zipCode" className="text-gray-700">Zip Code</label>
-          <input
-            type="text"
-            name="zipCode"
-            id="zipCode"
-            placeholder="Enter Zip Code"
-            value={newAddress.zipCode}
             onChange={handleInputChange}
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
             required
@@ -155,19 +90,6 @@ const AddAddressPage = () => {
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black"
             required
           />
-        </div>
-
-        {/* Set as Default Address */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            name="isDefault"
-            id="isDefault"
-            checked={newAddress.isDefault}
-            onChange={(e) => setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }))} 
-            className="mr-2"
-          />
-          <label htmlFor="isDefault" className="text-gray-700">Set as Default Address</label>
         </div>
 
         {/* Submit Button */}

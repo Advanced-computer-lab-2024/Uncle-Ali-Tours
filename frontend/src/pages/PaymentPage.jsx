@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import TouristPromos from '../components/TouristPromos.jsx';
 import { useActivityStore } from '../store/activity';
+import { useAddressStore } from '../store/address.js';
 import { useItineraryStore } from '../store/itinerary';
 import { usePaymentStore } from '../store/payment';
 import { useTouristStore } from '../store/tourist';
@@ -21,12 +22,18 @@ function PaymentPage() {
   const { currentActivity, getActivityById } = useActivityStore();
   const { getTransportationActivityById, transportationActivity } = useTransportationActivityStore();
   const { items, setSelectedItems, currency, setCurrency, createCheckoutSession , CheckoutUsingWallet } = usePaymentStore();
+  const { addresses , getAddressByUsername }= useAddressStore();
   const { user } = useUserStore();
   const { tourist , checkoutList } = useTouristStore();
   const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const userName = user.userName;
+const [address, setAddress] = useState("");
+
+
+
+
   const handlePromoCodeChange = (e) => {
     setPromoCode(e.target.value);
   };
@@ -80,7 +87,7 @@ function PaymentPage() {
     };
 
     fetchItemDetails();
-
+    getAddressByUsername(user.userName);
     setCurrency(user.chosenCurrency);
 
   }, [type, id , user.chosenCurrency]);
@@ -138,7 +145,7 @@ function PaymentPage() {
       setOrderData({
         creator: user.userName,
         products: orderDataProducts,
-        deliveryAddress:"l7d ma n3mel el deliveryAddress",
+        deliveryAddress: address,
         paymentMethod: selectedPaymentMethod,
         total: price,
       });
@@ -209,6 +216,25 @@ function PaymentPage() {
           <p className="text-orange-600">Remaining Balance: {((tourist.myWallet *  user.currencyRate) - price).toFixed(2)} {user.chosenCurrency}</p>
           </div>
           )}
+          { type === 'product' && (
+            <div>
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold text-gray-900">Select Delivery Address</h2>
+                  <select
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    <option value="">Select Address</option>
+                    {addresses.map((addr, index) => (
+                      <option key={index} value={addr.addressLine}>
+                        {addr.addressLine}, {addr.city}, {addr.country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+)}
                 </div>
 
                 <div className="space-y-2">

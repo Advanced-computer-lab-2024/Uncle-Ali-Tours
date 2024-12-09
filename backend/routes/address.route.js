@@ -1,5 +1,5 @@
 import express from 'express';
-import {addAddress,setAddressDefault,getAddressByUsername}  from '../controllers/address.controller.js';
+import { addAddress, getAddressByUsername, setAddressDefault } from '../controllers/address.controller.js';
 const router = express.Router();
 
 router.post('/', addAddress); 

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { setAddressDefault } from '../../../backend/controllers/address.controller';
 
 export const useAddressStore = create((set) => ({
   addresses: [],
@@ -41,7 +40,7 @@ export const useAddressStore = create((set) => ({
       if (!data.success) return { success: false, message: data.message };
       set((state) => ({
         addresses: state.addresses.map((address) =>
-            address._id === id ? { ...address, isDefault: true } : order
+            address._id === id ? { ...address, isDefault: true } : address
         ),
       }));
       return { success: true, message: `Address set default` };
