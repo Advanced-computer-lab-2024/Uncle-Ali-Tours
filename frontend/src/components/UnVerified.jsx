@@ -38,7 +38,7 @@ const UnVerified = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 relative">
-      <Toaster />
+       />
       {/* Background Image with Overlay */}
       <img
         src={egypt}

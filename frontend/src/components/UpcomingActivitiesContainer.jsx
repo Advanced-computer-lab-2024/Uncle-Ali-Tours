@@ -44,7 +44,7 @@ const UpcomingActivitiesContainer = () => {
   return (
     <div className="p-4">
       <h1>Upcoming Activities</h1>
-      <Toaster />
+       />
       {upcomingActivities.length === 0 ? (
         <p>No upcoming activities found.</p>
       ) : (

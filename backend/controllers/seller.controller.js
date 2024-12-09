@@ -297,6 +297,45 @@ export const getAllUploadedDocuments = async (req, res) => {
     return res.status(500).json({ message: "Error fetching documents", error });
   }
 };
+// Accept Documents and Verify Seller
+export const acceptDocuments = async (req, res) => {
+  const { userName } = req.body;
+
+  try {
+    const seller = await Seller.findOne({ userName });
+    if (!seller) {
+      return res.status(404).json({ success: false, message: "Seller not found." });
+    }
+
+    seller.verified = true;
+    await seller.save();
+
+    return res.status(200).json({ success: true, message: "Seller documents accepted and verified." });
+  } catch (error) {
+    console.error("Error accepting documents:", error);
+    return res.status(500).json({ success: false, message: "Failed to accept documents.", error });
+  }
+};
+
+// Reject Documents and Unverify Seller
+export const rejectDocuments = async (req, res) => {
+  const { userName } = req.body;
+
+  try {
+    const seller = await Seller.findOne({ userName });
+    if (!seller) {
+      return res.status(404).json({ success: false, message: "Seller not found." });
+    }
+
+    seller.verified = false;
+    await seller.save();
+
+    return res.status(200).json({ success: true, message: "Seller documents rejected and unverified." });
+  } catch (error) {
+    console.error("Error rejecting documents:", error);
+    return res.status(500).json({ success: false, message: "Failed to reject documents.", error });
+  }
+};
 
 
 

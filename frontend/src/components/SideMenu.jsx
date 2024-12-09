@@ -174,6 +174,7 @@ const SideMenu = ({ isOpen, onClose }) => {
 
       ],
     },
+    
   ];
 
   const toggleMenu = (index) => {

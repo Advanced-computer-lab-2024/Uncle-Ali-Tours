@@ -87,6 +87,7 @@ import ViewMyActivities from './ViewMyActivities.jsx';
 import ViewMyComplaints from './ViewMyComplaints.jsx';
 import ViewMyItineraries from './ViewMyItineraries.jsx';
 import ViewMyOrders from './ViewMyOrders.jsx';
+import { Toast } from 'react-bootstrap';
 function App() {
   const {  user, setUser } = useUserStore();
   const { getGuide } = useGuideStore();
@@ -132,8 +133,8 @@ function App() {
 
   return (
     <div >
-      <Toaster/>
-    <div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
+<Toaster      />
+<div className="text-center relative  font-black h-[100vh] overflow-x-hidden">
 				<div className="absolute translate-x-[-50%] translate-y-[-50%] text-yellow-400 top-0 left-0">
 					<img src={sun} alt="sun" className="w-32 h-32 animate-spin-slow" />
 				</div>

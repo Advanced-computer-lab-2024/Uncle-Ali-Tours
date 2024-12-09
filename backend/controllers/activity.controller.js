@@ -357,20 +357,26 @@ export const updateActivity = async (req, res) => {
 // Delete Activity
 export const deleteActivity = async (req, res) => {
     const { id } = req.body;
-    try {
-        const deleted=   await Activity.findOneAndDelete({ _id: id });
-
-        if (deleted.profilePicture && fs.existsSync(path.join(__dirname, `../${deleted.profilePicture}`))) {
-            fs.unlinkSync(path.join(__dirname, `../${deleted.profilePicture}`));
-          }
-        return res.json({ success: true, message: 'Activity deleted successfully' });
-        
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
-    }
   
-
-    } 
+    try {
+      const deleted = await Activity.findOneAndDelete({ _id: id });
+  
+      if (!deleted) {
+        return res.status(404).json({ success: false, message: 'Activity not found' });
+      }
+  
+      // Delete the profile picture if it exists
+      if (deleted.profilePicture && fs.existsSync(path.join(__dirname, `../${deleted.profilePicture}`))) {
+        fs.unlinkSync(path.join(__dirname, `../${deleted.profilePicture}`));
+      }
+  
+      return res.status(200).json({ success: true, message: 'Activity deleted successfully' });
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
 
 // Create Activity Review
 export const createActivityReview = async (req, res) => {

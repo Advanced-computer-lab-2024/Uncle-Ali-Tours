@@ -1,10 +1,12 @@
-  import React, { useState ,useRef,useEffect } from 'react';
+import React, { useState ,useRef,useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiLoader } from 'react-icons/fi';
 import { MdDelete, MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import { dialog } from '../components/Dialog.jsx';
+// import { Button } from '../components/Button.jsx';
+
 import { useItineraryStore } from '../store/itinerary.js';
 import { useGuideStore } from '../store/tourGuide.js';
 import { useTouristStore } from '../store/tourist.js';
@@ -123,6 +125,15 @@ function ItineraryContainer({itinerary, itineraryChanger , accept , reject}) {
     } else {
       toast.error('Failed to add tour guide review: ' + message, { className: "text-white bg-gray-800" });
     }
+  };
+  const handleRedirectToReviews = () => {
+    navigate('/tourguidereviews');
+  };
+
+
+  const handleViewReviewsClick = () => {
+    setCurrentItinerary(itinerary); // Set the itinerary in the store
+    navigate('/viewReviews');       // Navigate to the view reviews page
   };
 
   const { showDialog } = dialog();

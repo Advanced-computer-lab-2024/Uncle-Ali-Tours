@@ -17,7 +17,15 @@ function AdminItineraryPage() {
     setCurItinerary(itinerary);
     setShowFlagDialog(true);
   };
-
+  const handleDeleteItinerary = async (itineraryID) => {
+    const { success, message } = await deleteItinerary(itineraryID);
+    if (success) {
+      toast.success(message, { className: 'text-white bg-gray-800' });
+      await getActivities();
+    } else {
+      toast.error(message, { className: 'text-white bg-gray-800' });
+    }
+  };
   // Toggle flag status
   const toggleAppropriateness = async (itinerary) => {
     if (itinerary) {

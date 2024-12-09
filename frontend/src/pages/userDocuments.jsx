@@ -48,7 +48,11 @@ const UserDocuments = () => {
 
       if (data.success) {
         toast.success(`Documents for ${userName} accepted successfully!`);
-        setUploadedDocuments((prev) => prev.filter((doc) => doc.userName !== userName));
+        setUploadedDocuments((prev) =>
+          prev.map((doc) =>
+            doc.userName === userName ? { ...doc, verified: true } : doc
+          )
+        );
       } else {
         toast.error(data.message || "Failed to accept documents.");
       }
@@ -73,7 +77,11 @@ const UserDocuments = () => {
 
       if (data.success) {
         toast.success(`Documents for ${userName} rejected successfully!`);
-        setUploadedDocuments((prev) => prev.filter((doc) => doc.userName !== userName));
+        setUploadedDocuments((prev) =>
+          prev.map((doc) =>
+            doc.userName === userName ? { ...doc, verified: false } : doc
+          )
+        );
       } else {
         toast.error(data.message || "Failed to reject documents.");
       }
@@ -95,7 +103,16 @@ const UserDocuments = () => {
             uploadedDocuments.map((doc, index) => (
               <div key={index} className="mb-6 p-4 border border-gray-700 rounded-lg">
                 <h4 className="text-lg font-bold mb-2">Seller: {doc.userName}</h4>
-                
+
+                <p className="mb-2">
+                  <strong>Status:</strong>{" "}
+                  {doc.verified ? (
+                    <span className="text-green-400">Verified</span>
+                  ) : (
+                    <span className="text-red-400">Unverified</span>
+                  )}
+                </p>
+
                 <div className="mb-2">
                   <h5 className="text-md font-semibold">Seller ID:</h5>
                   {doc.sellerID ? (
