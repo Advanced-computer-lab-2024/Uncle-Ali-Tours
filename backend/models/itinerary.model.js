@@ -34,6 +34,10 @@ const itinerarySchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  isBookmarked: {
+     type: Boolean, 
+    default: false 
+}, 
   language: {
     type: String,
     required: true,
